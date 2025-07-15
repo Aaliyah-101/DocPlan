@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:country_picker/country_picker.dart';
 import '../../constants/app_colors.dart';
 import '../../services/auth_service.dart';
@@ -146,8 +145,8 @@ class _AuthScreenState extends State<AuthScreen> {
       if (user != null) {
         // Add a small delay to ensure Firestore data is available
         await Future.delayed(const Duration(milliseconds: 500));
-
         final userData = await _authService.getUserData(user.uid);
+
         print('DEBUG: User UID: ${user.uid}');
         print('DEBUG: User data: $userData');
         print('DEBUG: User role: ${userData?.role}');
@@ -157,10 +156,8 @@ class _AuthScreenState extends State<AuthScreen> {
             print(
               'DEBUG: Navigating to dashboard based on role: "${userData.role}"',
             );
-
             // Normalize role to lowercase for comparison
             final normalizedRole = userData.role.toLowerCase().trim();
-
             if (normalizedRole == 'doctor') {
               print('DEBUG: Navigating to doctor dashboard');
               Navigator.pushReplacementNamed(context, '/doctor_dashboard');
@@ -205,6 +202,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
   Future<void> _signUp() async {
     if (!_signUpFormKey.currentState!.validate()) return;
+
     if (_selectedCountry.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -229,7 +227,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
       // Check if at least one day has time slots selected
       bool hasAvailability = _doctorAvailability.values.any(
-        (slots) => slots.isNotEmpty,
+            (slots) => slots.isNotEmpty,
       );
       if (!hasAvailability) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -310,6 +308,8 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
       body: Stack(
@@ -323,12 +323,16 @@ class _AuthScreenState extends State<AuthScreen> {
           // Semi-transparent overlay for better text visibility
           Container(color: Colors.black.withOpacity(0.4)),
           SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
+            child: SingleChildScrollView(
+              padding: EdgeInsets.only(
+                left: 24.0,
+                right: 24.0,
+                top: 24.0,
+                bottom: keyboardHeight > 0 ? keyboardHeight + 24.0 : 24.0,
+              ),
               child: Column(
                 children: [
-                  const SizedBox(height: 40),
-
+                  const SizedBox(height: 20),
                   // App Logo and Title
                   Container(
                     width: 80,
@@ -344,7 +348,6 @@ class _AuthScreenState extends State<AuthScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-
                   const Text(
                     'DocPlan',
                     style: TextStyle(
@@ -354,7 +357,6 @@ class _AuthScreenState extends State<AuthScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-
                   const Text(
                     'Welcome to smart healthcare scheduling',
                     style: TextStyle(
@@ -363,23 +365,17 @@ class _AuthScreenState extends State<AuthScreen> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 32),
 
                   // Main content area
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: _showSignUp
-                          ? _buildSignUpForm()
-                          : _buildSignInForm(),
-                    ),
-                  ),
+                  _showSignUp ? _buildSignUpForm() : _buildSignInForm(),
+
+                  const SizedBox(height: 24),
 
                   // Bottom buttons
-                  const SizedBox(height: 24),
                   _buildBottomButtons(),
 
-                  // Temporary debug section
-                  // Removed debug dialog and check current user buttons as requested
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
@@ -568,7 +564,6 @@ class _AuthScreenState extends State<AuthScreen> {
             },
           ),
           const SizedBox(height: 16),
-
           // Role Selection Dropdown
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -599,7 +594,6 @@ class _AuthScreenState extends State<AuthScreen> {
             ),
           ),
           const SizedBox(height: 16),
-
           // Doctor Specialty (only for doctors)
           if (_selectedRole == 'doctor') ...[
             Container(
@@ -634,7 +628,6 @@ class _AuthScreenState extends State<AuthScreen> {
             ),
             const SizedBox(height: 16),
           ],
-
           InkWell(
             onTap: _showCountryPicker,
             child: Container(
@@ -733,10 +726,9 @@ class _AuthScreenState extends State<AuthScreen> {
               return null;
             },
           ),
-
           // Doctor Availability (only for doctors)
           if (_selectedRole == 'doctor') ...[
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
             const Text(
               'Select Your Availability',
               style: TextStyle(
@@ -748,8 +740,6 @@ class _AuthScreenState extends State<AuthScreen> {
             const SizedBox(height: 16),
             ..._daysOfWeek.map((day) => _buildDayAvailability(day)),
           ],
-
-          const SizedBox(height: 24),
         ],
       ),
     );
@@ -757,7 +747,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
   Widget _buildDayAvailability(String day) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
