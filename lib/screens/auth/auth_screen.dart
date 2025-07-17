@@ -47,6 +47,17 @@ class _AuthScreenState extends State<AuthScreen> {
     'Neurosurgeon',
     'Cardiothoracic Surgeon',
     'Plastic Surgeon',
+    'Dermatologist',
+    'Oncologist',
+    'Radiologist',
+    'Pathologist',
+    'Rheumatologist',
+    'Ophthalmologist',
+    'Psychiatrist',
+    'Urologist',
+    'Trauma Surgeon',
+    'Allergist',
+    'Toxicologist',
   ];
 
   // Days of the week
