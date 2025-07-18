@@ -11,6 +11,7 @@ import 'screens/doctor/emergency_response_screen.dart';
 
 import 'services/firebase_messaging_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'dart:convert';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 final FlutterLocalNotificationsPlugin flnPlugin = FlutterLocalNotificationsPlugin();
@@ -18,7 +19,6 @@ final FlutterLocalNotificationsPlugin flnPlugin = FlutterLocalNotificationsPlugi
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize local notifications
   const AndroidInitializationSettings initializationSettingsAndroid =
   AndroidInitializationSettings('@mipmap/ic_launcher');
 
@@ -28,15 +28,25 @@ void main() async {
   await flnPlugin.initialize(
     initializationSettings,
     onDidReceiveNotificationResponse: (response) {
-      if (response.payload != null && response.payload == 'emergency_alert') {
-        // NOTE: You must send an appointmentId in arguments when using pushNamed
-        // This is a fallback, but normally handled in FirebaseMessagingService
-        navigatorKey.currentState?.pushNamed('/emergency_response', arguments: 'fallback-id');
+      try {
+        if (response.payload != null) {
+          final payload = jsonDecode(response.payload!);
+          final type = payload['type'];
+          final appointmentId = payload['appointmentId'];
+
+          if (type == 'emergency_alert' && appointmentId != null) {
+            navigatorKey.currentState?.pushNamed(
+              '/emergency_response',
+              arguments: appointmentId,
+            );
+          }
+        }
+      } catch (e) {
+        print("❌ Failed to decode notification payload: $e");
       }
     },
   );
 
-  // Initialize Firebase messaging
   await FirebaseMessagingService.initializeFCM(flnPlugin, navigatorKey);
 
   runApp(const MyApp());
@@ -84,8 +94,7 @@ class _MyAppState extends State<MyApp> {
                 );
               }
             }
-
-            return null; // fallback to default
+            return null;
           },
         );
       },
