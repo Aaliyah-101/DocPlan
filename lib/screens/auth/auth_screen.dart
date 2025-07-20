@@ -311,83 +311,140 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      backgroundColor: AppColors.primary,
       body: Stack(
         fit: StackFit.expand,
         children: [
           // Background image with reduced opacity
           Opacity(
             opacity: 0.3,
-            child: Image.asset('lib/images/docplan2.jpg', fit: BoxFit.cover),
+            child: Image.asset(
+              'assets/images/img_6.png',
+              fit: BoxFit.cover,
+            ),
           ),
           // Semi-transparent overlay for better text visibility
-          Container(color: Colors.black.withOpacity(0.4)),
+          Container(
+            color: Colors.black.withOpacity(0.2),
+          ),
+          
           SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                children: [
-                  const SizedBox(height: 40),
-
-                  // App Logo and Title
-                  Container(
-                    width: 80,
-                    height: 80,
+            child: Column(
+              children: [
+                // Header Section (Teal Background with transparency)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(24.0),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.9),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // App Logo and Title
+                      Row(
+                        children: [
+                          Container(
+                            width: 60,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              color: AppColors.textWhite,
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: const Image(
+                              image: AssetImage('assets/images/booking-app_15090912.png'),
+                              width: 40,
+                              height: 40,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          const Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'DocPlan',
+                                  style: TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textWhite,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      
+                      // Welcome text like dashboard
+                      const Text(
+                        'Welcome',
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textWhite,
+                        ),
+                      ),
+                      const Text(
+                        'Sign in to continue',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: AppColors.textWhite,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                
+                // Main Content Area (White Card)
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
                     decoration: BoxDecoration(
-                      color: AppColors.docplanBlue,
-                      borderRadius: BorderRadius.circular(20),
+                      color: AppColors.cardBackground,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, -2),
+                        ),
+                      ],
                     ),
-                    child: const Icon(
-                      Icons.medical_services,
-                      size: 40,
-                      color: AppColors.textWhite,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Column(
+                        children: [
+                          // Main content area
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: _showSignUp
+                                  ? _buildSignUpForm()
+                                  : _buildSignInForm(),
+                            ),
+                          ),
 
-                  const Text(
-                    'DocPlan',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.docplanBlue,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-
-                  const Text(
-                    'Welcome to smart healthcare scheduling',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppColors.textWhite,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 40),
-
-                  // Main content area
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: _showSignUp
-                          ? _buildSignUpForm()
-                          : _buildSignInForm(),
+                          // Bottom buttons
+                          const SizedBox(height: 24),
+                          _buildBottomButtons(),
+                        ],
+                      ),
                     ),
                   ),
-
-                  // Bottom buttons
-                  const SizedBox(height: 24),
-                  _buildBottomButtons(),
-
-                  // Temporary debug section
-                  // Removed debug dialog and check current user buttons as requested
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
       ),
     );
   }
+
 
   Widget _buildBottomButtons() {
     return Column(
@@ -404,7 +461,7 @@ class _AuthScreenState extends State<AuthScreen> {
             children: [
               const Text(
                 "Don't have an account? ",
-                style: TextStyle(color: AppColors.textWhite, fontSize: 16),
+                style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
               ),
               GestureDetector(
                 onTap: () {
@@ -435,7 +492,7 @@ class _AuthScreenState extends State<AuthScreen> {
             children: [
               const Text(
                 'Already have an account? ',
-                style: TextStyle(color: AppColors.textWhite, fontSize: 16),
+                style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
               ),
               GestureDetector(
                 onTap: () {
@@ -742,7 +799,7 @@ class _AuthScreenState extends State<AuthScreen> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textWhite,
+                color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 16),
