@@ -18,7 +18,9 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   final AppointmentService _appointmentService = AppointmentService();
   final AuthService _authService = AuthService();
 
+  // ignore: unused_field
   String? _selectedDoctorId;
+  // ignore: unused_field
   String? _selectedDoctorName;
   String? _selectedSpecialty;
   DateTime? _selectedDate;
@@ -38,6 +40,17 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     'Neurosurgeon',
     'Cardiothoracic Surgeon',
     'Plastic Surgeon',
+    'Dermatologist',
+    'Oncologist',
+    'Radiologist',
+    'Pathologist',
+    'Rheumatologist',
+    'Ophthalmologist',
+    'Psychiatrist',
+    'Urologist',
+    'Trauma Surgeon',
+    'Allergist',
+    'Toxicologist',
   ];
 
   // Days of the week
@@ -75,7 +88,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 20),
-                
+
                 // Specialty Selection
                 Text(
                   'Select Specialty',
@@ -83,7 +96,10 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                 ),
                 const SizedBox(height: 10),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.cardBackground,
                     borderRadius: BorderRadius.circular(8),
@@ -93,11 +109,17 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                     value: _selectedSpecialty,
                     decoration: const InputDecoration(
                       border: InputBorder.none,
-                      icon: Icon(Icons.medical_services, color: AppColors.textSecondary),
+                      icon: Icon(
+                        Icons.medical_services,
+                        color: AppColors.textSecondary,
+                      ),
                       hintText: 'Select Specialty',
                     ),
                     items: _specialties.map((specialty) {
-                      return DropdownMenuItem(value: specialty, child: Text(specialty));
+                      return DropdownMenuItem(
+                        value: specialty,
+                        child: Text(specialty),
+                      );
                     }).toList(),
                     onChanged: (value) {
                       setState(() {
@@ -110,59 +132,9 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                
-                // Doctor Selection
-                if (_selectedSpecialty != null) ...[
-                  Text(
-                    'Select Doctor',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 10),
-                  StreamBuilder<List<Map<String, dynamic>>>(
-                    stream: _appointmentService.getAvailableDoctorsBySpecialty(_selectedSpecialty!),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const LinearProgressIndicator();
-                      }
-                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return const Text('No doctors available for this specialty.');
-                      }
-                      final doctors = snapshot.data!;
-                      return Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        decoration: BoxDecoration(
-                          color: AppColors.cardBackground,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: AppColors.textSecondary),
-                        ),
-                        child: DropdownButtonFormField<String>(
-                          value: _selectedDoctorId,
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            icon: Icon(Icons.person, color: AppColors.textSecondary),
-                            hintText: 'Select Doctor',
-                          ),
-                          items: doctors.map((doc) {
-                            return DropdownMenuItem<String>(
-                              value: doc['id'],
-                              child: Text(doc['name']),
-                            );
-                          }).toList(),
-                          onChanged: (val) {
-                            setState(() {
-                              _selectedDoctorId = val;
-                              final doc = doctors.firstWhere((d) => d['id'] == val);
-                              _selectedDoctorName = doc['name'];
-                              _selectedTimeSlot = null;
-                            });
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 24),
-                ],
-                
+
+                // Doctor selection removed; doctor will be auto-assigned
+
                 // Date Selection
                 Text(
                   'Select Date',
@@ -205,43 +177,60 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                         Text(
                           _selectedDate == null
                               ? 'Choose a date'
-                              : DateFormat('EEE, MMM d, yyyy').format(_selectedDate!),
+                              : DateFormat(
+                                  'EEE, MMM d, yyyy',
+                                ).format(_selectedDate!),
                         ),
                       ],
                     ),
                   ),
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Time Slot Selection (based on doctor availability)
-                if (_selectedDoctorId != null && _selectedDate != null) ...[
+                if (_selectedSpecialty != null && _selectedDate != null) ...[
                   Text(
                     'Select Time Slot',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 10),
-                  StreamBuilder<Map<String, List<String>>>(
-                    stream: _appointmentService.getDoctorAvailability(_selectedDoctorId!),
+                  FutureBuilder<List<Map<String, dynamic>>>(
+                    future: _appointmentService
+                        .getAvailableDoctorsBySpecialty(_selectedSpecialty!)
+                        .first,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const LinearProgressIndicator();
                       }
-                      if (!snapshot.hasData) {
-                        return const Text('Unable to load doctor availability.');
+                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return const Text(
+                          'No doctors available for this specialty.',
+                        );
                       }
-                      
-                      final availability = snapshot.data!;
+                      final doctors = snapshot.data!;
+                      // Gather all available slots for all doctors for the selected day
                       final dayName = _daysOfWeek[_selectedDate!.weekday - 1];
-                      final availableSlots = availability[dayName] ?? [];
-                      
-                      if (availableSlots.isEmpty) {
-                        return const Text('No available time slots for this day.');
+                      final Set<String> allSlots = {};
+                      for (final doc in doctors) {
+                        final availability =
+                            doc['availability'] as Map<String, dynamic>?;
+                        if (availability != null &&
+                            availability[dayName] != null) {
+                          for (final slot in (availability[dayName] as List)) {
+                            allSlots.add(slot);
+                          }
+                        }
                       }
-                      
+                      if (allSlots.isEmpty) {
+                        return const Text(
+                          'No available time slots for this day.',
+                        );
+                      }
+                      final sortedSlots = allSlots.toList()..sort();
                       return Wrap(
                         spacing: 8,
                         runSpacing: 8,
-                        children: availableSlots.map((timeSlot) {
+                        children: sortedSlots.map((timeSlot) {
                           bool isSelected = _selectedTimeSlot == timeSlot;
                           return GestureDetector(
                             onTap: () {
@@ -250,19 +239,30 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                               });
                             },
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
                               decoration: BoxDecoration(
-                                color: isSelected ? AppColors.primary : AppColors.cardBackground,
+                                color: isSelected
+                                    ? AppColors.primary
+                                    : AppColors.cardBackground,
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                                  color: isSelected
+                                      ? AppColors.primary
+                                      : AppColors.textSecondary,
                                 ),
                               ),
                               child: Text(
                                 timeSlot,
                                 style: TextStyle(
-                                  color: isSelected ? AppColors.textWhite : AppColors.textPrimary,
-                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                  color: isSelected
+                                      ? AppColors.textWhite
+                                      : AppColors.textPrimary,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
                                 ),
                               ),
                             ),
@@ -273,7 +273,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                   ),
                   const SizedBox(height: 24),
                 ],
-                
+
                 // Reason for Appointment
                 Text(
                   'Reason for Appointment',
@@ -283,7 +283,8 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                 TextField(
                   maxLines: 3,
                   decoration: InputDecoration(
-                    hintText: 'Please describe your reason for the appointment...',
+                    hintText:
+                        'Please describe your reason for the appointment...',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -295,7 +296,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                   },
                 ),
                 const SizedBox(height: 32),
-                
+
                 if (_error != null)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 12),
@@ -332,11 +333,11 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     setState(() {
       _error = null;
     });
-    if (_selectedDoctorId == null ||
+    if (_selectedSpecialty == null ||
         _selectedDate == null ||
         _selectedTimeSlot == null) {
       setState(() {
-        _error = 'Please select doctor, date, and time slot.';
+        _error = 'Please select specialty, date, and time slot.';
       });
       return;
     }
@@ -346,12 +347,12 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       if (user == null) throw Exception('User not logged in');
       final userModel = await _authService.getUserData(user.uid);
       if (userModel == null) throw Exception('User data not found');
-      
+
       // Parse time slot (e.g., "09:00" -> hour: 9, minute: 0)
       final timeParts = _selectedTimeSlot!.split(':');
       final hour = int.parse(timeParts[0]);
       final minute = int.parse(timeParts[1]);
-      
+
       final appointmentDateTime = DateTime(
         _selectedDate!.year,
         _selectedDate!.month,
@@ -359,16 +360,50 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
         hour,
         minute,
       );
-      
+
+      // Find all available doctors for the specialty
+      final doctorsSnapshot = await FirebaseFirestore.instance
+          .collection('doctors')
+          .where('status', isEqualTo: 'available')
+          .where('specialty', isEqualTo: _selectedSpecialty)
+          .get();
+      final doctors = doctorsSnapshot.docs;
+      if (doctors.isEmpty) {
+        throw Exception('No available doctors for this specialty.');
+      }
+
+      // For each doctor, count their appointments at this date/time
+      String? chosenDoctorId;
+      String? chosenDoctorName;
+      int minAppointments = 999999;
+      for (final doc in doctors) {
+        final docId = doc.id;
+        final docName = doc['name'] ?? '';
+        final appointmentsSnapshot = await FirebaseFirestore.instance
+            .collection('appointments')
+            .where('doctorId', isEqualTo: docId)
+            .where('dateTime', isEqualTo: appointmentDateTime.toIso8601String())
+            .get();
+        final count = appointmentsSnapshot.docs.length;
+        if (count < minAppointments) {
+          minAppointments = count;
+          chosenDoctorId = docId;
+          chosenDoctorName = docName;
+        }
+      }
+      if (chosenDoctorId == null) {
+        throw Exception('No available doctor for the selected time slot.');
+      }
+
       final appointmentId = FirebaseFirestore.instance
           .collection('appointments')
           .doc()
           .id;
       final appointment = AppointmentModel(
         id: appointmentId,
-        doctorId: _selectedDoctorId!,
+        doctorId: chosenDoctorId,
         patientId: user.uid,
-        doctorName: _selectedDoctorName ?? '',
+        doctorName: chosenDoctorName ?? '',
         patientName: userModel.name,
         dateTime: appointmentDateTime,
         status: 'upcoming',
@@ -383,8 +418,10 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Appointment booked successfully!'),
+          SnackBar(
+            content: Text(
+              'Appointment booked with Dr. ${chosenDoctorName ?? ''}!',
+            ),
             backgroundColor: AppColors.success,
           ),
         );

@@ -7,6 +7,7 @@ import '../../services/appointment_service.dart';
 import '../../services/auth_service.dart';
 import '../../models/appointment_model.dart';
 import '../../widgets/gradient_background.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DoctorViewAppointmentsScreen extends StatelessWidget {
   const DoctorViewAppointmentsScreen({super.key});
@@ -213,6 +214,27 @@ class _DoctorAppointmentCardState extends State<_DoctorAppointmentCard> {
                   const SizedBox(width: 12),
                   Text(
                     'Lng: ${a.location!['longitude']?.toStringAsFixed(5) ?? '-'}',
+                  ),
+                  const SizedBox(width: 12),
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.map),
+                    label: const Text('View on Map'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.accent,
+                      foregroundColor: AppColors.textWhite,
+                    ),
+                    onPressed: () async {
+                      final lat = a.location!['latitude'];
+                      final lng = a.location!['longitude'];
+                      final url = 'https://www.google.com/maps/search/?api=1&query=$lat,$lng';
+                      if (await canLaunchUrl(Uri.parse(url))) {
+                        await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Could not open Google Maps.')),
+                        );
+                      }
+                    },
                   ),
                 ],
               ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../constants/app_colors.dart';
 import '../../services/auth_service.dart';
@@ -8,6 +9,8 @@ import 'radius_settings_screen.dart';
 import 'patient_records_screen.dart';
 import 'doctor_emergency_dialog.dart';
 import '../../widgets/gradient_background.dart';
+import '../../models/emergency_model.dart';
+import '../settings/settings_screen.dart';
 
 class DoctorDashboardScreen extends StatefulWidget {
   const DoctorDashboardScreen({super.key});
@@ -18,300 +21,349 @@ class DoctorDashboardScreen extends StatefulWidget {
 
 class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
   final AuthService _authService = AuthService();
-  // ignore: unused_field
   final AppointmentService _appointmentService = AppointmentService();
+  static const List<double> _offsets = [0, 24, 48];
+
+  int _selectedIndex = 0;
+
+  static const List<Widget> _pages = <Widget>[
+    _DoctorHomeContent(),
+    DoctorViewAppointmentsScreen(),
+    PatientRecordsScreen(),
+    RadiusSettingsScreen(),
+    SettingsScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final user = _authService.currentUser;
-
     return Scaffold(
-      backgroundColor: AppColors.primary,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          // Background image with reduced opacity
-          Opacity(
-            opacity: 0.5,
-            child: Image.asset(
-              'assets/images/26087.jpg',
-              fit: BoxFit.cover,
+      backgroundColor: AppColors.backgroundLight,
+      appBar: AppBar(
+        title: const Text('Doctor Dashboard'),
+        backgroundColor: AppColors.primary,
+      ),
+      drawer: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.5, // 👈 Reduces width to 70% of screen
+        child: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              DrawerHeader(
+                decoration: const BoxDecoration(color: AppColors.primary),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Icon(Icons.account_circle, size: 48, color: Colors.white),
+                    SizedBox(height: 8),
+                    Text("Doctor Menu", style: TextStyle(color: Colors.white, fontSize: 20)),
+                  ],
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.home, color: AppColors.primary),
+                title: const Text('Home'),
+                selected: _selectedIndex == 0,
+                selectedTileColor: AppColors.primary.withOpacity(0.1),
+                onTap: () {
+                  Navigator.pop(context);
+                  setState(() => _selectedIndex = 0);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.list_alt, color: AppColors.primary),
+                title: const Text('Appointments'),
+                selected: _selectedIndex == 1,
+                selectedTileColor: AppColors.primary.withOpacity(0.1),
+                onTap: () {
+                  Navigator.pop(context);
+                  setState(() => _selectedIndex = 1);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.medical_services, color: AppColors.primary),
+                title: const Text('Records'),
+                selected: _selectedIndex == 2,
+                selectedTileColor: AppColors.primary.withOpacity(0.1),
+                onTap: () {
+                  Navigator.pop(context);
+                  setState(() => _selectedIndex = 2);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.my_location, color: AppColors.primary),
+                title: const Text('Set Radius'),
+                selected: _selectedIndex == 3,
+                selectedTileColor: AppColors.primary.withOpacity(0.1),
+                onTap: () {
+                  Navigator.pop(context);
+                  setState(() => _selectedIndex = 3);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.settings, color: AppColors.primary),
+                title: const Text('Settings'),
+                selected: _selectedIndex == 4,
+                selectedTileColor: AppColors.primary.withOpacity(0.1),
+                onTap: () {
+                  Navigator.pop(context);
+                  setState(() => _selectedIndex = 4);
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+      body: _pages[_selectedIndex],
+    );
+  }
+}
+
+class _DoctorHomeContent extends StatelessWidget {
+  const _DoctorHomeContent();
+
+  Future<void> _releaseAllFrozenAppointments(BuildContext context) async {
+    final user = AuthService().currentUser;
+    if (user == null) return;
+    await AppointmentService().releaseAllFrozenAppointments(user.uid);
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('All frozen appointments have been released.'),
+          backgroundColor: AppColors.success,
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final _authService = AuthService();
+    final user = _authService.currentUser;
+    return GradientBackground(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 20),
+            Text('Hello,', style: Theme.of(context).textTheme.titleMedium),
+            FutureBuilder(
+              future: _authService.getUserData(user?.uid ?? ''),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const SizedBox(
+                    height: 24,
+                    child: LinearProgressIndicator(),
+                  );
+                }
+                if (!snapshot.hasData || snapshot.data == null) {
+                  return const Text('Doctor');
+                }
+                return Text(
+                  (snapshot.data as dynamic).name ?? 'Doctor',
+                  style: Theme.of(context).textTheme.headlineMedium,
+                );
+              },
             ),
-          ),
-          // Semi-transparent overlay for better text visibility
-          Container(
-            color: Colors.black.withOpacity(0.2),
-          ),
-          
-          SafeArea(
-            child: Column(
-              children: [
-                // Header Section (Teal Background with transparency)
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(24.0),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.9),
+            const SizedBox(height: 20),
+            // Status Banner with real-time updates
+            StreamBuilder<DocumentSnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('doctors')
+                  .doc(user?.uid)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const SizedBox(
+                    height: 50,
+                    child: LinearProgressIndicator(),
+                  );
+                }
+                final doctorData = snapshot.data!.data() as Map<String, dynamic>?;
+                final specialty = doctorData?['specialty'] ?? 'General';
+                return Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  decoration: BoxDecoration(
+                    color: AppColors.success.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: AppColors.success),
+                  ),
+                  child: Row(
                     children: [
-                      // Top row with welcome text and avatar
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'WELCOME.',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.textWhite,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                              ],
-                            ),
-                          ),
-                          // Avatar circle
-                          Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: AppColors.accent,
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.medical_services,
-                              color: AppColors.textWhite,
-                              size: 30,
-                            ),
-                          ),
-                        ],
+                      const Icon(
+                        Icons.check_circle,
+                        color: AppColors.success,
                       ),
-                      const SizedBox(height: 20),
-                      
-                      // User greeting
-                      Text(
-                        'Hello,',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: AppColors.textWhite,
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Status: Available',
+                              style: const TextStyle(
+                                color: AppColors.success,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                              ),
+                            ),
+                            Text(
+                              'Specialty: $specialty',
+                              style: const TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      FutureBuilder(
-                        future: _authService.getUserData(user?.uid ?? ''),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const SizedBox(
-                              height: 24,
-                              child: LinearProgressIndicator(
-                                backgroundColor: AppColors.textWhite,
-                                valueColor: AlwaysStoppedAnimation<Color>(AppColors.accent),
-                              ),
-                            );
-                          }
-                          if (!snapshot.hasData || snapshot.data == null) {
-                            return const Text(
-                              'Doctor',
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textWhite,
-                              ),
-                            );
-                          }
-                          return Text(
-                            (snapshot.data as dynamic).name ?? 'Doctor',
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textWhite,
-                            ),
-                          );
-                        },
                       ),
                     ],
                   ),
-                ),
-                
-                // Main Content Area (White Card with shadow)
-                Expanded(
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: AppColors.cardBackground,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(30),
-                        topRight: Radius.circular(30),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, -2),
+                );
+              },
+            ),
+            const SizedBox(height: 20),
+            // Emergency List Section
+            Builder(
+              builder: (context) {
+                final user = _authService.currentUser;
+                if (user == null) {
+                  return const SizedBox();
+                }
+                return StreamBuilder<List<EmergencyModel>>(
+                  stream: AppointmentService().getActiveEmergencies(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const SizedBox(
+                        height: 50,
+                        child: LinearProgressIndicator(),
+                      );
+                    }
+                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: const Text(
+                          'No active emergencies.',
+                          style: TextStyle(
+                            color: AppColors.success,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
                         ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Column(
-                        children: [
-                          // Service Grid
-                          Expanded(
-                            child: GridView.count(
-                              crossAxisCount: 3,
-                              crossAxisSpacing: 16,
-                              mainAxisSpacing: 16,
-                              children: [
-                                // View Appointments
-                                _buildServiceButton(
-                                  context,
-                                  icon: Icons.list_alt,
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const DoctorViewAppointmentsScreen(),
-                                      ),
-                                    );
-                                  },
-                                ),
-                                
-                                // Emergency Toggle
-                                _buildServiceButton(
-                                  context,
-                                  icon: Icons.emergency,
-                                  onTap: () {
-                                    _showEmergencyDialog(context);
-                                  },
-                                ),
-                                
-                                // Set Availability
-                                _buildServiceButton(
-                                  context,
-                                  icon: Icons.schedule,
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => const RadiusSettingsScreen(),
-                                      ),
-                                    );
-                                  },
-                                ),
-                                
-                                // Patient Records
-                                _buildServiceButton(
-                                  context,
-                                  icon: Icons.medical_services,
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => const PatientRecordsScreen(),
-                                      ),
-                                    );
-                                  },
-                                ),
-                                
-                                // Logout
-                                _buildServiceButton(
-                                  context,
-                                  icon: Icons.logout,
-                                  onTap: () async {
-                                    await AuthService().signOut();
-                                    if (context.mounted) {
-                                      Navigator.pushReplacementNamed(context, '/auth');
-                                    }
-                                  },
-                                ),
-                                
-                                // Settings
-                                _buildServiceButton(
-                                  context,
-                                  icon: Icons.settings,
-                                  onTap: () {
-                                    // Add settings functionality here
-                                  },
-                                ),
-                              ],
+                      );
+                    }
+                    final emergencies = snapshot.data!
+                        .where((e) => e.doctorId == user.uid)
+                        .toList();
+                    if (emergencies.isEmpty) {
+                      return Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: const Text(
+                          'No active emergencies.',
+                          style: TextStyle(
+                            color: AppColors.success,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                        ),
+                      );
+                    }
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Active Emergencies',
+                          style: TextStyle(
+                            color: AppColors.error,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        ...emergencies.map(
+                          (e) => Card(
+                            color: AppColors.emergencyLight,
+                            margin: const EdgeInsets.only(bottom: 12),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Reason: ${e.reason}',
+                                    style: const TextStyle(
+                                      color: AppColors.error,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'Time: ${e.timestamp}',
+                                    style: const TextStyle(
+                                      color: AppColors.textSecondary,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'Affected Appointments: ${e.affectedAppointments.length}',
+                                    style: const TextStyle(
+                                      color: AppColors.textSecondary,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  ElevatedButton.icon(
+                                    icon: const Icon(Icons.check),
+                                    label: const Text('Mark as Resolved'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppColors.success,
+                                      foregroundColor: AppColors.textWhite,
+                                    ),
+                                    onPressed: () async {
+                                      await AppointmentService()
+                                          .resolveEmergency(user.uid);
+                                    },
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                          
-                          // Pagination dots
-                          const SizedBox(height: 20),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: 8,
-                                height: 8,
-                                decoration: BoxDecoration(
-                                  color: AppColors.textSecondary.withOpacity(0.3),
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Container(
-                                width: 8,
-                                height: 8,
-                                decoration: const BoxDecoration(
-                                  color: AppColors.primary,
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Container(
-                                width: 8,
-                                height: 8,
-                                decoration: BoxDecoration(
-                                  color: AppColors.textSecondary.withOpacity(0.3),
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                            ],
+                        ),
+                        const SizedBox(height: 16),
+                        // Release all frozen appointments button
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            icon: const Icon(Icons.refresh),
+                            label: const Text('Release All Frozen Appointments'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: AppColors.textWhite,
+                            ),
+                            onPressed: () => _releaseAllFrozenAppointments(context),
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildServiceButton(
-    BuildContext context, {
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.backgroundLight,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(
-          icon,
-          size: 32,
-          color: AppColors.primary,
+            const SizedBox(height: 20),
+            // No dashboard grid/buttons here
+          ],
         ),
       ),
-    );
-  }
-
-  void _showEmergencyDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => const DoctorEmergencyDialog(),
     );
   }
 }

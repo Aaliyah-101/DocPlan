@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'app_colors.dart';
+import '../services/preferences_service.dart';
 
 class AppTheme {
   static ThemeData lightTheme = ThemeData(
@@ -110,4 +111,21 @@ class AppTheme {
       ),
     ),
   );
+}
+
+class ThemeNotifier extends ChangeNotifier {
+  ThemeMode _themeMode = ThemeMode.system;
+  ThemeMode get themeMode => _themeMode;
+  final PreferencesService _preferencesService = PreferencesService();
+
+  Future<void> loadThemeMode() async {
+    _themeMode = await _preferencesService.loadThemeMode();
+    notifyListeners();
+  }
+
+  void setTheme(ThemeMode mode) {
+    _themeMode = mode;
+    _preferencesService.saveThemeMode(mode);
+    notifyListeners();
+  }
 }

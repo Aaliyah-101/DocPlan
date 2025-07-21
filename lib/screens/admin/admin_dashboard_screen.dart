@@ -354,21 +354,7 @@ class AdminDashboardScreen extends StatelessWidget {
                       style: TextStyle(color: AppColors.textSecondary),
                     ),
                     const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        icon: const Icon(Icons.emergency),
-                        label: const Text('Declare Emergency'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.emergencyDark,
-                          foregroundColor: AppColors.textWhite,
-                          minimumSize: const Size.fromHeight(45),
-                        ),
-                        onPressed: () {
-                          _showDeclareEmergencyDialog(context);
-                        },
-                      ),
-                    ),
+                    // Emergency declaration removed for admin
                   ],
                 ),
               ),
@@ -488,54 +474,9 @@ class AdminDashboardScreen extends StatelessWidget {
         .snapshots();
   }
 
-  void _showDeclareEmergencyDialog(BuildContext context) {
-    final reasonController = TextEditingController();
+  // _showDeclareEmergencyDialog removed
 
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Declare System Emergency'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'This will freeze all appointments and notify all patients.',
-              style: TextStyle(color: AppColors.textSecondary),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: reasonController,
-              decoration: const InputDecoration(
-                labelText: 'Emergency Reason',
-                border: OutlineInputBorder(),
-              ),
-              maxLines: 3,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (reasonController.text.isNotEmpty) {
-                _declareSystemEmergency(reasonController.text);
-                Navigator.pop(context);
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.emergencyDark,
-              foregroundColor: AppColors.textWhite,
-            ),
-            child: const Text('Declare Emergency'),
-          ),
-        ],
-      ),
-    );
-  }
-
+  // ignore: unused_element
   Future<void> _declareSystemEmergency(String reason) async {
     try {
       // Create emergency record

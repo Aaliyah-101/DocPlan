@@ -7,6 +7,8 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  FirebaseFirestore get firestore => _firestore;
+
   // Get current user
   User? get currentUser => _auth.currentUser;
 

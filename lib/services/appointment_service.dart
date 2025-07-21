@@ -243,21 +243,20 @@ class AppointmentService {
       'emergency_time': emergency.timestamp.toIso8601String(),
     });
 
-    // Reschedule all upcoming appointments for this doctor
+    // Freeze all upcoming appointments for ALL doctors
     QuerySnapshot appointments = await _firestore
         .collection('appointments')
-        .where('doctorId', isEqualTo: emergency.doctorId)
         .where('status', isEqualTo: 'upcoming')
         .get();
 
     for (DocumentSnapshot doc in appointments.docs) {
       await doc.reference.update({
-        'status': 'rescheduled',
-        'notes': 'Doctor in emergency. Will reschedule.',
+        'status': 'frozen',
+        'notes': 'We apologize, your appointment is temporarily frozen due to a system-wide emergency. You will be notified when it is rescheduled or you may choose a new time.',
       });
     }
 
-    // Send notifications to all affected patients
+    // Send notifications to all affected patients of the declaring doctor
     await NotificationService.notifyDoctorPatients(
       doctorId: emergency.doctorId,
       doctorName: emergency.doctorName,
@@ -297,5 +296,21 @@ class AppointmentService {
               .map((doc) => EmergencyModel.fromMap(doc.data()))
               .toList();
         });
+  }
+
+  // Release all frozen appointments for a doctor
+  Future<void> releaseAllFrozenAppointments(String doctorId) async {
+    final frozenAppointments = await _firestore
+        .collection('appointments')
+        .where('doctorId', isEqualTo: doctorId)
+        .where('status', isEqualTo: 'frozen')
+        .get();
+
+    for (final doc in frozenAppointments.docs) {
+      await doc.reference.update({
+        'status': 'upcoming',
+        'notes': null,
+      });
+    }
   }
 }

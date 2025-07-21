@@ -124,6 +124,57 @@ class _AppointmentCard extends StatelessWidget {
               const SizedBox(height: 8),
               Text('Note: ${appointment.notes!}', style: const TextStyle(color: AppColors.error)),
             ],
+            if (appointment.status == 'frozen') ...[
+              const SizedBox(height: 12),
+              Text(
+                'This appointment is temporarily frozen due to a doctor emergency. Please reschedule to a new time.',
+                style: const TextStyle(color: AppColors.emergencyDark, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              ElevatedButton.icon(
+                icon: const Icon(Icons.schedule),
+                label: const Text('Reschedule'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.textWhite,
+                ),
+                onPressed: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime.now().add(const Duration(days: 60)),
+                  );
+                  if (picked != null) {
+                    final timeOfDay = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.now(),
+                    );
+                    if (timeOfDay != null) {
+                      final newDateTime = DateTime(
+                        picked.year,
+                        picked.month,
+                        picked.day,
+                        timeOfDay.hour,
+                        timeOfDay.minute,
+                      );
+                      await AppointmentService().rescheduleAppointment(
+                        appointment.id,
+                        newDateTime,
+                      );
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Appointment rescheduled!'),
+                            backgroundColor: AppColors.success,
+                          ),
+                        );
+                      }
+                    }
+                  }
+                },
+              ),
+            ],
           ],
         ),
       ),
