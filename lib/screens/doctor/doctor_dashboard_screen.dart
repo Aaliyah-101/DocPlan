@@ -26,244 +26,283 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
     final user = _authService.currentUser;
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
-      appBar: AppBar(
-        title: const Text(
-          'DocPlan',
-          style: TextStyle(
-            color: AppColors.docplanBlue,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+      backgroundColor: AppColors.primary,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Background image with reduced opacity
+          Opacity(
+            opacity: 0.5,
+            child: Image.asset(
+              'assets/images/26087.jpg',
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.textWhite,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await AuthService().signOut();
-              if (context.mounted) {
-                Navigator.pushReplacementNamed(context, '/auth');
-              }
-            },
+          // Semi-transparent overlay for better text visibility
+          Container(
+            color: Colors.black.withOpacity(0.2),
           ),
-        ],
-      ),
-      body: GradientBackground(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
-              Text('Hello,', style: Theme.of(context).textTheme.titleMedium),
-              FutureBuilder(
-                future: _authService.getUserData(user?.uid ?? ''),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const SizedBox(
-                      height: 24,
-                      child: LinearProgressIndicator(),
-                    );
-                  }
-                  if (!snapshot.hasData || snapshot.data == null) {
-                    return const Text('Doctor');
-                  }
-                  return Text(
-                    (snapshot.data as dynamic).name ?? 'Doctor',
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  );
-                },
-              ),
-              const SizedBox(height: 20),
-
-              // Status Banner with real-time updates
-              StreamBuilder<DocumentSnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('doctors')
-                    .doc(user?.uid)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return const SizedBox(
-                      height: 50,
-                      child: LinearProgressIndicator(),
-                    );
-                  }
-
-                  final doctorData =
-                      snapshot.data!.data() as Map<String, dynamic>?;
-                  // ignore: unused_local_variable
-                  final status = doctorData?['status'] ?? 'available';
-                  final specialty = doctorData?['specialty'] ?? 'General';
-
-                  return Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.success.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppColors.success),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.check_circle,
-                          color: AppColors.success,
+          
+          SafeArea(
+            child: Column(
+              children: [
+                // Header Section (Teal Background with transparency)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(24.0),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.9),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Top row with welcome text and avatar
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'WELCOME.',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textWhite,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                              ],
+                            ),
+                          ),
+                          // Avatar circle
+                          Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              color: AppColors.accent,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.medical_services,
+                              color: AppColors.textWhite,
+                              size: 30,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      
+                      // User greeting
+                      Text(
+                        'Hello,',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: AppColors.textWhite,
                         ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                      ),
+                      FutureBuilder(
+                        future: _authService.getUserData(user?.uid ?? ''),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const SizedBox(
+                              height: 24,
+                              child: LinearProgressIndicator(
+                                backgroundColor: AppColors.textWhite,
+                                valueColor: AlwaysStoppedAnimation<Color>(AppColors.accent),
+                              ),
+                            );
+                          }
+                          if (!snapshot.hasData || snapshot.data == null) {
+                            return const Text(
+                              'Doctor',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textWhite,
+                              ),
+                            );
+                          }
+                          return Text(
+                            (snapshot.data as dynamic).name ?? 'Doctor',
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textWhite,
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                
+                // Main Content Area (White Card with shadow)
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: AppColors.cardBackground,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, -2),
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Column(
+                        children: [
+                          // Service Grid
+                          Expanded(
+                            child: GridView.count(
+                              crossAxisCount: 3,
+                              crossAxisSpacing: 16,
+                              mainAxisSpacing: 16,
+                              children: [
+                                // View Appointments
+                                _buildServiceButton(
+                                  context,
+                                  icon: Icons.list_alt,
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const DoctorViewAppointmentsScreen(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                
+                                // Emergency Toggle
+                                _buildServiceButton(
+                                  context,
+                                  icon: Icons.emergency,
+                                  onTap: () {
+                                    _showEmergencyDialog(context);
+                                  },
+                                ),
+                                
+                                // Set Availability
+                                _buildServiceButton(
+                                  context,
+                                  icon: Icons.schedule,
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const RadiusSettingsScreen(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                
+                                // Patient Records
+                                _buildServiceButton(
+                                  context,
+                                  icon: Icons.medical_services,
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const PatientRecordsScreen(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                
+                                // Logout
+                                _buildServiceButton(
+                                  context,
+                                  icon: Icons.logout,
+                                  onTap: () async {
+                                    await AuthService().signOut();
+                                    if (context.mounted) {
+                                      Navigator.pushReplacementNamed(context, '/auth');
+                                    }
+                                  },
+                                ),
+                                
+                                // Settings
+                                _buildServiceButton(
+                                  context,
+                                  icon: Icons.settings,
+                                  onTap: () {
+                                    // Add settings functionality here
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                          
+                          // Pagination dots
+                          const SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                'Status: Available',
-                                style: const TextStyle(
-                                  color: AppColors.success,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 16,
+                              Container(
+                                width: 8,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                  color: AppColors.textSecondary.withOpacity(0.3),
+                                  shape: BoxShape.circle,
                                 ),
                               ),
-                              Text(
-                                'Specialty: $specialty',
-                                style: const TextStyle(
-                                  color: AppColors.textSecondary,
-                                  fontSize: 12,
+                              const SizedBox(width: 8),
+                              Container(
+                                width: 8,
+                                height: 8,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.primary,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Container(
+                                width: 8,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                  color: AppColors.textSecondary.withOpacity(0.3),
+                                  shape: BoxShape.circle,
                                 ),
                               ),
                             ],
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  );
-                },
-              ),
-              const SizedBox(height: 30),
-
-              // Dashboard Grid
-              Expanded(
-                child: GridView.count(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  children: [
-                    // View Appointments
-                    _buildDashboardCard(
-                      context,
-                      icon: Icons.list_alt,
-                      title: 'View\nAppointments',
-                      color: AppColors.accent,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const DoctorViewAppointmentsScreen(),
-                          ),
-                        );
-                      },
-                    ),
-
-                    // Emergency Toggle
-                    _buildDashboardCard(
-                      context,
-                      icon: Icons.emergency,
-                      title: 'Emergency\nToggle',
-                      color: AppColors.error,
-                      onTap: () {
-                        _showEmergencyDialog(context);
-                      },
-                    ),
-
-                    // Set Availability
-                    _buildDashboardCard(
-                      context,
-                      icon: Icons.schedule,
-                      title: 'Set\nAvailability',
-                      color: AppColors.primary,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const RadiusSettingsScreen(),
-                          ),
-                        );
-                      },
-                    ),
-
-                    // Patient Records
-                    _buildDashboardCard(
-                      context,
-                      icon: Icons.medical_services,
-                      title: 'Patient\nRecords',
-                      color: AppColors.docplanBlue,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const PatientRecordsScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
 
-  Widget _buildDashboardCard(
+  Widget _buildServiceButton(
     BuildContext context, {
     required IconData icon,
-    required String title,
-    required Color color,
     required VoidCallback onTap,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.cardBackground,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: color.withOpacity(0.2),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          color: AppColors.backgroundLight,
+          borderRadius: BorderRadius.circular(12),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, size: 32, color: color),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
-            ),
-          ],
+        child: Icon(
+          icon,
+          size: 32,
+          color: AppColors.primary,
         ),
       ),
     );
