@@ -1,14 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NotificationModel {
-  final String id;
-  final String title;
-  final String message;
-  final String type;
-  final String from;
-  final String to;
-  final bool isRead;
-  final Timestamp timestamp;
+  final String id;              // Firestore document ID (notification ID)
+  final String title;           // Notification title
+  final String message;         // Body of the notification
+  final String type;            // e.g., booking, reminder, cancel_by_patient
+  final String from;            // Sender UID (e.g., admin or system)
+  final String to;              // Receiver UID
+  bool isRead;                  // Whether it's been read (mutable)
+  final Timestamp timestamp;    // Firestore timestamp
 
   NotificationModel({
     required this.id,
@@ -21,6 +21,7 @@ class NotificationModel {
     required this.timestamp,
   });
 
+  /// Factory method to create model from Firestore document snapshot
   factory NotificationModel.fromDoc(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return NotificationModel(
@@ -35,6 +36,7 @@ class NotificationModel {
     );
   }
 
+  /// Convert model to Firestore-storable map
   Map<String, dynamic> toMap() {
     return {
       'title': title,

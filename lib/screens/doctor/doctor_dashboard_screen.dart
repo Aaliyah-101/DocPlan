@@ -11,6 +11,7 @@ import 'doctor_emergency_dialog.dart';
 import '../../widgets/gradient_background.dart';
 import '../../models/emergency_model.dart';
 import '../settings/settings_screen.dart';
+import '../../widgets/notification_bell.dart';
 
 class DoctorDashboardScreen extends StatefulWidget {
   const DoctorDashboardScreen({super.key});
@@ -47,6 +48,9 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
       appBar: AppBar(
         title: const Text('Doctor Dashboard'),
         backgroundColor: AppColors.primary,
+        actions: const [
+          NotificationBell(), // 🔔 Bell with badge
+        ],
       ),
       drawer: SizedBox(
         width: MediaQuery.of(context).size.width * 0.5, // 👈 Reduces width to 70% of screen

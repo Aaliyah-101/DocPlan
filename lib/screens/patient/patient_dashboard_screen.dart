@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../../constants/app_colors.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/gradient_background.dart';
+import "/../../widgets/notification_bell.dart";
 
 class PatientDashboardScreen extends StatefulWidget {
   const PatientDashboardScreen({super.key});
@@ -59,6 +60,9 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         title: Text(_menuTitles[_selectedIndex]),
+        actions: const [
+          NotificationBell(), // 🔔 Bell with badge
+        ],
       ),
       drawer: Drawer(
         child: ListView(
