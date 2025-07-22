@@ -2,7 +2,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-
 class FirebaseMessagingService {
   static final FirebaseMessaging _messaging = FirebaseMessaging.instance;
 
@@ -13,7 +12,7 @@ class FirebaseMessagingService {
     // Request notification permission
     await _messaging.requestPermission();
 
-    // Define channel for Android
+    // Define Android notification channel
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
       'high_importance_channel',
       'High Importance Notifications',
@@ -21,13 +20,13 @@ class FirebaseMessagingService {
       importance: Importance.high,
     );
 
-    // Register channel
+    // Register the channel with the plugin
     await flnPlugin
         .resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
 
-    // Init local notification click listener
+    // Initialize local notifications plugin with navigation on tap
     await flnPlugin.initialize(
       const InitializationSettings(
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
@@ -36,13 +35,15 @@ class FirebaseMessagingService {
       onDidReceiveNotificationResponse: (NotificationResponse response) {
         final payload = response.payload;
         if (payload != null) {
-          // You can handle simple payload here if needed
-          print('Tapped notification with payload: $payload');
+          navigatorKey.currentState?.pushNamed(
+            '/emergency_response',
+            arguments: payload,
+          );
         }
       },
     );
 
-    // Foreground message
+    // Handle foreground Firebase messages: show local notification
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       final notification = message.notification;
       final data = message.data;
@@ -52,17 +53,14 @@ class FirebaseMessagingService {
       String? title = notification?.title;
       String? body = notification?.body;
 
-      // Fallback for some emergency types
       if ((title == null || body == null) && type == 'emergency_alert') {
         title ??= "🚨 Emergency Alert";
         body ??= "An emergency has been assigned to you.";
-      } else if ((title == null || body == null) &&
-          type == 'emergency_update') {
+      } else if ((title == null || body == null) && type == 'emergency_update') {
         title ??= "🚨 Emergency Update";
         body ??= "Emergency has been marked as ${data['status']}.";
       }
 
-      // Show notification locally
       flnPlugin.show(
         message.hashCode,
         title,
@@ -76,16 +74,16 @@ class FirebaseMessagingService {
             playSound: true,
           ),
         ),
-        payload: appointmentId, // used when tapping
+        payload: appointmentId,
       );
     });
 
-    // Tapped while app in background
+    // Handle notification tap when app is in background
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       _handleNotificationClick(message.data, navigatorKey);
     });
 
-    // Tapped while app was terminated
+    // Handle notification tap when app launched from terminated state
     RemoteMessage? initialMessage = await _messaging.getInitialMessage();
     if (initialMessage != null) {
       _handleNotificationClick(initialMessage.data, navigatorKey);

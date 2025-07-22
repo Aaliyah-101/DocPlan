@@ -1,13 +1,10 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 
 import 'app.dart'; // Your app structure (routing, theming)
 import 'constants/app_theme.dart';
-
-final FlutterLocalNotificationsPlugin flnPlugin = FlutterLocalNotificationsPlugin();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,14 +26,14 @@ Future<void> main() async {
     await Firebase.initializeApp();
   }
 
-  // 🌙 Load saved theme
+  // Load saved theme
   final themeNotifier = ThemeNotifier();
   await themeNotifier.loadThemeMode();
 
   runApp(
     ChangeNotifierProvider(
       create: (_) => themeNotifier,
-      child: const MyApp(), // ⬅️ Defined in app.dart
+      child: const MyApp(), // Defined in app.dart
     ),
   );
 }

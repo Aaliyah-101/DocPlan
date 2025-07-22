@@ -12,32 +12,12 @@ import 'screens/patient/patient_dashboard_screen.dart';
 import 'services/firebase_messaging_service.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-final FlutterLocalNotificationsPlugin flnPlugin =
-FlutterLocalNotificationsPlugin();
+final FlutterLocalNotificationsPlugin flnPlugin = FlutterLocalNotificationsPlugin();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  const initializationSettingsAndroid =
-  AndroidInitializationSettings('@mipmap/ic_launcher');
-
-  const initializationSettings =
-  InitializationSettings(android: initializationSettingsAndroid);
-
-  await flnPlugin.initialize(
-    initializationSettings,
-    onDidReceiveNotificationResponse: (NotificationResponse response) {
-      final String? payload = response.payload;
-
-      if (payload != null) {
-        navigatorKey.currentState?.pushNamed(
-          '/emergency_response',
-          arguments: payload,
-        );
-      }
-    },
-  );
-
+  // ONLY call the initializeFCM here, no flnPlugin.initialize()
   await FirebaseMessagingService.initializeFCM(flnPlugin, navigatorKey);
 
   runApp(const MyApp());
@@ -63,8 +43,7 @@ class MyApp extends StatelessWidget {
             '/auth': (context) => const AuthScreen(),
             '/doctor_dashboard': (context) => const DoctorDashboardScreen(),
             '/admin_dashboard': (context) => const AdminDashboardScreen(),
-            '/patient_dashboard': (context) =>
-            const PatientDashboardScreen(),
+            '/patient_dashboard': (context) => const PatientDashboardScreen(),
           },
           onGenerateRoute: (settings) {
             if (settings.name == '/emergency_response') {
@@ -77,7 +56,6 @@ class MyApp extends StatelessWidget {
                 );
               }
             }
-
             return null;
           },
         );
