@@ -2,14 +2,16 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'package:workmanager/workmanager.dart';
 
 import 'app.dart'; // Your app structure (routing, theming)
 import 'constants/app_theme.dart';
+import '/../controllers/reminder_worker.dart'; // <-- Add this
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase for web or mobile
+  // Firebase initialization
   if (kIsWeb) {
     await Firebase.initializeApp(
       options: const FirebaseOptions(
@@ -19,21 +21,32 @@ Future<void> main() async {
         storageBucket: "docplan22-87323.appspot.com",
         messagingSenderId: "751987947078",
         appId: "1:751987947078:web:4061bced04e0e16fc27c47",
-        measurementId: "G-XXXXXXX", // Optional
+        measurementId: "G-XXXXXXX",
       ),
     );
   } else {
     await Firebase.initializeApp();
+
+    // ⏰ Initialize Workmanager for background reminders
+    Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
+
+    // 🔁 Periodic task to check for reminders every 15 minutes
+    Workmanager().registerPeriodicTask(
+      "reminder_task", // Unique task name
+      "check_reminders", // Callback task name
+      frequency: const Duration(minutes: 15),
+      initialDelay: const Duration(seconds: 10), // Optional delay after app start
+    );
   }
 
-  // Load saved theme
+  // Load saved theme mode
   final themeNotifier = ThemeNotifier();
   await themeNotifier.loadThemeMode();
 
   runApp(
     ChangeNotifierProvider(
       create: (_) => themeNotifier,
-      child: const MyApp(), // Defined in app.dart
+      child: const MyApp(),
     ),
   );
 }
