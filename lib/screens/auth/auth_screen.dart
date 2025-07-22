@@ -238,7 +238,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
       // Check if at least one day has time slots selected
       bool hasAvailability = _doctorAvailability.values.any(
-            (slots) => slots.isNotEmpty,
+        (slots) => slots.isNotEmpty,
       );
       if (!hasAvailability) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -329,7 +329,10 @@ class _AuthScreenState extends State<AuthScreen> {
           // Background image with reduced opacity
           Opacity(
             opacity: 0.3,
-            child: Image.asset('lib/images/signupbackground.png', fit: BoxFit.cover),
+            child: Image.asset(
+              'lib/images/signupbackground.png',
+              fit: BoxFit.cover,
+            ),
           ),
           // Semi-transparent overlay for better text visibility
           Container(color: Colors.black.withOpacity(0.4)),
@@ -642,10 +645,11 @@ class _AuthScreenState extends State<AuthScreen> {
             const SizedBox(height: 16),
           ],
           CustomTextField(
-            controller: TextEditingController(text: _selectedCountry.isEmpty ? '' : _selectedCountry),
+            controller: TextEditingController(
+              text: _selectedCountry.isEmpty ? '' : _selectedCountry,
+            ),
             label: 'Country',
             icon: Icons.flag,
-            readOnly: true,
             onTap: _showCountryPicker,
             suffixIcon: Icon(Icons.arrow_drop_down),
             style: TextStyle(color: AppColors.textPrimary),
@@ -802,5 +806,6 @@ class _AuthScreenState extends State<AuthScreen> {
 }
 
 extension StringCasingExtension on String {
-  String capitalize() => this.length > 0 ? '${this[0].toUpperCase()}${this.substring(1)}' : '';
+  String capitalize() =>
+      this.length > 0 ? '${this[0].toUpperCase()}${this.substring(1)}' : '';
 }
