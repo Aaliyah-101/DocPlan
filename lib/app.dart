@@ -17,14 +17,46 @@ final FlutterLocalNotificationsPlugin flnPlugin = FlutterLocalNotificationsPlugi
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // ONLY call the initializeFCM here, no flnPlugin.initialize()
+  // Initialize Firebase Messaging and Local Notifications
   await FirebaseMessagingService.initializeFCM(flnPlugin, navigatorKey);
 
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => ThemeNotifier(),
+      child: const MyApp(),
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+
+    // Delay execution until widgets are fully built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final message = FirebaseMessagingService.initialMessage;
+      if (message != null) {
+        final data = message.data;
+        final type = data['type'];
+        final appointmentId = data['appointmentId'];
+
+        if (type == 'emergency_alert' && appointmentId != null) {
+          navigatorKey.currentState?.pushNamed(
+            '/emergency_response',
+            arguments: appointmentId,
+          );
+        }
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

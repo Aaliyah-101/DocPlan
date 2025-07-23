@@ -4,15 +4,19 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class FirebaseMessagingService {
   static final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  static RemoteMessage? _initialMessage;
+
+  // Expose this to MyApp so it can safely handle it after build
+  static RemoteMessage? get initialMessage => _initialMessage;
 
   static Future<void> initializeFCM(
       FlutterLocalNotificationsPlugin flnPlugin,
       GlobalKey<NavigatorState> navigatorKey,
       ) async {
-    // Request notification permission
+    // Request notification permissions
     await _messaging.requestPermission();
 
-    // Define Android notification channel
+    // Set up Android notification channel
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
       'high_importance_channel',
       'High Importance Notifications',
@@ -20,13 +24,12 @@ class FirebaseMessagingService {
       importance: Importance.high,
     );
 
-    // Register the channel with the plugin
     await flnPlugin
         .resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
 
-    // Initialize local notifications plugin with navigation on tap
+    // Initialize local notification settings
     await flnPlugin.initialize(
       const InitializationSettings(
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
@@ -43,7 +46,7 @@ class FirebaseMessagingService {
       },
     );
 
-    // Handle foreground Firebase messages: show local notification
+    // Handle foreground messages
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       final notification = message.notification;
       final data = message.data;
@@ -56,7 +59,8 @@ class FirebaseMessagingService {
       if ((title == null || body == null) && type == 'emergency_alert') {
         title ??= "🚨 Emergency Alert";
         body ??= "An emergency has been assigned to you.";
-      } else if ((title == null || body == null) && type == 'emergency_update') {
+      } else if ((title == null || body == null) &&
+          type == 'emergency_update') {
         title ??= "🚨 Emergency Update";
         body ??= "Emergency has been marked as ${data['status']}.";
       }
@@ -83,11 +87,8 @@ class FirebaseMessagingService {
       _handleNotificationClick(message.data, navigatorKey);
     });
 
-    // Handle notification tap when app launched from terminated state
-    RemoteMessage? initialMessage = await _messaging.getInitialMessage();
-    if (initialMessage != null) {
-      _handleNotificationClick(initialMessage.data, navigatorKey);
-    }
+    // Store the initial message (if app was launched by notification)
+    _initialMessage = await _messaging.getInitialMessage();
   }
 
   static void _handleNotificationClick(

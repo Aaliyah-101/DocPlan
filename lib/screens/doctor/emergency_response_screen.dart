@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:intl/intl.dart';
 
 class EmergencyResponseScreen extends StatefulWidget {
   final String appointmentId;
@@ -14,6 +15,7 @@ class EmergencyResponseScreen extends StatefulWidget {
 class _EmergencyResponseScreenState extends State<EmergencyResponseScreen> {
   bool isLoading = true;
   bool isAcknowledged = false;
+  bool isResolved = false;
   Map<String, dynamic>? emergencyData;
   String? error;
 
@@ -38,18 +40,19 @@ class _EmergencyResponseScreenState extends State<EmergencyResponseScreen> {
         final data = json.decode(res.body);
         setState(() {
           emergencyData = data;
-          isAcknowledged = data['status'] == 'acknowledged';
+          isAcknowledged = data['status'] == 'acknowledged' || data['status'] == 'resolved';
+          isResolved = data['status'] == 'resolved';
           isLoading = false;
         });
       } else {
         setState(() {
-          error = 'Failed to load emergency';
+          error = '❌ Failed to load emergency.';
           isLoading = false;
         });
       }
     } catch (e) {
       setState(() {
-        error = 'Something went wrong: $e';
+        error = '❌ Error: $e';
         isLoading = false;
       });
     }
@@ -94,12 +97,23 @@ class _EmergencyResponseScreenState extends State<EmergencyResponseScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("✅ Emergency resolved")),
         );
-        Navigator.pop(context);
+        setState(() => isResolved = true);
+        Navigator.pop(context); // Optional: Navigate back after resolve
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("❌ Failed to resolve")),
         );
       }
+    }
+  }
+
+  String formatTimestamp(Map<String, dynamic> timestamp) {
+    try {
+      final seconds = timestamp['_seconds'];
+      final date = DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
+      return DateFormat('MMMM d, yyyy – h:mm a').format(date.toLocal());
+    } catch (e) {
+      return "Invalid date";
     }
   }
 
@@ -121,7 +135,7 @@ class _EmergencyResponseScreenState extends State<EmergencyResponseScreen> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : error != null
-          ? Center(child: Text(error!))
+          ? Center(child: Text(error!, style: const TextStyle(color: Colors.red)))
           : emergencyData == null
           ? const Center(child: Text("No emergency data found."))
           : Padding(
@@ -162,7 +176,7 @@ class _EmergencyResponseScreenState extends State<EmergencyResponseScreen> {
               children: [
                 const Icon(Icons.access_time, color: Colors.black54),
                 const SizedBox(width: 8),
-                Text("Started: ${emergencyData!['dateTime']}"),
+                Text("Started: ${formatTimestamp(emergencyData!['dateTime'])}"),
               ],
             ),
             const SizedBox(height: 30),
@@ -180,18 +194,21 @@ class _EmergencyResponseScreenState extends State<EmergencyResponseScreen> {
                 ),
               ),
             const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.check_circle),
-                label: const Text("Resolve Emergency"),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+            if (!isResolved)
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.check_circle),
+                  label: const Text("Resolve Emergency"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                  onPressed: handleResolve,
                 ),
-                onPressed: handleResolve,
               ),
-            ),
+            if (isResolved)
+              const Text("✅ Emergency has been resolved.", style: TextStyle(color: Colors.green)),
           ],
         ),
       ),
