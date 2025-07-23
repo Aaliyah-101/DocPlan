@@ -329,7 +329,7 @@ class _AuthScreenState extends State<AuthScreen> {
           // Background image with reduced opacity
           Opacity(
             opacity: 0.3,
-            child: Image.asset('lib/images/docplan2.jpg', fit: BoxFit.cover),
+            child: Image.asset('lib/images/signupbackground.png', fit: BoxFit.cover),
           ),
           // Semi-transparent overlay for better text visibility
           Container(color: Colors.black.withOpacity(0.4)),
@@ -346,16 +346,14 @@ class _AuthScreenState extends State<AuthScreen> {
                   const SizedBox(height: 20),
                   // App Logo and Title
                   Container(
-                    width: 80,
-                    height: 80,
+                    width: 85,
+                    height: 85,
                     decoration: BoxDecoration(
                       color: AppColors.docplanBlue,
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Icon(
-                      Icons.medical_services,
-                      size: 40,
-                      color: AppColors.textWhite,
+                    child: const Image(
+                      image: AssetImage('lib/images/booking-app_15090912.png'),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -475,6 +473,7 @@ class _AuthScreenState extends State<AuthScreen> {
             controller: _signInEmailController,
             label: 'Email',
             icon: Icons.email,
+            style: TextStyle(color: AppColors.textPrimary),
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Please enter your email';
@@ -492,6 +491,7 @@ class _AuthScreenState extends State<AuthScreen> {
             controller: _signInPasswordController,
             label: 'Password',
             icon: Icons.lock,
+            style: TextStyle(color: AppColors.textPrimary),
             obscureText: _obscureSignInPassword,
             suffixIcon: IconButton(
               icon: Icon(
@@ -550,6 +550,7 @@ class _AuthScreenState extends State<AuthScreen> {
             controller: _nameController,
             label: 'Full Name',
             icon: Icons.person,
+            style: TextStyle(color: AppColors.textPrimary),
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Please enter your name';
@@ -562,6 +563,7 @@ class _AuthScreenState extends State<AuthScreen> {
             controller: _signUpEmailController,
             label: 'Email',
             icon: Icons.email,
+            style: TextStyle(color: AppColors.textPrimary),
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Please enter your email';
@@ -639,38 +641,14 @@ class _AuthScreenState extends State<AuthScreen> {
             ),
             const SizedBox(height: 16),
           ],
-          InkWell(
+          CustomTextField(
+            controller: TextEditingController(text: _selectedCountry.isEmpty ? '' : _selectedCountry),
+            label: 'Country',
+            icon: Icons.flag,
+            readOnly: true,
             onTap: _showCountryPicker,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: AppColors.cardBackground,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColors.textSecondary),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.flag, color: AppColors.textSecondary),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      _selectedCountry.isEmpty
-                          ? 'Select Country'
-                          : _selectedCountry,
-                      style: TextStyle(
-                        color: _selectedCountry.isEmpty
-                            ? AppColors.textSecondary
-                            : AppColors.textPrimary,
-                      ),
-                    ),
-                  ),
-                  const Icon(
-                    Icons.arrow_drop_down,
-                    color: AppColors.textSecondary,
-                  ),
-                ],
-              ),
-            ),
+            suffixIcon: Icon(Icons.arrow_drop_down),
+            style: TextStyle(color: AppColors.textPrimary),
           ),
           const SizedBox(height: 16),
           Row(
@@ -699,6 +677,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   controller: _phoneController,
                   label: 'Phone Number',
                   icon: Icons.phone,
+                  style: TextStyle(color: AppColors.textPrimary),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your phone number';
@@ -715,6 +694,7 @@ class _AuthScreenState extends State<AuthScreen> {
             label: 'Password',
             icon: Icons.lock,
             obscureText: _obscureSignUpPassword,
+            style: TextStyle(color: AppColors.textPrimary),
             suffixIcon: IconButton(
               icon: Icon(
                 _obscureSignUpPassword
@@ -819,4 +799,8 @@ class _AuthScreenState extends State<AuthScreen> {
       ),
     );
   }
+}
+
+extension StringCasingExtension on String {
+  String capitalize() => this.length > 0 ? '${this[0].toUpperCase()}${this.substring(1)}' : '';
 }
