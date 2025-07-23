@@ -12,14 +12,17 @@ class AppointmentService {
     await _firestore
         .collection('appointments')
         .doc(appointment.id)
-        .set(appointment.toMap());
+        .set({
+      ...appointment.toMap(),
+      'dateTime': Timestamp.fromDate(appointment.dateTime), // ✅ FIXED
+    });
   }
 
   // Get appointments for a user (patient or doctor)
   Stream<List<AppointmentModel>> getUserAppointments(
-    String userId,
-    String role,
-  ) {
+      String userId,
+      String role,
+      ) {
     String field = role == 'doctor' ? 'doctorId' : 'patientId';
 
     return _firestore
@@ -28,10 +31,10 @@ class AppointmentService {
         .orderBy('dateTime', descending: false)
         .snapshots()
         .map((snapshot) {
-          return snapshot.docs
-              .map((doc) => AppointmentModel.fromMap(doc.data()))
-              .toList();
-        });
+      return snapshot.docs
+          .map((doc) => AppointmentModel.fromMap(doc.data()))
+          .toList();
+    });
   }
 
   // Get available doctors
@@ -41,10 +44,10 @@ class AppointmentService {
         .where('status', isEqualTo: 'available')
         .snapshots()
         .map((snapshot) {
-          return snapshot.docs
-              .map((doc) => {'id': doc.id, ...doc.data()})
-              .toList();
-        });
+      return snapshot.docs
+          .map((doc) => {'id': doc.id, ...doc.data()})
+          .toList();
+    });
   }
 
   // Get available doctors by specialty
@@ -55,10 +58,10 @@ class AppointmentService {
         .where('specialty', isEqualTo: specialty)
         .snapshots()
         .map((snapshot) {
-          return snapshot.docs
-              .map((doc) => {'id': doc.id, ...doc.data()})
-              .toList();
-        });
+      return snapshot.docs
+          .map((doc) => {'id': doc.id, ...doc.data()})
+          .toList();
+    });
   }
 
   // Get doctor availability
@@ -68,25 +71,25 @@ class AppointmentService {
         .doc(doctorId)
         .snapshots()
         .map((snapshot) {
-          if (!snapshot.exists) return {};
-          final data = snapshot.data() as Map<String, dynamic>;
-          final availability = data['availability'] as Map<String, dynamic>?;
-          if (availability == null) return {};
-          
-          return availability.map((key, value) {
-            if (value is List) {
-              return MapEntry(key, value.cast<String>());
-            }
-            return MapEntry(key, <String>[]);
-          });
-        });
+      if (!snapshot.exists) return {};
+      final data = snapshot.data() as Map<String, dynamic>;
+      final availability = data['availability'] as Map<String, dynamic>?;
+      if (availability == null) return {};
+
+      return availability.map((key, value) {
+        if (value is List) {
+          return MapEntry(key, value.cast<String>());
+        }
+        return MapEntry(key, <String>[]);
+      });
+    });
   }
 
   // Update appointment status
   Future<void> updateAppointmentStatus(
-    String appointmentId,
-    String status,
-  ) async {
+      String appointmentId,
+      String status,
+      ) async {
     await _firestore.collection('appointments').doc(appointmentId).update({
       'status': status,
     });
@@ -94,7 +97,6 @@ class AppointmentService {
 
   // Cancel appointment
   Future<void> cancelAppointment(String appointmentId) async {
-    // Get appointment details before updating
     final appointmentDoc = await _firestore
         .collection('appointments')
         .doc(appointmentId)
@@ -105,11 +107,10 @@ class AppointmentService {
     final appointmentData = appointmentDoc.data() as Map<String, dynamic>;
     final patientId = appointmentData['patientId'] as String;
     final doctorName = appointmentData['doctorName'] as String;
-    final appointmentTime = DateTime.parse(appointmentData['dateTime']);
+    final appointmentTime = (appointmentData['dateTime'] as Timestamp).toDate();
 
     await updateAppointmentStatus(appointmentId, 'cancelled');
 
-    // Send notification to patient
     await NotificationService.notifyAppointmentStatusChange(
       patientId: patientId,
       doctorName: doctorName,
@@ -120,10 +121,9 @@ class AppointmentService {
 
   // Reschedule appointment
   Future<void> rescheduleAppointment(
-    String appointmentId,
-    DateTime newDateTime,
-  ) async {
-    // Get appointment details before updating
+      String appointmentId,
+      DateTime newDateTime,
+      ) async {
     final appointmentDoc = await _firestore
         .collection('appointments')
         .doc(appointmentId)
@@ -134,14 +134,12 @@ class AppointmentService {
     final appointmentData = appointmentDoc.data() as Map<String, dynamic>;
     final patientId = appointmentData['patientId'] as String;
     final doctorName = appointmentData['doctorName'] as String;
-    final _ = DateTime.parse(appointmentData['dateTime']);
 
     await _firestore.collection('appointments').doc(appointmentId).update({
-      'dateTime': newDateTime.toIso8601String(),
+      'dateTime': Timestamp.fromDate(newDateTime), // ✅ FIXED
       'status': 'upcoming',
     });
 
-    // Send notification to patient
     await NotificationService.notifyAppointmentStatusChange(
       patientId: patientId,
       doctorName: doctorName,
@@ -152,10 +150,10 @@ class AppointmentService {
 
   // Check if patient is within doctor's radius
   Future<bool> isPatientWithinRadius(
-    String doctorId,
-    double patientLat,
-    double patientLng,
-  ) async {
+      String doctorId,
+      double patientLat,
+      double patientLng,
+      ) async {
     try {
       DocumentSnapshot doctorDoc = await _firestore
           .collection('doctors')
@@ -165,11 +163,11 @@ class AppointmentService {
       if (!doctorDoc.exists) return false;
 
       Map<String, dynamic> doctorData =
-          doctorDoc.data() as Map<String, dynamic>;
+      doctorDoc.data() as Map<String, dynamic>;
       Map<String, dynamic>? doctorLocation = doctorData['location'];
-      int radius = doctorData['radius'] ?? 1000; // Default 1km
+      int radius = doctorData['radius'] ?? 1000;
 
-      if (doctorLocation == null) return true; // If no location set, allow
+      if (doctorLocation == null) return true;
 
       double doctorLat = doctorLocation['latitude'];
       double doctorLng = doctorLocation['longitude'];
@@ -189,62 +187,33 @@ class AppointmentService {
 
   // Update patient location for appointment
   Future<void> updatePatientLocation(
-    String appointmentId,
-    double latitude,
-    double longitude,
-  ) async {
+      String appointmentId,
+      double latitude,
+      double longitude,
+      ) async {
     await _firestore.collection('appointments').doc(appointmentId).update({
       'location': {
         'latitude': latitude,
         'longitude': longitude,
-        'timestamp': DateTime.now().toIso8601String(),
+        'timestamp': Timestamp.now(),
       },
     });
   }
 
-  // Get current location
-  Future<Position?> getCurrentLocation() async {
-    try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        return null;
-      }
-
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          return null;
-        }
-      }
-
-      if (permission == LocationPermission.deniedForever) {
-        return null;
-      }
-
-      return await Geolocator.getCurrentPosition();
-    } catch (e) {
-      return null;
-    }
-  }
-
-  // Emergency functions
+  // Declare emergency
   Future<void> declareEmergency(EmergencyModel emergency) async {
-    // Create emergency record
     await _firestore
         .collection('emergencies')
         .doc(emergency.id)
         .set(emergency.toMap());
 
-    // Update doctor status
     await _firestore.collection('doctors').doc(emergency.doctorId).update({
       'status': 'emergency',
       'emergency_reason': emergency.reason,
-      'emergency_time': emergency.timestamp.toIso8601String(),
+      'emergency_time': Timestamp.fromDate(emergency.timestamp),
     });
 
-    // Freeze all upcoming appointments for ALL doctors
-    QuerySnapshot appointments = await _firestore
+    final appointments = await _firestore
         .collection('appointments')
         .where('status', isEqualTo: 'upcoming')
         .get();
@@ -252,11 +221,11 @@ class AppointmentService {
     for (DocumentSnapshot doc in appointments.docs) {
       await doc.reference.update({
         'status': 'frozen',
-        'notes': 'We apologize, your appointment is temporarily frozen due to a system-wide emergency. You will be notified when it is rescheduled or you may choose a new time.',
+        'notes':
+        'We apologize, your appointment is temporarily frozen due to a system-wide emergency.',
       });
     }
 
-    // Send notifications to all affected patients of the declaring doctor
     await NotificationService.notifyDoctorPatients(
       doctorId: emergency.doctorId,
       doctorName: emergency.doctorName,
@@ -272,8 +241,7 @@ class AppointmentService {
       'emergency_time': null,
     });
 
-    // Update emergency status
-    QuerySnapshot emergencies = await _firestore
+    final emergencies = await _firestore
         .collection('emergencies')
         .where('doctorId', isEqualTo: doctorId)
         .where('status', isEqualTo: 'active')
@@ -292,10 +260,10 @@ class AppointmentService {
         .orderBy('timestamp', descending: true)
         .snapshots()
         .map((snapshot) {
-          return snapshot.docs
-              .map((doc) => EmergencyModel.fromMap(doc.data()))
-              .toList();
-        });
+      return snapshot.docs
+          .map((doc) => EmergencyModel.fromMap(doc.data()))
+          .toList();
+    });
   }
 
   // Release all frozen appointments for a doctor

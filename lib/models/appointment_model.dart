@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class AppointmentModel {
   final String id;
   final String doctorId;
@@ -11,6 +13,7 @@ class AppointmentModel {
   final DateTime createdAt;
   final Map<String, dynamic>? location; // For geolocation
   final bool isEmergency;
+  final String? specialty; // ✅ included properly
 
   AppointmentModel({
     required this.id,
@@ -25,9 +28,10 @@ class AppointmentModel {
     required this.createdAt,
     this.location,
     this.isEmergency = false,
-    String? specialty,
+    this.specialty, // ✅ properly assigned
   });
 
+  /// Converts the appointment model to a Firestore-compatible map.
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -35,16 +39,18 @@ class AppointmentModel {
       'patientId': patientId,
       'doctorName': doctorName,
       'patientName': patientName,
-      'dateTime': dateTime.toIso8601String(),
+      'dateTime': Timestamp.fromDate(dateTime), // ✅ Firestore Timestamp
       'status': status,
       'reason': reason,
       'notes': notes,
-      'createdAt': createdAt.toIso8601String(),
+      'createdAt': Timestamp.fromDate(createdAt), // ✅ Firestore Timestamp
       'location': location,
       'isEmergency': isEmergency,
+      'specialty': specialty, // ✅ added to map
     };
   }
 
+  /// Constructs the model from a Firestore map.
   factory AppointmentModel.fromMap(Map<String, dynamic> map) {
     return AppointmentModel(
       id: map['id'] ?? '',
@@ -52,16 +58,18 @@ class AppointmentModel {
       patientId: map['patientId'] ?? '',
       doctorName: map['doctorName'] ?? '',
       patientName: map['patientName'] ?? '',
-      dateTime: DateTime.parse(map['dateTime']),
+      dateTime: (map['dateTime'] as Timestamp).toDate(), // ✅ from Timestamp
       status: map['status'] ?? '',
       reason: map['reason'],
       notes: map['notes'],
-      createdAt: DateTime.parse(map['createdAt']),
+      createdAt: (map['createdAt'] as Timestamp).toDate(), // ✅ from Timestamp
       location: map['location'],
       isEmergency: map['isEmergency'] ?? false,
+      specialty: map['specialty'], // ✅ handled from map
     );
   }
 
+  /// Copies the model with optional overrides.
   AppointmentModel copyWith({
     String? id,
     String? doctorId,
@@ -75,6 +83,7 @@ class AppointmentModel {
     DateTime? createdAt,
     Map<String, dynamic>? location,
     bool? isEmergency,
+    String? specialty, // ✅ included in copy
   }) {
     return AppointmentModel(
       id: id ?? this.id,
@@ -89,6 +98,7 @@ class AppointmentModel {
       createdAt: createdAt ?? this.createdAt,
       location: location ?? this.location,
       isEmergency: isEmergency ?? this.isEmergency,
+      specialty: specialty ?? this.specialty, // ✅ used in copy
     );
   }
 }

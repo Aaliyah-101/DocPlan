@@ -382,7 +382,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
         final appointmentsSnapshot = await FirebaseFirestore.instance
             .collection('appointments')
             .where('doctorId', isEqualTo: docId)
-            .where('dateTime', isEqualTo: appointmentDateTime.toIso8601String())
+            .where('dateTime', isEqualTo: Timestamp.fromDate(appointmentDateTime))
             .get();
         final count = appointmentsSnapshot.docs.length;
         if (count < minAppointments) {

@@ -3,15 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:workmanager/workmanager.dart';
-
-import 'app.dart'; // Your app structure (routing, theming)
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'app.dart';
 import 'constants/app_theme.dart';
-import '/../controllers/reminder_worker.dart'; // <-- Add this
+import 'controllers/reminder_worker.dart';
+import 'services/firebase_messaging_service.dart';
+
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+final FlutterLocalNotificationsPlugin flnPlugin = FlutterLocalNotificationsPlugin();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Firebase initialization
+  // ✅ Firebase initialization
   if (kIsWeb) {
     await Firebase.initializeApp(
       options: const FirebaseOptions(
@@ -27,26 +32,36 @@ Future<void> main() async {
   } else {
     await Firebase.initializeApp();
 
-    // ⏰ Initialize Workmanager for background reminders
+    // ✅ Initialize WorkManager
     Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
-
-    // 🔁 Periodic task to check for reminders every 15 minutes
     Workmanager().registerPeriodicTask(
-      "reminder_task", // Unique task name
-      "check_reminders", // Callback task name
+      "reminder_task",
+      "check_reminders",
       frequency: const Duration(minutes: 15),
-      initialDelay: const Duration(seconds: 10), // Optional delay after app start
+      initialDelay: const Duration(seconds: 10),
     );
   }
 
-  // Load saved theme mode
+  // ✅ Initialize FCM and notifications
+  await FirebaseMessagingService.initializeFCM(flnPlugin, navigatorKey);
+
+  // ✅ Handle initial notification if app was opened via notification
+  final initialMessage = FirebaseMessagingService.initialMessage;
+  if (initialMessage != null) {
+    FirebaseMessagingService.handleInitialMessage(initialMessage.data, navigatorKey);
+  }
+
+  // ✅ Theme
   final themeNotifier = ThemeNotifier();
   await themeNotifier.loadThemeMode();
 
   runApp(
     ChangeNotifierProvider(
       create: (_) => themeNotifier,
-      child: const MyApp(),
+      child: MyApp(
+        navigatorKey: navigatorKey,
+        flnPlugin: flnPlugin,
+      ),
     ),
   );
 }
