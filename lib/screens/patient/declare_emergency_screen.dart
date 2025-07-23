@@ -4,7 +4,9 @@ import '../../constants/app_colors.dart';
 import '../../services/auth_service.dart';
 import '../../services/appointment_service.dart';
 import '../../models/appointment_model.dart';
+import '../../models/emergency_model.dart';
 import '../../widgets/gradient_background.dart';
+import '../../screens/patient/patient_dashboard_screen.dart';
 
 class DeclareEmergencyScreen extends StatefulWidget {
   const DeclareEmergencyScreen({super.key});
@@ -65,26 +67,19 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
     try {
       final user = _authService.currentUser;
       if (user == null) throw Exception('User not logged in');
-      
       final userModel = await _authService.getUserData(user.uid);
       if (userModel == null) throw Exception('User data not found');
-
-      // Find nearest available doctor
       final availableDoctors = await _findNearestAvailableDoctor();
-      
       if (availableDoctors.isEmpty) {
         setState(() {
           _error = 'No doctors available for emergency. Please contact emergency services directly.';
         });
         return;
       }
-
-      // Create emergency appointment
       final appointmentId = FirebaseFirestore.instance
           .collection('appointments')
           .doc()
           .id;
-      
       final appointment = AppointmentModel(
         id: appointmentId,
         doctorId: availableDoctors.first['id'],
@@ -100,11 +95,24 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
         isEmergency: true,
         specialty: availableDoctors.first['specialty'],
       );
-
       await _appointmentService.createAppointment(appointment);
-
+      // Create emergency record for doctor's dashboard
+      final emergencyId = FirebaseFirestore.instance.collection('emergencies').doc().id;
+      final emergency = EmergencyModel(
+        id: emergencyId,
+        doctorId: availableDoctors.first['id'],
+        doctorName: availableDoctors.first['name'],
+        reason: 'Patient Emergency: $_selectedEmergencyType - ${_symptomsController.text.trim()}',
+        timestamp: DateTime.now(),
+        status: 'active',
+        affectedAppointments: [appointmentId],
+      );
+      await _appointmentService.declareEmergency(emergency);
       if (mounted) {
-        Navigator.pop(context);
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const PatientDashboardScreen()),
+          (route) => false,
+        );
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Emergency request sent successfully! A doctor will contact you shortly.'),

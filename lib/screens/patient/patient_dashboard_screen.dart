@@ -3,7 +3,6 @@ import 'package:docplan/screens/patient/view_appointments_screen.dart';
 import 'package:docplan/screens/patient/declare_emergency_screen.dart';
 import 'package:docplan/screens/patient/medical_records_screen.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
 import '../../constants/app_colors.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/gradient_background.dart';
@@ -45,7 +44,9 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
             onDestinationSelected: _onItemTapped,
             labelType: NavigationRailLabelType.all,
             selectedIconTheme: const IconThemeData(color: AppColors.primary),
-            unselectedIconTheme: const IconThemeData(color: AppColors.textSecondary),
+            unselectedIconTheme: const IconThemeData(
+              color: AppColors.textSecondary,
+            ),
             destinations: const [
               NavigationRailDestination(
                 icon: Icon(Icons.home),
@@ -91,11 +92,11 @@ class _PatientHomeContent extends StatelessWidget {
     return GradientBackground(
       child: Container(
         decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('lib/images/docplan2.jpg'),
-            fit: BoxFit.cover,
-            opacity: 0.2,
-          ),
+          // image: DecorationImage(
+          //   image: AssetImage('lib/images/docplan2.jpg'),
+          //   fit: BoxFit.cover,
+          //   opacity: 0.2,
+          // ),
         ),
         child: Padding(
           padding: const EdgeInsets.all(24.0),

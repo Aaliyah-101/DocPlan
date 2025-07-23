@@ -100,10 +100,10 @@ class _SplashScreenState extends State<SplashScreen>
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(
-            'lib/images/docplan.jpg',
-            fit: BoxFit.cover,
-          ),
+          // Image.asset(
+          //   'lib/images/docplan.jpg',
+          //   fit: BoxFit.cover,
+          // ),
           Center(
             child: AnimatedBuilder(
               animation: _animationController,

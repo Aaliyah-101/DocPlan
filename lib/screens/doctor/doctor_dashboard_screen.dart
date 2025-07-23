@@ -7,7 +7,6 @@ import '../../services/appointment_service.dart';
 import 'view_appointments_screen.dart';
 import 'radius_settings_screen.dart';
 import 'patient_records_screen.dart';
-import 'doctor_emergency_dialog.dart';
 import '../../widgets/gradient_background.dart';
 import '../../models/emergency_model.dart';
 import '../settings/settings_screen.dart';
@@ -51,7 +50,9 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
             onDestinationSelected: _onItemTapped,
             labelType: NavigationRailLabelType.all,
             selectedIconTheme: const IconThemeData(color: AppColors.primary),
-            unselectedIconTheme: const IconThemeData(color: AppColors.textSecondary),
+            unselectedIconTheme: const IconThemeData(
+              color: AppColors.textSecondary,
+            ),
             destinations: const [
               NavigationRailDestination(
                 icon: Icon(Icons.home),
@@ -102,8 +103,8 @@ class _DoctorHomeContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _authService = AuthService();
-    final user = _authService.currentUser;
+    final authService = AuthService();
+    final user = authService.currentUser;
     return GradientBackground(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
@@ -113,7 +114,7 @@ class _DoctorHomeContent extends StatelessWidget {
             const SizedBox(height: 20),
             Text('Hello,', style: Theme.of(context).textTheme.titleMedium),
             FutureBuilder(
-              future: _authService.getUserData(user?.uid ?? ''),
+              future: authService.getUserData(user?.uid ?? ''),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const SizedBox(
@@ -144,7 +145,8 @@ class _DoctorHomeContent extends StatelessWidget {
                     child: LinearProgressIndicator(),
                   );
                 }
-                final doctorData = snapshot.data!.data() as Map<String, dynamic>?;
+                final doctorData =
+                    snapshot.data!.data() as Map<String, dynamic>?;
                 final specialty = doctorData?['specialty'] ?? 'General';
                 return Container(
                   padding: const EdgeInsets.symmetric(
@@ -158,10 +160,7 @@ class _DoctorHomeContent extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      const Icon(
-                        Icons.check_circle,
-                        color: AppColors.success,
-                      ),
+                      const Icon(Icons.check_circle, color: AppColors.success),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Column(
@@ -194,7 +193,7 @@ class _DoctorHomeContent extends StatelessWidget {
             // Emergency List Section
             Builder(
               builder: (context) {
-                final user = _authService.currentUser;
+                final user = authService.currentUser;
                 if (user == null) {
                   return const SizedBox();
                 }
@@ -304,12 +303,15 @@ class _DoctorHomeContent extends StatelessWidget {
                           width: double.infinity,
                           child: ElevatedButton.icon(
                             icon: const Icon(Icons.refresh),
-                            label: const Text('Release All Frozen Appointments'),
+                            label: const Text(
+                              'Release All Frozen Appointments',
+                            ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primary,
                               foregroundColor: AppColors.textWhite,
                             ),
-                            onPressed: () => _releaseAllFrozenAppointments(context),
+                            onPressed: () =>
+                                _releaseAllFrozenAppointments(context),
                           ),
                         ),
                       ],
