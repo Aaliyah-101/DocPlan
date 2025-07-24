@@ -6,6 +6,7 @@ import '../../services/appointment_service.dart';
 import '../../services/auth_service.dart';
 import '../../models/appointment_model.dart';
 import '../../widgets/gradient_background.dart';
+import '../../controllers/notification_controller.dart';
 
 class BookAppointmentScreen extends StatefulWidget {
   const BookAppointmentScreen({super.key});
@@ -328,7 +329,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       ),
     );
   }
-
   Future<void> _bookAppointment() async {
     setState(() {
       _error = null;
@@ -372,7 +372,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
         throw Exception('No available doctors for this specialty.');
       }
 
-      // For each doctor, count their appointments at this date/time
+      // Choose doctor with fewest appointments
       String? chosenDoctorId;
       String? chosenDoctorName;
       int minAppointments = 999999;
@@ -382,7 +382,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
         final appointmentsSnapshot = await FirebaseFirestore.instance
             .collection('appointments')
             .where('doctorId', isEqualTo: docId)
-            .where('dateTime', isEqualTo: appointmentDateTime.toIso8601String())
+            .where('dateTime', isEqualTo: Timestamp.fromDate(appointmentDateTime))
             .get();
         final count = appointmentsSnapshot.docs.length;
         if (count < minAppointments) {
@@ -391,10 +391,12 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
           chosenDoctorName = docName;
         }
       }
+
       if (chosenDoctorId == null) {
         throw Exception('No available doctor for the selected time slot.');
       }
 
+      // Create appointment
       final appointmentId = FirebaseFirestore.instance
           .collection('appointments')
           .doc()
@@ -415,6 +417,15 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
         specialty: _selectedSpecialty,
       );
       await _appointmentService.createAppointment(appointment);
+
+      // 🔔 Send Notification to Doctor
+      await NotificationController().sendBookingNotification(
+        patientName: userModel.name,
+        doctorId: chosenDoctorId,
+        appointmentTime: appointmentDateTime,
+        patientId: user.uid,
+      );
+
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(

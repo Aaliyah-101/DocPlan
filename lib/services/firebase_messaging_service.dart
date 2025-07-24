@@ -4,15 +4,20 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class FirebaseMessagingService {
   static final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  static RemoteMessage? _initialMessage;
 
+  /// Expose this to main.dart
+  static RemoteMessage? get initialMessage => _initialMessage;
+
+  /// Initialize FCM and local notifications
   static Future<void> initializeFCM(
       FlutterLocalNotificationsPlugin flnPlugin,
       GlobalKey<NavigatorState> navigatorKey,
       ) async {
-    // Request notification permission
+    // 🔒 Request notification permissions
     await _messaging.requestPermission();
 
-    // Define channel for Android
+    // ✅ Create Android notification channel
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
       'high_importance_channel',
       'High Importance Notifications',
@@ -20,13 +25,12 @@ class FirebaseMessagingService {
       importance: Importance.high,
     );
 
-    // Register channel
     await flnPlugin
         .resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
 
-    // Init local notification click listener
+    // 🎯 Local Notification initialization (when tapped while app is running)
     await flnPlugin.initialize(
       const InitializationSettings(
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
@@ -35,23 +39,25 @@ class FirebaseMessagingService {
       onDidReceiveNotificationResponse: (NotificationResponse response) {
         final payload = response.payload;
         if (payload != null) {
-          // You can handle simple payload here if needed
-          print('Tapped notification with payload: $payload');
+          navigatorKey.currentState?.pushNamed(
+            '/emergency_response',
+            arguments: payload,
+          );
         }
       },
     );
 
-    // Foreground message
+    // 💬 Foreground notifications
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      final notification = message.notification;
       final data = message.data;
       final type = data['type'];
       final appointmentId = data['appointmentId'];
+      final notification = message.notification;
 
       String? title = notification?.title;
       String? body = notification?.body;
 
-      // Fallback for some emergency types
+      // Fallback title/body for emergency types
       if ((title == null || body == null) && type == 'emergency_alert') {
         title ??= "🚨 Emergency Alert";
         body ??= "An emergency has been assigned to you.";
@@ -61,7 +67,6 @@ class FirebaseMessagingService {
         body ??= "Emergency has been marked as ${data['status']}.";
       }
 
-      // Show notification locally
       flnPlugin.show(
         message.hashCode,
         title,
@@ -75,24 +80,24 @@ class FirebaseMessagingService {
             playSound: true,
           ),
         ),
-        payload: appointmentId, // used when tapping
+        payload: appointmentId, // This is passed to onDidReceiveNotificationResponse
       );
     });
 
-    // Tapped while app in background
+    // ⬅️ Background tap handler
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       _handleNotificationClick(message.data, navigatorKey);
     });
 
-    // Tapped while app was terminated
-    RemoteMessage? initialMessage = await _messaging.getInitialMessage();
-    if (initialMessage != null) {
-      _handleNotificationClick(initialMessage.data, navigatorKey);
-    }
+    // 💾 If app was terminated and opened by notification
+    _initialMessage = await _messaging.getInitialMessage();
   }
 
+  /// Handles navigation when notification is tapped from background
   static void _handleNotificationClick(
-      Map<String, dynamic> data, GlobalKey<NavigatorState> navigatorKey) {
+      Map<String, dynamic> data,
+      GlobalKey<NavigatorState> navigatorKey,
+      ) {
     final type = data['type'];
     final appointmentId = data['appointmentId'];
 
@@ -102,7 +107,23 @@ class FirebaseMessagingService {
         arguments: appointmentId,
       );
     } else {
-      print('No navigation matched for: $type');
+      print('[Notification] No matching navigation for type: $type');
+    }
+  }
+
+  /// Handles navigation if app was killed and opened by notification
+  static void handleInitialMessage(
+      Map<String, dynamic> data,
+      GlobalKey<NavigatorState> navigatorKey,
+      ) {
+    final type = data['type'];
+    final appointmentId = data['appointmentId'];
+
+    if (type == 'emergency_alert' && appointmentId != null) {
+      navigatorKey.currentState?.pushNamed(
+        '/emergency_response',
+        arguments: appointmentId,
+      );
     }
   }
 }

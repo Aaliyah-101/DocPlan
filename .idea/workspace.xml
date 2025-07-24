@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AndroidLayouts">
+    <shared>
+      <config />
+    </shared>
+  </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="058a975a-a3fc-4aa3-a992-5e5075670016" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/lib/constants/theme_notifier.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/app.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/services/firebase_messaging_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/services/firebase_messaging_service.dart" afterDir="false" />
     </list>
@@ -61,7 +64,7 @@
     &quot;git-widget-placeholder&quot;: &quot;mathias&quot;,
     &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/user/AndroidStudioProjects/DocPlan/lib/screens/auth&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/user/AndroidStudioProjects/DocPlan/lib&quot;,
     &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
@@ -71,7 +74,11 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\user\AndroidStudioProjects\DocPlan\lib\screens\auth" />
+      <recent name="C:\Users\user\AndroidStudioProjects\DocPlan\lib" />
+      <recent name="C:\Users\user\AndroidStudioProjects\DocPlan\lib\services" />
+      <recent name="C:\Users\user\AndroidStudioProjects\DocPlan\lib\screens\doctor" />
+      <recent name="C:\Users\user\AndroidStudioProjects\DocPlan\lib\widgets" />
+      <recent name="C:\Users\user\AndroidStudioProjects\DocPlan\lib\models" />
     </key>
   </component>
   <component name="RunManager">

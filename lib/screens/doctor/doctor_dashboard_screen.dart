@@ -10,6 +10,7 @@ import 'patient_records_screen.dart';
 import '../../widgets/gradient_background.dart';
 import '../../models/emergency_model.dart';
 import '../settings/settings_screen.dart';
+import '../../widgets/notification_bell.dart';
 
 class DoctorDashboardScreen extends StatefulWidget {
   const DoctorDashboardScreen({super.key});
@@ -43,24 +44,49 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
-      body: Row(
-        children: [
-          NavigationRail(
-            selectedIndex: _selectedIndex,
-            onDestinationSelected: _onItemTapped,
-            labelType: NavigationRailLabelType.all,
-            selectedIconTheme: const IconThemeData(color: AppColors.primary),
-            unselectedIconTheme: const IconThemeData(
-              color: AppColors.textSecondary,
-            ),
-            destinations: const [
-              NavigationRailDestination(
-                icon: Icon(Icons.home),
-                label: Text('Home'),
+      appBar: AppBar(
+        title: const Text('Doctor Dashboard'),
+        backgroundColor: AppColors.primary,
+        actions: const [
+          NotificationBell(), // 🔔 Bell with badge
+        ],
+      ),
+      drawer: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.5, // 👈 Reduces width to 70% of screen
+        child: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              DrawerHeader(
+                decoration: const BoxDecoration(color: AppColors.primary),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Icon(Icons.account_circle, size: 48, color: Colors.white),
+                    SizedBox(height: 8),
+                    Text("Doctor Menu", style: TextStyle(color: Colors.white, fontSize: 20)),
+                  ],
+                ),
               ),
-              NavigationRailDestination(
-                icon: Icon(Icons.list_alt),
-                label: Text('Appointments'),
+              ListTile(
+                leading: const Icon(Icons.home, color: AppColors.primary),
+                title: const Text('Home'),
+                selected: _selectedIndex == 0,
+                selectedTileColor: AppColors.primary.withOpacity(0.1),
+                onTap: () {
+                  Navigator.pop(context);
+                  setState(() => _selectedIndex = 0);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.list_alt, color: AppColors.primary),
+                title: const Text('Appointments'),
+                selected: _selectedIndex == 1,
+                selectedTileColor: AppColors.primary.withOpacity(0.1),
+                onTap: () {
+                  Navigator.pop(context);
+                  setState(() => _selectedIndex = 1);
+                },
               ),
               NavigationRailDestination(
                 icon: Icon(Icons.medical_services),

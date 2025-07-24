@@ -2,11 +2,11 @@ import 'package:docplan/screens/patient/book_appointment_screen.dart';
 import 'package:docplan/screens/patient/view_appointments_screen.dart';
 import 'package:docplan/screens/patient/declare_emergency_screen.dart';
 import 'package:docplan/screens/patient/medical_records_screen.dart';
-import 'package:docplan/screens/settings/settings_screen.dart';
 import 'package:flutter/material.dart';
 import '../../constants/app_colors.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/gradient_background.dart';
+import 'package:docplan/screens/settings/settings_screen.dart';
 
 class PatientDashboardScreen extends StatefulWidget {
   const PatientDashboardScreen({super.key});
@@ -27,26 +27,7 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
     SettingsScreen(),
   ];
 
-  static const List<String> _menuTitles = [
-    'Home',
-    'Book Appointment',
-    'View Appointments',
-    'Declare Emergency',
-    'Medical Records',
-    'Settings',
-  ];
-
-  static const List<IconData> _menuIcons = [
-    Icons.home,
-    Icons.add_circle_outline,
-    Icons.list_alt,
-    Icons.emergency,
-    Icons.medical_services,
-    Icons.settings,
-  ];
-
-  void _onMenuSelected(int index) {
-    Navigator.pop(context); // Close the drawer
+  void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
@@ -75,21 +56,29 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
                 icon: Icon(Icons.add_circle_outline),
                 label: Text('Book'),
               ),
-            ),
-            ...List.generate(
-              _menuTitles.length,
-                  (index) => ListTile(
-                leading: Icon(_menuIcons[index], color: AppColors.primary),
-                title: Text(_menuTitles[index], style: const TextStyle(fontSize: 16)),
-                selected: _selectedIndex == index,
-                selectedTileColor: AppColors.primary.withOpacity(0.1),
-                onTap: () => _onMenuSelected(index),
+              NavigationRailDestination(
+                icon: Icon(Icons.list_alt),
+                label: Text('Appointments'),
               ),
-            ),
-          ],
-        ),
+              NavigationRailDestination(
+                icon: Icon(Icons.emergency),
+                label: Text('Emergency'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.medical_services),
+                label: Text('Records'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.settings),
+                label: Text('Settings'),
+              ),
+            ],
+          ),
+          const VerticalDivider(thickness: 1, width: 1),
+          // Expanded page content
+          Expanded(child: _pages[_selectedIndex]),
+        ],
       ),
-      body: _pages[_selectedIndex],
     );
   }
 }
@@ -135,6 +124,7 @@ class _PatientHomeContent extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 40),
+              // No dashboard grid/buttons here
             ],
           ),
         ),
