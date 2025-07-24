@@ -16,6 +16,8 @@ class _EmergencyResponseScreenState extends State<EmergencyResponseScreen> {
   bool isLoading = true;
   bool isAcknowledged = false;
   bool isResolved = false;
+  bool isAckLoading = false;
+  bool isResolveLoading = false;
   Map<String, dynamic>? emergencyData;
   String? error;
 
@@ -59,16 +61,21 @@ class _EmergencyResponseScreenState extends State<EmergencyResponseScreen> {
   }
 
   Future<void> handleAcknowledge() async {
+    setState(() => isAckLoading = true);
     final res = await http.post(
       Uri.parse('https://docplan-backend.onrender.com/api/emergencies/${widget.appointmentId}/acknowledge'),
     );
 
     if (res.statusCode == 200) {
-      setState(() => isAcknowledged = true);
+      setState(() {
+        isAcknowledged = true;
+        isAckLoading = false;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("✅ Emergency acknowledged")),
       );
     } else {
+      setState(() => isAckLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("❌ Failed to acknowledge")),
       );
@@ -89,17 +96,25 @@ class _EmergencyResponseScreenState extends State<EmergencyResponseScreen> {
     );
 
     if (confirmed == true) {
+      setState(() => isResolveLoading = true);
       final res = await http.post(
         Uri.parse('https://docplan-backend.onrender.com/api/emergencies/${widget.appointmentId}/resolve'),
       );
 
       if (res.statusCode == 200) {
+        setState(() {
+          isResolved = true;
+          isResolveLoading = false;
+        });
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("✅ Emergency resolved")),
         );
-        setState(() => isResolved = true);
-        Navigator.pop(context); // Optional: Navigate back after resolve
+
+        await Future.delayed(const Duration(seconds: 3));
+        if (mounted) Navigator.pop(context);
       } else {
+        setState(() => isResolveLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("❌ Failed to resolve")),
         );
@@ -120,10 +135,10 @@ class _EmergencyResponseScreenState extends State<EmergencyResponseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.red.shade50,
+      backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
         title: const Text("🚨 Emergency Response"),
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.red.shade700,
         actions: [
           IconButton(
             onPressed: loadEmergencyDetails,
@@ -139,7 +154,7 @@ class _EmergencyResponseScreenState extends State<EmergencyResponseScreen> {
           : emergencyData == null
           ? const Center(child: Text("No emergency data found."))
           : Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -148,69 +163,87 @@ class _EmergencyResponseScreenState extends State<EmergencyResponseScreen> {
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.red),
             ),
             const SizedBox(height: 20),
-            Row(
-              children: [
-                const Icon(Icons.person, color: Colors.black54),
-                const SizedBox(width: 8),
-                Text("Patient: ${emergencyData!['patientName'] ?? 'Unknown'}"),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                const Icon(Icons.info, color: Colors.black54),
-                const SizedBox(width: 8),
-                Expanded(child: Text("Reason: ${emergencyData!['reason']}")),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                const Icon(Icons.priority_high, color: Colors.black54),
-                const SizedBox(width: 8),
-                Text("Notes: ${emergencyData!['notes'] ?? 'None'}"),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                const Icon(Icons.access_time, color: Colors.black54),
-                const SizedBox(width: 8),
-                Text("Started: ${formatTimestamp(emergencyData!['dateTime'])}"),
-              ],
-            ),
+
+            infoRow(Icons.person, "Patient: ${emergencyData!['patientName'] ?? 'Unknown'}"),
+            infoRow(Icons.info_outline, "Reason: ${emergencyData!['reason']}"),
+            infoRow(Icons.note_alt_outlined, "Notes: ${emergencyData!['notes'] ?? 'None'}"),
+            infoRow(Icons.access_time_filled, "Started: ${formatTimestamp(emergencyData!['dateTime'])}"),
+
             const SizedBox(height: 30),
+
             if (!isAcknowledged)
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  icon: const Icon(Icons.verified),
+                  icon: isAckLoading
+                      ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                  )
+                      : const Icon(Icons.verified),
                   label: const Text("Acknowledge Emergency"),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.orange,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
-                  onPressed: handleAcknowledge,
+                  onPressed: isAckLoading ? null : handleAcknowledge,
                 ),
               ),
+
             const SizedBox(height: 12),
+
             if (!isResolved)
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  icon: const Icon(Icons.check_circle),
+                  icon: isResolveLoading
+                      ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                  )
+                      : const Icon(Icons.check_circle),
                   label: const Text("Resolve Emergency"),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
-                  onPressed: handleResolve,
+                  onPressed: isResolveLoading ? null : handleResolve,
                 ),
               ),
+
             if (isResolved)
-              const Text("✅ Emergency has been resolved.", style: TextStyle(color: Colors.green)),
+              const Padding(
+                padding: EdgeInsets.only(top: 20.0),
+                child: Text(
+                  "✅ Emergency has been resolved.",
+                  style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                ),
+              ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget infoRow(IconData icon, String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.black54),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black87,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
