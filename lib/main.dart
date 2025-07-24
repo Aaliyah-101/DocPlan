@@ -11,7 +11,8 @@ import 'controllers/reminder_worker.dart';
 import 'services/firebase_messaging_service.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-final FlutterLocalNotificationsPlugin flnPlugin = FlutterLocalNotificationsPlugin();
+final FlutterLocalNotificationsPlugin flnPlugin =
+    FlutterLocalNotificationsPlugin();
 
 /// 👇 Required for background execution on some Android setups
 @pragma('vm:entry-point')
@@ -57,7 +58,10 @@ Future<void> main() async {
   // ✅ Handle FCM initial message if app was opened from background
   final initialMessage = FirebaseMessagingService.initialMessage;
   if (initialMessage != null) {
-    FirebaseMessagingService.handleInitialMessage(initialMessage.data, navigatorKey);
+    FirebaseMessagingService.handleInitialMessage(
+      initialMessage.data,
+      navigatorKey,
+    );
   }
 
   // ✅ Theme and Provider
@@ -67,10 +71,7 @@ Future<void> main() async {
   runApp(
     ChangeNotifierProvider(
       create: (_) => themeNotifier,
-      child: MyApp(
-        navigatorKey: navigatorKey,
-        flnPlugin: flnPlugin,
-      ),
+      child: MyApp(navigatorKey: navigatorKey, flnPlugin: flnPlugin),
     ),
   );
 }

@@ -5,6 +5,9 @@ import '../../services/appointment_service.dart';
 import '../../services/auth_service.dart';
 import '../../models/appointment_model.dart';
 import '../../widgets/gradient_background.dart';
+import '../../screens/chat_screen.dart';
+import '../../services/chat_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ViewAppointmentsScreen extends StatelessWidget {
   const ViewAppointmentsScreen({super.key});
@@ -175,6 +178,97 @@ class _AppointmentCard extends StatelessWidget {
                 },
               ),
             ],
+            const SizedBox(height: 8),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.chat),
+              label: const Text('Message Doctor'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: AppColors.textWhite,
+              ),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => ChatScreen(
+                      currentUserId: appointment.patientId,
+                      otherUserId: appointment.doctorId,
+                      otherUserName: appointment.doctorName ?? 'Doctor',
+                    ),
+                  ),
+                );
+              },
+            ),
+            // Last message preview
+            StreamBuilder(
+              stream: ChatService()
+                  .streamMessages(appointment.patientId, appointment.doctorId)
+                  .map((snapshot) => snapshot.docs.isNotEmpty ? snapshot.docs.last : null),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Padding(
+                    padding: EdgeInsets.only(top: 8.0),
+                    child: LinearProgressIndicator(minHeight: 2),
+                  );
+                }
+                final msg = snapshot.data;
+                if (msg == null) {
+                  return const Padding(
+                    padding: EdgeInsets.only(top: 8.0),
+                    child: Text('No messages yet.', style: TextStyle(color: AppColors.textSecondary)),
+                  );
+                }
+                final text = msg['message'] ?? '';
+                final senderId = msg['senderId'] ?? '';
+                final ts = msg['timestamp'] != null && msg['timestamp'] is Timestamp
+                    ? (msg['timestamp'] as Timestamp).toDate()
+                    : null;
+                final timeStr = ts != null ? DateFormat('MMM d, h:mm a').format(ts) : '';
+                final isMe = senderId == appointment.patientId;
+                final senderLabel = isMe ? 'You' : (appointment.doctorName ?? 'Doctor');
+                return StreamBuilder<Timestamp?>(
+                  stream: ChatService().getLastRead(appointment.patientId, appointment.doctorId, appointment.patientId),
+                  builder: (context, readSnapshot) {
+                    final lastRead = readSnapshot.data;
+                    final isUnread = ts != null && (lastRead == null || ts.isAfter(lastRead.toDate()));
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Row(
+                        children: [
+                          if (isUnread)
+                            Container(
+                              width: 8,
+                              height: 8,
+                              margin: const EdgeInsets.only(right: 6),
+                              decoration: const BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          const Icon(Icons.chat_bubble_outline, size: 16, color: AppColors.textSecondary),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              '$senderLabel: $text',
+                              style: TextStyle(
+                                color: isUnread ? AppColors.primary : AppColors.textSecondary,
+                                fontStyle: FontStyle.italic,
+                                fontWeight: isUnread ? FontWeight.bold : FontWeight.normal,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (timeStr.isNotEmpty) ...[
+                            const SizedBox(width: 8),
+                            Text(timeStr, style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                          ]
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
           ],
         ),
       ),

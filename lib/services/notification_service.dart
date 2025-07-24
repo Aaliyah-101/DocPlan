@@ -46,4 +46,33 @@ class NotificationService {
         .doc(notificationId)
         .delete();
   }
+
+  // Send notification for new chat message
+  static Future<void> notifyNewChatMessage({
+    required String receiverId,
+    required String senderName,
+    required String message,
+  }) async {
+    try {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(receiverId)
+          .get();
+      if (!userDoc.exists) return;
+      final userData = userDoc.data() as Map<String, dynamic>;
+      final fcmToken = userData['fcmToken'] as String?;
+      if (fcmToken == null || fcmToken.isEmpty) return;
+      await sendNotificationToTokens(
+        fcmTokens: [fcmToken],
+        title: 'New Message from $senderName',
+        body: message,
+        data: {
+          'type': 'chat_message',
+          'senderName': senderName,
+        },
+      );
+    } catch (e) {
+      _logger.e('Error notifying new chat message: $e');
+    }
+  }
 }
