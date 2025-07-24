@@ -56,23 +56,24 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
-      appBar: AppBar(
-        backgroundColor: AppColors.primary,
-        title: Text(_menuTitles[_selectedIndex]),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: const BoxDecoration(color: AppColors.primary),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Icon(Icons.account_circle, size: 48, color: Colors.white),
-                  SizedBox(height: 8),
-                  Text("Menu", style: TextStyle(color: Colors.white, fontSize: 20)),
-                ],
+      body: Row(
+        children: [
+          NavigationRail(
+            selectedIndex: _selectedIndex,
+            onDestinationSelected: _onItemTapped,
+            labelType: NavigationRailLabelType.all,
+            selectedIconTheme: const IconThemeData(color: AppColors.primary),
+            unselectedIconTheme: const IconThemeData(
+              color: AppColors.textSecondary,
+            ),
+            destinations: const [
+              NavigationRailDestination(
+                icon: Icon(Icons.home),
+                label: Text('Home'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.add_circle_outline),
+                label: Text('Book'),
               ),
             ),
             ...List.generate(
@@ -102,11 +103,11 @@ class _PatientHomeContent extends StatelessWidget {
     return GradientBackground(
       child: Container(
         decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('lib/images/docplan2.jpg'),
-            fit: BoxFit.cover,
-            opacity: 0.2,
-          ),
+          // image: DecorationImage(
+          //   image: AssetImage('lib/images/docplan2.jpg'),
+          //   fit: BoxFit.cover,
+          //   opacity: 0.2,
+          // ),
         ),
         child: Padding(
           padding: const EdgeInsets.all(24.0),

@@ -126,7 +126,7 @@ class _AuthScreenState extends State<AuthScreen> {
           prefixIcon: const Icon(Icons.search),
           border: OutlineInputBorder(
             borderSide: BorderSide(
-              color: const Color(0xFF8C98A8).withOpacity(0.2),
+              color: const Color(0xFF8C98A8).withAlpha((255 * 0.2).toInt()),
             ),
           ),
         ),
@@ -327,12 +327,12 @@ class _AuthScreenState extends State<AuthScreen> {
         fit: StackFit.expand,
         children: [
           // Background image with reduced opacity
-          Opacity(
-            opacity: 0.3,
-            child: Image.asset('lib/images/docplan2.jpg', fit: BoxFit.cover),
-          ),
+          // Opacity(
+          //   opacity: 0.3,
+          //   child: Image.asset('lib/images/docplan2.jpg', fit: BoxFit.cover),
+          // ),
           // Semi-transparent overlay for better text visibility
-          Container(color: Colors.black.withOpacity(0.4)),
+          Container(color: Colors.black.withAlpha((255 * 0.4).toInt())),
           SafeArea(
             child: SingleChildScrollView(
               padding: EdgeInsets.only(
@@ -763,7 +763,7 @@ class _AuthScreenState extends State<AuthScreen> {
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.textSecondary.withOpacity(0.3)),
+        border: Border.all(color: AppColors.textSecondary.withAlpha((255 * 0.3).toInt())),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
