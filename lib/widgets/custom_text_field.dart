@@ -39,7 +39,7 @@ class CustomTextField extends StatelessWidget {
         prefixIcon: Icon(icon, color: AppColors.textSecondary),
         suffixIcon: suffixIcon,
         filled: true,
-        fillColor: AppColors.docplanBlue.withOpacity(0.25),
+        fillColor: AppColors.docplanBlue.withAlpha((255 * 0.25).toInt()),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: AppColors.textSecondary),

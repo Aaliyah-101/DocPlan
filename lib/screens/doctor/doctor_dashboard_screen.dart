@@ -11,6 +11,8 @@ import 'doctor_emergency_dialog.dart';
 import '../../widgets/gradient_background.dart';
 import '../../models/emergency_model.dart';
 import '../settings/settings_screen.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class DoctorDashboardScreen extends StatefulWidget {
   const DoctorDashboardScreen({super.key});
@@ -44,82 +46,43 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
-      appBar: AppBar(
-        title: const Text('Doctor Dashboard'),
-        backgroundColor: AppColors.primary,
-      ),
-      drawer: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.5, // 👈 Reduces width to 70% of screen
-        child: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              DrawerHeader(
-                decoration: const BoxDecoration(color: AppColors.primary),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Icon(Icons.account_circle, size: 48, color: Colors.white),
-                    SizedBox(height: 8),
-                    Text("Doctor Menu", style: TextStyle(color: Colors.white, fontSize: 20)),
-                  ],
-                ),
+      body: Row(
+        children: [
+          NavigationRail(
+            selectedIndex: _selectedIndex,
+            onDestinationSelected: _onItemTapped,
+            labelType: NavigationRailLabelType.all,
+            selectedIconTheme: const IconThemeData(color: AppColors.primary),
+            unselectedIconTheme: const IconThemeData(
+              color: AppColors.textSecondary,
+            ),
+            destinations: const [
+              NavigationRailDestination(
+                icon: Icon(Icons.home),
+                label: Text('Home'),
               ),
-              ListTile(
-                leading: const Icon(Icons.home, color: AppColors.primary),
-                title: const Text('Home'),
-                selected: _selectedIndex == 0,
-                selectedTileColor: AppColors.primary.withOpacity(0.1),
-                onTap: () {
-                  Navigator.pop(context);
-                  setState(() => _selectedIndex = 0);
-                },
+              NavigationRailDestination(
+                icon: Icon(Icons.list_alt),
+                label: Text('Appointments'),
               ),
-              ListTile(
-                leading: const Icon(Icons.list_alt, color: AppColors.primary),
-                title: const Text('Appointments'),
-                selected: _selectedIndex == 1,
-                selectedTileColor: AppColors.primary.withOpacity(0.1),
-                onTap: () {
-                  Navigator.pop(context);
-                  setState(() => _selectedIndex = 1);
-                },
+              NavigationRailDestination(
+                icon: Icon(Icons.medical_services),
+                label: Text('Records'),
               ),
-              ListTile(
-                leading: const Icon(Icons.medical_services, color: AppColors.primary),
-                title: const Text('Records'),
-                selected: _selectedIndex == 2,
-                selectedTileColor: AppColors.primary.withOpacity(0.1),
-                onTap: () {
-                  Navigator.pop(context);
-                  setState(() => _selectedIndex = 2);
-                },
+              NavigationRailDestination(
+                icon: Icon(Icons.my_location),
+                label: Text('Set Radius'),
               ),
-              ListTile(
-                leading: const Icon(Icons.my_location, color: AppColors.primary),
-                title: const Text('Set Radius'),
-                selected: _selectedIndex == 3,
-                selectedTileColor: AppColors.primary.withOpacity(0.1),
-                onTap: () {
-                  Navigator.pop(context);
-                  setState(() => _selectedIndex = 3);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.settings, color: AppColors.primary),
-                title: const Text('Settings'),
-                selected: _selectedIndex == 4,
-                selectedTileColor: AppColors.primary.withOpacity(0.1),
-                onTap: () {
-                  Navigator.pop(context);
-                  setState(() => _selectedIndex = 4);
-                },
+              NavigationRailDestination(
+                icon: Icon(Icons.settings),
+                label: Text('Settings'),
               ),
             ],
           ),
-        ),
+          const VerticalDivider(thickness: 1, width: 1),
+          Expanded(child: _pages[_selectedIndex]),
+        ],
       ),
-      body: _pages[_selectedIndex],
     );
   }
 }
@@ -143,8 +106,18 @@ class _DoctorHomeContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _authService = AuthService();
-    final user = _authService.currentUser;
+    final authService = AuthService();
+    final user = authService.currentUser;
+    final List<String> imagePaths = [
+      'lib/images/p2.jpg',
+      'lib/images/p3.jpg',
+      'lib/images/p4.jpg',
+      'lib/images/p5.jpg',
+      'lib/images/p6.jpg',
+      'lib/images/p7.jpg',
+      'lib/images/p8.jpg',
+    ];
+    final ValueNotifier<int> currentNotifier = ValueNotifier<int>(0);
     return GradientBackground(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
@@ -154,7 +127,7 @@ class _DoctorHomeContent extends StatelessWidget {
             const SizedBox(height: 20),
             Text('Hello,', style: Theme.of(context).textTheme.titleMedium),
             FutureBuilder(
-              future: _authService.getUserData(user?.uid ?? ''),
+              future: authService.getUserData(user?.uid ?? ''),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const SizedBox(
@@ -168,6 +141,61 @@ class _DoctorHomeContent extends StatelessWidget {
                 return Text(
                   (snapshot.data as dynamic).name ?? 'Doctor',
                   style: Theme.of(context).textTheme.headlineMedium,
+                );
+              },
+            ),
+            const SizedBox(height: 16),
+            // Carousel (smaller height for mobile)
+            ValueListenableBuilder<int>(
+              valueListenable: currentNotifier,
+              builder: (context, current, _) {
+                return Stack(
+                  alignment: Alignment.bottomCenter,
+                  children: [
+                    CarouselSlider(
+                      items: imagePaths.map((path) {
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.asset(
+                            path,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: 180,
+                          ),
+                        );
+                      }).toList(),
+                      options: CarouselOptions(
+                        height: 180,
+                        autoPlay: true,
+                        autoPlayInterval: const Duration(seconds: 3),
+                        autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                        enlargeCenterPage: false,
+                        viewportFraction: 1.0,
+                        onPageChanged: (index, reason) {
+                          currentNotifier.value = index;
+                        },
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 8,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: imagePaths.asMap().entries.map((entry) {
+                          return Container(
+                            width: 8.0,
+                            height: 8.0,
+                            margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: current == entry.key
+                                  ? Theme.of(context).primaryColor
+                                  : Colors.grey.shade300,
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ],
                 );
               },
             ),
@@ -185,7 +213,8 @@ class _DoctorHomeContent extends StatelessWidget {
                     child: LinearProgressIndicator(),
                   );
                 }
-                final doctorData = snapshot.data!.data() as Map<String, dynamic>?;
+                final doctorData =
+                    snapshot.data!.data() as Map<String, dynamic>?;
                 final specialty = doctorData?['specialty'] ?? 'General';
                 return Container(
                   padding: const EdgeInsets.symmetric(
@@ -199,10 +228,7 @@ class _DoctorHomeContent extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      const Icon(
-                        Icons.check_circle,
-                        color: AppColors.success,
-                      ),
+                      const Icon(Icons.check_circle, color: AppColors.success),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Column(
@@ -235,7 +261,7 @@ class _DoctorHomeContent extends StatelessWidget {
             // Emergency List Section
             Builder(
               builder: (context) {
-                final user = _authService.currentUser;
+                final user = authService.currentUser;
                 if (user == null) {
                   return const SizedBox();
                 }
@@ -345,12 +371,15 @@ class _DoctorHomeContent extends StatelessWidget {
                           width: double.infinity,
                           child: ElevatedButton.icon(
                             icon: const Icon(Icons.refresh),
-                            label: const Text('Release All Frozen Appointments'),
+                            label: const Text(
+                              'Release All Frozen Appointments',
+                            ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primary,
                               foregroundColor: AppColors.textWhite,
                             ),
-                            onPressed: () => _releaseAllFrozenAppointments(context),
+                            onPressed: () =>
+                                _releaseAllFrozenAppointments(context),
                           ),
                         ),
                       ],
@@ -364,6 +393,71 @@ class _DoctorHomeContent extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class EmergencyAlertsWidget extends StatefulWidget {
+  const EmergencyAlertsWidget({Key? key}) : super(key: key);
+
+  @override
+  State<EmergencyAlertsWidget> createState() => _EmergencyAlertsWidgetState();
+}
+
+class _EmergencyAlertsWidgetState extends State<EmergencyAlertsWidget> {
+  @override
+  void initState() {
+    super.initState();
+    // Subscribe to 'doctors' topic for FCM
+    FirebaseMessaging.instance.subscribeToTopic('doctors');
+  }
+
+  Future<void> _markAsResolved(String emergencyId) async {
+    await FirebaseFirestore.instance
+        .collection('emergencies')
+        .doc(emergencyId)
+        .update({'status': 'resolved'});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('emergencies')
+          .where('status', isEqualTo: 'active')
+          .orderBy('timestamp', descending: true)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final docs = snapshot.data!.docs;
+        if (docs.isEmpty) {
+          return const Text('No active emergencies.');
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Active Emergencies:', style: TextStyle(fontWeight: FontWeight.bold)),
+            ...docs.map((doc) {
+              final data = doc.data() as Map<String, dynamic>;
+              return Card(
+                color: Colors.red[50],
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                child: ListTile(
+                  title: Text('Patient: ${data['patientName']} (${data['patientId']})'),
+                  subtitle: Text('Message: ${data['message']}'),
+                  trailing: ElevatedButton(
+                    onPressed: () => _markAsResolved(data['id']),
+                    child: const Text('Mark as Resolved'),
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                  ),
+                ),
+              );
+            }),
+          ],
+        );
+      },
     );
   }
 }
