@@ -88,24 +88,41 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                   setState(() => _selectedIndex = 1);
                 },
               ),
-              NavigationRailDestination(
-                icon: Icon(Icons.medical_services),
-                label: Text('Records'),
+              ListTile(
+                leading: const Icon(Icons.medical_services, color: AppColors.primary),
+                title: const Text('Records'),
+                selected: _selectedIndex == 2,
+                selectedTileColor: AppColors.primary.withOpacity(0.1),
+                onTap: () {
+                  Navigator.pop(context);
+                  setState(() => _selectedIndex = 2);
+                },
               ),
-              NavigationRailDestination(
-                icon: Icon(Icons.my_location),
-                label: Text('Set Radius'),
+              ListTile(
+                leading: const Icon(Icons.my_location, color: AppColors.primary),
+                title: const Text('Set Radius'),
+                selected: _selectedIndex == 3,
+                selectedTileColor: AppColors.primary.withOpacity(0.1),
+                onTap: () {
+                  Navigator.pop(context);
+                  setState(() => _selectedIndex = 3);
+                },
               ),
-              NavigationRailDestination(
-                icon: Icon(Icons.settings),
-                label: Text('Settings'),
+              ListTile(
+                leading: const Icon(Icons.settings, color: AppColors.primary),
+                title: const Text('Settings'),
+                selected: _selectedIndex == 4,
+                selectedTileColor: AppColors.primary.withOpacity(0.1),
+                onTap: () {
+                  Navigator.pop(context);
+                  setState(() => _selectedIndex = 4);
+                },
               ),
             ],
           ),
-          // Add the selected page to the right of the NavigationRail
-          Expanded(child: _pages[_selectedIndex]),
-        ],
+        ),
       ),
+      body: _pages[_selectedIndex],
     );
   }
 }
@@ -129,8 +146,8 @@ class _DoctorHomeContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authService = AuthService();
-    final user = authService.currentUser;
+    final _authService = AuthService();
+    final user = _authService.currentUser;
     return GradientBackground(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
@@ -140,7 +157,7 @@ class _DoctorHomeContent extends StatelessWidget {
             const SizedBox(height: 20),
             Text('Hello,', style: Theme.of(context).textTheme.titleMedium),
             FutureBuilder(
-              future: authService.getUserData(user?.uid ?? ''),
+              future: _authService.getUserData(user?.uid ?? ''),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const SizedBox(
@@ -171,8 +188,7 @@ class _DoctorHomeContent extends StatelessWidget {
                     child: LinearProgressIndicator(),
                   );
                 }
-                final doctorData =
-                    snapshot.data!.data() as Map<String, dynamic>?;
+                final doctorData = snapshot.data!.data() as Map<String, dynamic>?;
                 final specialty = doctorData?['specialty'] ?? 'General';
                 return Container(
                   padding: const EdgeInsets.symmetric(
@@ -186,7 +202,10 @@ class _DoctorHomeContent extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.check_circle, color: AppColors.success),
+                      const Icon(
+                        Icons.check_circle,
+                        color: AppColors.success,
+                      ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Column(
@@ -219,7 +238,7 @@ class _DoctorHomeContent extends StatelessWidget {
             // Emergency List Section
             Builder(
               builder: (context) {
-                final user = authService.currentUser;
+                final user = _authService.currentUser;
                 if (user == null) {
                   return const SizedBox();
                 }
@@ -274,7 +293,7 @@ class _DoctorHomeContent extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         ...emergencies.map(
-                          (e) => Card(
+                              (e) => Card(
                             color: AppColors.emergencyLight,
                             margin: const EdgeInsets.only(bottom: 12),
                             child: Padding(
@@ -329,15 +348,12 @@ class _DoctorHomeContent extends StatelessWidget {
                           width: double.infinity,
                           child: ElevatedButton.icon(
                             icon: const Icon(Icons.refresh),
-                            label: const Text(
-                              'Release All Frozen Appointments',
-                            ),
+                            label: const Text('Release All Frozen Appointments'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primary,
                               foregroundColor: AppColors.textWhite,
                             ),
-                            onPressed: () =>
-                                _releaseAllFrozenAppointments(context),
+                            onPressed: () => _releaseAllFrozenAppointments(context),
                           ),
                         ),
                       ],

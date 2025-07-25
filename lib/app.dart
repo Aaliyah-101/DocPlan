@@ -8,7 +8,7 @@ import 'screens/doctor/doctor_dashboard_screen.dart';
 import 'screens/doctor/emergency_response_screen.dart';
 import 'screens/admin/admin_dashboard_screen.dart';
 import 'screens/patient/patient_dashboard_screen.dart';
-
+import 'screens/chat_screen.dart'; // ✅ import ChatScreen
 
 class MyApp extends StatefulWidget {
   final GlobalKey<NavigatorState> navigatorKey;
@@ -50,11 +50,29 @@ class _MyAppState extends State<MyApp> {
               if (appointmentId != null) {
                 return MaterialPageRoute(
                   builder: (_) => EmergencyResponseScreen(
-                    appointmentId: appointmentId, // <-- or appointmentId!
+                    appointmentId: appointmentId,
                   ),
                 );
               }
             }
+
+            // ✅ Route for ChatScreen (notification-based)
+            if (settings.name == '/chat') {
+              final args = settings.arguments as Map<String, dynamic>?;
+              if (args != null &&
+                  args.containsKey('currentUserId') &&
+                  args.containsKey('otherUserId') &&
+                  args.containsKey('otherUserName')) {
+                return MaterialPageRoute(
+                  builder: (_) => ChatScreen(
+                    currentUserId: args['currentUserId'],
+                    otherUserId: args['otherUserId'],
+                    otherUserName: args['otherUserName'],
+                  ),
+                );
+              }
+            }
+
             return null;
           },
         );

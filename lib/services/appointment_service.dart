@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 import '../models/appointment_model.dart';
 import '../models/emergency_model.dart';
-import '../services/notifications_service.dart';
+import '../services/notification_service.dart';
 
 class AppointmentService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

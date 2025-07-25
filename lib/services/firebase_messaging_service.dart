@@ -1,6 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+import '../screens/chat_screen.dart'; // Adjust the path if necessary
 
 class FirebaseMessagingService {
   static final FirebaseMessaging _messaging = FirebaseMessaging.instance;
@@ -97,14 +100,37 @@ class FirebaseMessagingService {
   static void _handleNotificationClick(
       Map<String, dynamic> data,
       GlobalKey<NavigatorState> navigatorKey,
-      ) {
+      ) async {
     final type = data['type'];
-    final appointmentId = data['appointmentId'];
 
-    if (type == 'emergency_alert' && appointmentId != null) {
+    if (type == 'emergency_alert' && data['appointmentId'] != null) {
       navigatorKey.currentState?.pushNamed(
         '/emergency_response',
-        arguments: appointmentId,
+        arguments: data['appointmentId'],
+      );
+    } else if (type == 'chat_message') {
+      final String senderId = data['senderId'];
+      final String senderName = data['senderName'] ?? 'User';
+      final String receiverId = data['receiverId'];
+
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) return;
+
+      final String currentUserId = currentUser.uid;
+      final String otherUserId =
+      currentUserId == senderId ? receiverId : senderId;
+      final String otherUserName = currentUserId == senderId
+          ? (data['receiverName'] ?? 'User')
+          : senderName;
+
+      navigatorKey.currentState?.push(
+        MaterialPageRoute(
+          builder: (_) => ChatScreen(
+            currentUserId: currentUserId,
+            otherUserId: otherUserId,
+            otherUserName: otherUserName,
+          ),
+        ),
       );
     } else {
       print('[Notification] No matching navigation for type: $type');
@@ -115,14 +141,37 @@ class FirebaseMessagingService {
   static void handleInitialMessage(
       Map<String, dynamic> data,
       GlobalKey<NavigatorState> navigatorKey,
-      ) {
+      ) async {
     final type = data['type'];
-    final appointmentId = data['appointmentId'];
 
-    if (type == 'emergency_alert' && appointmentId != null) {
+    if (type == 'emergency_alert' && data['appointmentId'] != null) {
       navigatorKey.currentState?.pushNamed(
         '/emergency_response',
-        arguments: appointmentId,
+        arguments: data['appointmentId'],
+      );
+    } else if (type == 'chat_message') {
+      final String senderId = data['senderId'];
+      final String senderName = data['senderName'] ?? 'User';
+      final String receiverId = data['receiverId'];
+
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) return;
+
+      final String currentUserId = currentUser.uid;
+      final String otherUserId =
+      currentUserId == senderId ? receiverId : senderId;
+      final String otherUserName = currentUserId == senderId
+          ? (data['receiverName'] ?? 'User')
+          : senderName;
+
+      navigatorKey.currentState?.push(
+        MaterialPageRoute(
+          builder: (_) => ChatScreen(
+            currentUserId: currentUserId,
+            otherUserId: otherUserId,
+            otherUserName: otherUserName,
+          ),
+        ),
       );
     }
   }

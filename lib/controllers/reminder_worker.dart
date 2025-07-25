@@ -1,7 +1,7 @@
 import 'package:workmanager/workmanager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../services/notification_service.dart';
+import '../services/Notifications_service.dart';
 import '../models/notification_model.dart';
 
 /// 👇 REQUIRED for background isolate in release mode

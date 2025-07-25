@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/notification_model.dart';
-import '../services/notification_service.dart';
+import '../services/Notifications_service.dart';
 
 class NotificationController {
   final NotificationService _service = NotificationService();

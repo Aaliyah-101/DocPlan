@@ -2,11 +2,12 @@ import 'package:docplan/screens/patient/book_appointment_screen.dart';
 import 'package:docplan/screens/patient/view_appointments_screen.dart';
 import 'package:docplan/screens/patient/declare_emergency_screen.dart';
 import 'package:docplan/screens/patient/medical_records_screen.dart';
+import 'package:docplan/screens/settings/settings_screen.dart';
 import 'package:flutter/material.dart';
 import '../../constants/app_colors.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/gradient_background.dart';
-import 'package:docplan/screens/settings/settings_screen.dart';
+import '../../widgets/notification_bell.dart';
 
 class PatientDashboardScreen extends StatefulWidget {
   const PatientDashboardScreen({super.key});
@@ -27,7 +28,26 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
     SettingsScreen(),
   ];
 
-  void _onItemTapped(int index) {
+  static const List<String> _menuTitles = [
+    'Home',
+    'Book Appointment',
+    'View Appointments',
+    'Declare Emergency',
+    'Medical Records',
+    'Settings',
+  ];
+
+  static const List<IconData> _menuIcons = [
+    Icons.home,
+    Icons.add_circle_outline,
+    Icons.list_alt,
+    Icons.emergency,
+    Icons.medical_services,
+    Icons.settings,
+  ];
+
+  void _onMenuSelected(int index) {
+    Navigator.pop(context); // Close the drawer
     setState(() {
       _selectedIndex = index;
     });
@@ -37,48 +57,42 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
-      body: Row(
-        children: [
-          NavigationRail(
-            selectedIndex: _selectedIndex,
-            onDestinationSelected: _onItemTapped,
-            labelType: NavigationRailLabelType.all,
-            selectedIconTheme: const IconThemeData(color: AppColors.primary),
-            unselectedIconTheme: const IconThemeData(
-              color: AppColors.textSecondary,
-            ),
-            destinations: const [
-              NavigationRailDestination(
-                icon: Icon(Icons.home),
-                label: Text('Home'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.add_circle_outline),
-                label: Text('Book'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.list_alt),
-                label: Text('Appointments'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.emergency),
-                label: Text('Emergency'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.medical_services),
-                label: Text('Records'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.settings),
-                label: Text('Settings'),
-              ),
-            ],
-          ),
-          const VerticalDivider(thickness: 1, width: 1),
-          // Expanded page content
-          Expanded(child: _pages[_selectedIndex]),
+      appBar: AppBar(
+        backgroundColor: AppColors.primary,
+        title: Text(_menuTitles[_selectedIndex]),
+        actions: const [
+          NotificationBell(), // 🔔 Bell with badge
         ],
       ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: const BoxDecoration(color: AppColors.primary),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Icon(Icons.account_circle, size: 48, color: Colors.white),
+                  SizedBox(height: 8),
+                  Text("Menu", style: TextStyle(color: Colors.white, fontSize: 20)),
+                ],
+              ),
+            ),
+            ...List.generate(
+              _menuTitles.length,
+                  (index) => ListTile(
+                leading: Icon(_menuIcons[index], color: AppColors.primary),
+                title: Text(_menuTitles[index], style: const TextStyle(fontSize: 16)),
+                selected: _selectedIndex == index,
+                selectedTileColor: AppColors.primary.withOpacity(0.1),
+                onTap: () => _onMenuSelected(index),
+              ),
+            ),
+          ],
+        ),
+      ),
+      body: _pages[_selectedIndex],
     );
   }
 }
@@ -92,11 +106,11 @@ class _PatientHomeContent extends StatelessWidget {
     return GradientBackground(
       child: Container(
         decoration: const BoxDecoration(
-          // image: DecorationImage(
-          //   image: AssetImage('lib/images/docplan2.jpg'),
-          //   fit: BoxFit.cover,
-          //   opacity: 0.2,
-          // ),
+          image: DecorationImage(
+            image: AssetImage('lib/images/docplan2.jpg'),
+            fit: BoxFit.cover,
+            opacity: 0.2,
+          ),
         ),
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -124,7 +138,6 @@ class _PatientHomeContent extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 40),
-              // No dashboard grid/buttons here
             ],
           ),
         ),
