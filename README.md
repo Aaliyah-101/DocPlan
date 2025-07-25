@@ -45,8 +45,7 @@ A Flutter-based healthcare appointment scheduling application with role-based ac
 ### 🛡️ Admin Features
 - **System overview**: Dashboard with statistics and monitoring
 - **Emergency management**: Declare system-wide emergencies
-- **Appointment freezing**: Freeze all appointments during emergencies
-- **User management**: Overview of all users, doctors, and appointments
+
 
 ### 🚨 Emergency System
 - **Admin-only emergency declaration**: Only admins can declare emergencies
