@@ -22,9 +22,13 @@ class NotificationService {
         .orderBy('timestamp', descending: true)
         .get();
 
+<<<<<<< HEAD
     return snapshot.docs
         .map((doc) => NotificationModel.fromDoc(doc))
         .toList();
+=======
+    return snapshot.docs.map((doc) => NotificationModel.fromDoc(doc)).toList();
+>>>>>>> AaliyahM
   }
 
   /// ✅ Mark notification as read

@@ -234,4 +234,8 @@ class NotificationService {
       _logger.e('Error notifying new chat message: $e');
     }
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> AaliyahM

@@ -1,7 +1,22 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
+<<<<<<< HEAD
 export "FLUTTER_ROOT=C:\flutter\src\flutter"
 export "FLUTTER_APPLICATION_PATH=C:\Users\user\AndroidStudioProjects\DocPlan"
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+export "FLUTTER_ROOT=D:\recess\flutter"
+export "FLUTTER_APPLICATION_PATH=C:\Users\HP 840\Desktop\mmm\docplan224"
+=======
+export "FLUTTER_ROOT=C:\flutter\src\flutter"
+export "FLUTTER_APPLICATION_PATH=C:\Users\user\AndroidStudioProjects\DocPlan"
+>>>>>>> origin/mathias
+=======
+export "FLUTTER_ROOT=C:\flutter\src\flutter"
+export "FLUTTER_APPLICATION_PATH=C:\Users\user\Desktop\mmm\docplan224"
+>>>>>>> AaliyahM
+>>>>>>> master
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_BUILD_DIR=build"
 export "FLUTTER_BUILD_NAME=1.0.0"
