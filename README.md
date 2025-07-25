@@ -29,14 +29,8 @@ A Flutter-based healthcare appointment scheduling application with role-based ac
   - Psychiatrist
   - Urologist
   - Trauma Surgeon
-  -Allergist
-  
-
-
-
-
-  
-
+  - Allergist
+  - toxicologist
 - **Availability management**: Set weekly schedule with hourly time slots
 - **Appointment viewing**: View and manage patient appointments
 - **Patient location tracking**: Check if patients are within service radius
