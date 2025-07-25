@@ -40,10 +40,7 @@ A Flutter-based healthcare appointment scheduling application with role-based ac
 - **Availability-based booking**: See doctor's available time slots
 - **Appointment booking**: Book appointments with reason/reasoning
 - **Appointment viewing**: View upcoming and past appointments
-- **emergency access**: Patients can declare emergencies
-
-### 🛡️ Admin Features
-- **System overview**: Dashboard with statistics and monitoring
+- **emergency access**: Patients can declare emergencie
 
 
 
