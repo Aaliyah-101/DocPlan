@@ -28,8 +28,11 @@ A Flutter-based healthcare appointment scheduling application with role-based ac
   - Ophthalmologist
   - Psychiatrist
   - Urologist
-  -Trauma Surgeon
+  - Trauma Surgeon
+  -Allergist
   
+
+
 
 
   
