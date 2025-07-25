@@ -170,11 +170,12 @@ A Flutter-based healthcare appointment scheduling application with role-based ac
 - Real-time chat between doctors and patients
 - Video consultation integration
 - Payment processing
-- Prescription management
+
 - Medical records integration
 - Advanced analytics and reporting
 - Multi-language support
 - Push notifications for appointment reminders
+
 
 ## Contributing
 
