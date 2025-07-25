@@ -5,12 +5,13 @@ A Flutter-based healthcare appointment scheduling application with role-based ac
 ## Features
 
 ### 🔐 Authentication & Role Management
-- **Multi-role signup**: Users can register as Patient, Doctor, or Admin
+- **Multi-role signup**: Users can register as Patient, Doctor, 
 - **Role-based dashboards**: Different interfaces for each user type
 - **Secure authentication**: Firebase Authentication integration
 
 ### 👨‍⚕️ Doctor Features
 - **Specialty selection**: Choose from 9 medical specialties:
+
   - Cardiologist
   - Endocrinologist
   - Gastroenterologist
@@ -20,6 +21,10 @@ A Flutter-based healthcare appointment scheduling application with role-based ac
   - Neurosurgeon
   - Cardiothoracic Surgeon
   - Plastic Surgeon
+  - Dermatologist
+  - Oncologist 
+  
+
 - **Availability management**: Set weekly schedule with hourly time slots
 - **Appointment viewing**: View and manage patient appointments
 - **Patient location tracking**: Check if patients are within service radius
@@ -29,7 +34,7 @@ A Flutter-based healthcare appointment scheduling application with role-based ac
 - **Availability-based booking**: See doctor's available time slots
 - **Appointment booking**: Book appointments with reason/reasoning
 - **Appointment viewing**: View upcoming and past appointments
-- **No emergency access**: Patients cannot declare emergencies
+- **emergency access**: Patients can declare emergencies
 
 ### 🛡️ Admin Features
 - **System overview**: Dashboard with statistics and monitoring
