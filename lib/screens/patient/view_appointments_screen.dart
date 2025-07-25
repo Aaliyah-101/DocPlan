@@ -8,12 +8,50 @@ import '../../widgets/gradient_background.dart';
 import '../../screens/chat_screen.dart';
 import '../../services/chat_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+<<<<<<< HEAD
+=======
+import '../../screens/patient/patient_dashboard_screen.dart';
+>>>>>>> AaliyahM
 
 class ViewAppointmentsScreen extends StatelessWidget {
-  const ViewAppointmentsScreen({super.key});
+  final bool showGoHomeDialog;
+  const ViewAppointmentsScreen({super.key, this.showGoHomeDialog = false});
+
+  void _showGoHomeDialog(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Appointment Booked!'),
+          content: const Text('Would you like to go back to the home page or stay on your appointments?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+              },
+              child: const Text('Stay on Appointments'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const PatientDashboardScreen()),
+                  (route) => false,
+                );
+              },
+              child: const Text('Go to Home'),
+            ),
+          ],
+        ),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (showGoHomeDialog) {
+      _showGoHomeDialog(context);
+    }
     final user = AuthService().currentUser;
     return Scaffold(
       appBar: AppBar(

@@ -6,7 +6,11 @@ import '../../services/appointment_service.dart';
 import '../../services/auth_service.dart';
 import '../../models/appointment_model.dart';
 import '../../widgets/gradient_background.dart';
+<<<<<<< HEAD
 import '../../controllers/notification_controller.dart';
+=======
+import '../../screens/patient/view_appointments_screen.dart';
+>>>>>>> AaliyahM
 
 class BookAppointmentScreen extends StatefulWidget {
   const BookAppointmentScreen({super.key});
@@ -41,17 +45,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     'Neurosurgeon',
     'Cardiothoracic Surgeon',
     'Plastic Surgeon',
-    'Dermatologist',
-    'Oncologist',
-    'Radiologist',
-    'Pathologist',
-    'Rheumatologist',
-    'Ophthalmologist',
-    'Psychiatrist',
-    'Urologist',
-    'Trauma Surgeon',
-    'Allergist',
-    'Toxicologist',
   ];
 
   // Days of the week
@@ -427,7 +420,10 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       );
 
       if (mounted) {
-        Navigator.pop(context);
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => ViewAppointmentsScreen(showGoHomeDialog: true)),
+          (route) => false,
+        );
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(

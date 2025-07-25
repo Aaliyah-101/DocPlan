@@ -57,6 +57,10 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _markAsRead() {
+<<<<<<< HEAD
+=======
+    // Mark all messages as read for the current user
+>>>>>>> AaliyahM
     ChatService().updateLastRead(
       widget.currentUserId,
       widget.otherUserId,
@@ -89,11 +93,19 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             _buildAvatar(_otherUser),
             const SizedBox(width: 8),
+<<<<<<< HEAD
             Expanded(
               child: Text(
                 widget.otherUserName,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(fontSize: 18),
+=======
+            Flexible(
+              child: Text(
+                widget.otherUserName,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+>>>>>>> AaliyahM
               ),
             ),
           ],
@@ -102,6 +114,7 @@ class _ChatScreenState extends State<ChatScreen> {
       body: _loadingUser
           ? const Center(child: CircularProgressIndicator())
           : Column(
+<<<<<<< HEAD
         children: [
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
@@ -187,3 +200,91 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 }
+=======
+              children: [
+                Expanded(
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: _chatService.streamMessages(
+                      widget.currentUserId,
+                      widget.otherUserId,
+                    ),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      final messages = snapshot.data!.docs;
+                      // Mark as read when new messages arrive
+                      if (messages.isNotEmpty) _markAsRead();
+                      return ListView.builder(
+                        padding: const EdgeInsets.all(8),
+                        itemCount: messages.length,
+                        itemBuilder: (context, index) {
+                          final msg = messages[index];
+                          final isMe = msg['senderId'] == widget.currentUserId;
+                          final user = isMe ? _currentUser : _otherUser;
+                          return Row(
+                            mainAxisAlignment: isMe
+                                ? MainAxisAlignment.end
+                                : MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              if (!isMe) ...[
+                                _buildAvatar(user),
+                                const SizedBox(width: 6),
+                              ],
+                              Flexible(
+                                child: Container(
+                                  margin: const EdgeInsets.symmetric(vertical: 4),
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 8, horizontal: 12),
+                                  decoration: BoxDecoration(
+                                    color: isMe
+                                        ? Colors.blueAccent.withOpacity(0.8)
+                                        : Colors.grey[300],
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    msg['message'],
+                                    style: TextStyle(
+                                      color: isMe ? Colors.white : Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              if (isMe) ...[
+                                const SizedBox(width: 6),
+                                _buildAvatar(user),
+                              ],
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _controller,
+                          decoration: const InputDecoration(
+                            hintText: 'Type a message...',
+                          ),
+                          onSubmitted: (_) => _sendMessage(),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.send),
+                        onPressed: _sendMessage,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+    );
+  }
+} 
+>>>>>>> AaliyahM

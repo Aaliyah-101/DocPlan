@@ -237,8 +237,12 @@ class _DoctorAppointmentCardState extends State<_DoctorAppointmentCard> {
                     'Lat: ${a.location!['latitude']?.toStringAsFixed(5) ?? '-'}',
                   ),
                   const SizedBox(width: 12),
-                  Text(
-                    'Lng: ${a.location!['longitude']?.toStringAsFixed(5) ?? '-'}',
+                  Expanded(
+                    child: Text(
+                      'Lng: ${a.location!['longitude']?.toStringAsFixed(5) ?? '-'}',
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   ElevatedButton.icon(

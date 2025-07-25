@@ -238,7 +238,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
       // Check if at least one day has time slots selected
       bool hasAvailability = _doctorAvailability.values.any(
-            (slots) => slots.isNotEmpty,
+        (slots) => slots.isNotEmpty,
       );
       if (!hasAvailability) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -763,7 +763,13 @@ class _AuthScreenState extends State<AuthScreen> {
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
         borderRadius: BorderRadius.circular(8),
+<<<<<<< HEAD
         border: Border.all(color: AppColors.textSecondary.withAlpha((255 * 0.3).toInt())),
+=======
+        border: Border.all(
+          color: AppColors.textSecondary.withAlpha((255 * 0.3).toInt()),
+        ),
+>>>>>>> AaliyahM
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
