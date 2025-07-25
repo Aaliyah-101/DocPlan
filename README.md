@@ -21,10 +21,14 @@ A Flutter-based healthcare appointment scheduling application with role-based ac
   - Neurosurgeon
   - Cardiothoracic Surgeon
   - Plastic Surgeon
-  - Dermatologist
+  - Dermatologistgit 
   - Oncologist 
   - Radiologist
   - Pathologist
+  - Ophthalmologist
+  - Psychiatrist
+
+
   
 
 - **Availability management**: Set weekly schedule with hourly time slots
