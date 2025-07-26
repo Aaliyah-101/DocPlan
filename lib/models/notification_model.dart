@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NotificationModel {
+<<<<<<< HEAD
   final String id;              // Firestore document ID (notification ID)
   final String title;           // Notification title
   final String message;         // Body of the notification
@@ -9,6 +10,16 @@ class NotificationModel {
   final String to;              // Receiver UID
   bool isRead;                  // Whether it's been read (mutable)
   final Timestamp timestamp;    // Firestore timestamp
+=======
+  final String id; // Firestore document ID (notification ID)
+  final String title; // Notification title
+  final String message; // Body of the notification
+  final String type; // e.g., booking, reminder, cancel_by_patient
+  final String from; // Sender UID (e.g., admin or system)
+  final String to; // Receiver UID
+  bool isRead; // Whether it's been read (mutable)
+  final Timestamp timestamp; // Firestore timestamp
+>>>>>>> AaliyahM
 
   NotificationModel({
     required this.id,

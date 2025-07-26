@@ -34,7 +34,12 @@ void callbackDispatcher() {
         final appointmentTime = data['dateTime'] as Timestamp;
 
         final title = "Upcoming Appointment";
+<<<<<<< HEAD
         final message = "You have an appointment at ${appointmentTime.toDate()}";
+=======
+        final message =
+            "You have an appointment at ${appointmentTime.toDate()}";
+>>>>>>> AaliyahM
 
         await notificationService.sendNotification(
           NotificationModel(

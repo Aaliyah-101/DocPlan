@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'full_screen_map.dart';
 import '../../constants/app_colors.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/custom_button.dart';
@@ -268,7 +271,7 @@ class _RadiusSettingsScreenState extends State<RadiusSettingsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Latitude: ${_currentPosition!.latitude.toStringAsFixed(6)}',
+                          'Latitude:  ${_currentPosition!.latitude.toStringAsFixed(6)}',
                           style: const TextStyle(fontSize: 14),
                         ),
                         const SizedBox(height: 4),
@@ -276,6 +279,46 @@ class _RadiusSettingsScreenState extends State<RadiusSettingsScreen> {
                           'Longitude: ${_currentPosition!.longitude.toStringAsFixed(6)}',
                           style: const TextStyle(fontSize: 14),
                         ),
+                        const SizedBox(height: 16),
+                        if (kIsWeb)
+                          Container(
+                            height: 250,
+                            color: Colors.grey[300],
+                            child: const Center(child: Text('Map not supported on web')),
+                          )
+                        else
+                          SizedBox(
+                            height: 250,
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => FullScreenMap(
+                                      doctorLocation: LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
+                                      // patientLocation: LatLng(patientLat, patientLng), // Add if you have patient location
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: AbsorbPointer(
+                                child: GoogleMap(
+                                  initialCameraPosition: CameraPosition(
+                                    target: LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
+                                    zoom: 14,
+                                  ),
+                                  markers: {
+                                    Marker(
+                                      markerId: MarkerId('doctor_location'),
+                                      position: LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
+                                    ),
+                                  },
+                                  myLocationEnabled: true,
+                                  myLocationButtonEnabled: false,
+                                ),
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                   ),

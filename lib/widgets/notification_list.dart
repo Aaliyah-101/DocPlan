@@ -50,9 +50,15 @@ class _NotificationListState extends State<NotificationList> {
       _notifications.removeWhere((n) => n.id == notification.id);
     });
 
+<<<<<<< HEAD
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Notification deleted")),
     );
+=======
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text("Notification deleted")));
+>>>>>>> AaliyahM
   }
 
   // 📊 Count notifications by type
@@ -102,6 +108,7 @@ class _NotificationListState extends State<NotificationList> {
           child: _notifications.isEmpty
               ? const Center(child: Text("No notifications found."))
               : ListView.separated(
+<<<<<<< HEAD
             itemCount: _notifications.length,
             separatorBuilder: (_, __) => const Divider(height: 1),
             itemBuilder: (context, index) {
@@ -145,6 +152,59 @@ class _NotificationListState extends State<NotificationList> {
               );
             },
           ),
+=======
+                  itemCount: _notifications.length,
+                  separatorBuilder: (_, __) => const Divider(height: 1),
+                  itemBuilder: (context, index) {
+                    final notification = _notifications[index];
+                    final formattedTime = DateFormat(
+                      'MMM d, h:mm a',
+                    ).format(notification.timestamp.toDate());
+
+                    return ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                      leading: Icon(
+                        _getIcon(notification.type),
+                        color: Colors.blueAccent,
+                      ),
+                      title: Text(
+                        notification.title,
+                        style: TextStyle(
+                          fontWeight: notification.isRead
+                              ? FontWeight.normal
+                              : FontWeight.bold,
+                        ),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(notification.message),
+                          const SizedBox(height: 4),
+                          Text(
+                            formattedTime,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                      trailing: notification.isRead
+                          ? null
+                          : const Icon(
+                              Icons.circle,
+                              size: 10,
+                              color: Colors.red,
+                            ),
+                      onTap: () => _markAsRead(notification),
+                      onLongPress: () => _confirmDelete(notification),
+                    );
+                  },
+                ),
+>>>>>>> AaliyahM
         ),
       ],
     );
@@ -155,8 +215,14 @@ class _NotificationListState extends State<NotificationList> {
       context: context,
       builder: (_) => AlertDialog(
         title: const Text("Delete Notification?"),
+<<<<<<< HEAD
         content:
         const Text("Are you sure you want to delete this notification?"),
+=======
+        content: const Text(
+          "Are you sure you want to delete this notification?",
+        ),
+>>>>>>> AaliyahM
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),

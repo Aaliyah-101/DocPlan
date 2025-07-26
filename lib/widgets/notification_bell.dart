@@ -29,9 +29,13 @@ class NotificationBell extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
+<<<<<<< HEAD
                   MaterialPageRoute(
                     builder: (_) => const NotificationScreen(),
                   ),
+=======
+                  MaterialPageRoute(builder: (_) => const NotificationScreen()),
+>>>>>>> AaliyahM
                 );
               },
             ),
@@ -47,10 +51,14 @@ class NotificationBell extends StatelessWidget {
                   ),
                   child: Text(
                     '$unreadCount',
+<<<<<<< HEAD
                     style: const TextStyle(
                       fontSize: 12,
                       color: Colors.white,
                     ),
+=======
+                    style: const TextStyle(fontSize: 12, color: Colors.white),
+>>>>>>> AaliyahM
                   ),
                 ),
               ),

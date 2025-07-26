@@ -33,6 +33,7 @@
       <excludeFolder url="file://$MODULE_DIR$/windows/flutter/ephemeral/.plugin_symlinks/geolocator_windows/example/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/windows/flutter/ephemeral/.plugin_symlinks/geolocator_windows/example/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/windows/flutter/ephemeral/.plugin_symlinks/geolocator_windows/example/build" />
+<<<<<<< HEAD
       <excludeFolder url="file://$MODULE_DIR$/linux/flutter/ephemeral/.plugin_symlinks/file_selector_linux/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/linux/flutter/ephemeral/.plugin_symlinks/file_selector_linux/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/linux/flutter/ephemeral/.plugin_symlinks/file_selector_linux/build" />
@@ -123,6 +124,8 @@
       <excludeFolder url="file://$MODULE_DIR$/windows/flutter/ephemeral/.plugin_symlinks/flutter_local_notifications_windows/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/windows/flutter/ephemeral/.plugin_symlinks/flutter_local_notifications_windows/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/windows/flutter/ephemeral/.plugin_symlinks/flutter_local_notifications_windows/build" />
+=======
+>>>>>>> AaliyahM
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Dart SDK" level="project" />
