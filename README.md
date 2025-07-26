@@ -59,7 +59,7 @@ A Flutter-based healthcare appointment scheduling application with role-based ac
 ## Technical Stack
 
 - **Frontend**: Flutter
-- **Backend**: Firebase
+- **Backend**: FirebasE
 - **Authentication**: Firebase Auth
 - **Database**: Cloud Firestore
 - **Notifications**: Firebase Messaging
