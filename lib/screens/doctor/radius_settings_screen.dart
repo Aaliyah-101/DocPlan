@@ -330,56 +330,68 @@ class _RadiusSettingsScreenState extends State<RadiusSettingsScreen> {
                                     );
                                   },
                                   child: AbsorbPointer(
-                                    child: GoogleMap(
-                                      onMapCreated: _onMapCreated,
-                                      initialCameraPosition: CameraPosition(
-                                        target: LatLng(
-                                          _currentPosition!.latitude,
-                                          _currentPosition!.longitude,
-                                        ),
-                                        zoom: 14,
+                                    child: Container(
+                                      height: 200,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[200],
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(color: Colors.grey[300]!),
                                       ),
-                                      markers: {
-                                        Marker(
-                                          markerId: const MarkerId('doctor_location'),
-                                          position: LatLng(
-                                            _currentPosition!.latitude,
-                                            _currentPosition!.longitude,
+                                      child: Stack(
+                                        children: [
+                                          GoogleMap(
+                                            onMapCreated: _onMapCreated,
+                                            initialCameraPosition: CameraPosition(
+                                              target: LatLng(
+                                                _currentPosition!.latitude,
+                                                _currentPosition!.longitude,
+                                              ),
+                                              zoom: 12,
+                                            ),
+                                            markers: {
+                                              Marker(
+                                                markerId: const MarkerId('doctor_location'),
+                                                position: LatLng(
+                                                  _currentPosition!.latitude,
+                                                  _currentPosition!.longitude,
+                                                ),
+                                                infoWindow: const InfoWindow(
+                                                  title: 'Your Location',
+                                                ),
+                                              ),
+                                            },
+                                            circles: {},
+                                            myLocationEnabled: false,
+                                            myLocationButtonEnabled: false,
+                                            zoomControlsEnabled: false,
+                                            mapToolbarEnabled: false,
+                                            compassEnabled: false,
+                                            rotateGesturesEnabled: false,
+                                            tiltGesturesEnabled: false,
+                                            onCameraMove: null,
+                                            onCameraIdle: null,
+                                            onTap: null,
+                                            onLongPress: null,
                                           ),
-                                          infoWindow: const InfoWindow(
-                                            title: 'Your Location',
+                                          Positioned(
+                                            top: 8,
+                                            right: 8,
+                                            child: Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                              decoration: BoxDecoration(
+                                                color: Colors.black.withOpacity(0.7),
+                                                borderRadius: BorderRadius.circular(4),
+                                              ),
+                                              child: const Text(
+                                                'Tap to view full map',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 10,
+                                                ),
+                                              ),
+                                            ),
                                           ),
-                                          icon: BitmapDescriptor.defaultMarkerWithHue(
-                                            BitmapDescriptor.hueBlue,
-                                          ),
-                                        ),
-                                      },
-                                      circles: _circles,
-                                      myLocationEnabled: true,
-                                      myLocationButtonEnabled: false,
-                                      zoomControlsEnabled: false,
-                                      mapToolbarEnabled: false,
-                                    ),
-                                  ),
-                                ),
-                                // Tap to expand overlay
-                                Positioned(
-                                  top: 8,
-                                  right: 8,
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black.withOpacity(0.7),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: const Text(
-                                      'Tap to expand',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
+                                        ],
                                       ),
                                     ),
                                   ),

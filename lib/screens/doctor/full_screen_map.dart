@@ -18,99 +18,24 @@ class FullScreenMap extends StatefulWidget {
   State<FullScreenMap> createState() => _FullScreenMapState();
 }
 
-class _FullScreenMapState extends State<FullScreenMap> with WidgetsBindingObserver {
-  late Set<Marker> markers;
-  late Set<Circle> circles;
+class _FullScreenMapState extends State<FullScreenMap> {
   bool _isMapLoading = true;
   bool _hasMapError = false;
   String _errorMessage = '';
   GoogleMapController? _mapController;
+  bool _useStaticFallback = false;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
     developer.log('🚀 FullScreenMap: Initializing with doctor location: ${widget.doctorLocation}');
-    _initializeMapData();
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
     developer.log('🗑️ Disposing FullScreenMap');
     _mapController?.dispose();
     super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-    if (state == AppLifecycleState.paused) {
-      // Pause map rendering when app goes to background
-      developer.log('📱 App paused - pausing map');
-    } else if (state == AppLifecycleState.resumed) {
-      // Resume map rendering when app comes to foreground
-      developer.log('📱 App resumed - resuming map');
-    }
-  }
-
-  void _initializeMapData() {
-    try {
-      developer.log('📍 Initializing map markers and circles...');
-
-      // Initialize markers with reduced complexity
-      markers = {
-        Marker(
-          markerId: const MarkerId('doctor'),
-          position: widget.doctorLocation,
-          infoWindow: const InfoWindow(
-            title: 'Doctor Location',
-            snippet: 'Your current location',
-          ),
-          // Use default marker to reduce memory usage
-        ),
-      };
-
-      // Add patient marker if available
-      if (widget.patientLocation != null) {
-        markers.add(
-          Marker(
-            markerId: const MarkerId('patient'),
-            position: widget.patientLocation!,
-            infoWindow: const InfoWindow(
-              title: 'Patient Location',
-              snippet: 'Patient location',
-            ),
-          ),
-        );
-        developer.log('✅ Patient marker added');
-      }
-
-      // Initialize circles with optimized settings
-      circles = {};
-      if (widget.radius != null && widget.radius! > 0) {
-        circles.add(
-          Circle(
-            circleId: const CircleId('radius'),
-            center: widget.doctorLocation,
-            radius: widget.radius!,
-            strokeColor: Colors.blue.withOpacity(0.6), // Reduced opacity
-            strokeWidth: 1, // Reduced stroke width
-            fillColor: Colors.blue.withOpacity(0.1), // Reduced fill opacity
-          ),
-        );
-        developer.log('✅ Radius circle added with radius: ${widget.radius} meters');
-      }
-
-      developer.log('✅ Map data initialized successfully');
-
-    } catch (e, stackTrace) {
-      developer.log('❌ Error initializing map data: $e', stackTrace: stackTrace);
-      setState(() {
-        _hasMapError = true;
-        _errorMessage = 'Failed to initialize map data: $e';
-      });
-    }
   }
 
   void _onMapCreated(GoogleMapController controller) {
@@ -123,67 +48,14 @@ class _FullScreenMapState extends State<FullScreenMap> with WidgetsBindingObserv
         _hasMapError = false;
       });
 
-      // Reduce map quality for better performance
-      _mapController?.setMapStyle(null); // Use default style
-
-      developer.log('📱 Map controller assigned');
-
-      // Fit bounds with delay to prevent buffer issues
-      if (widget.patientLocation != null) {
-        developer.log('🎯 Fitting bounds for both locations...');
-        Future.delayed(const Duration(milliseconds: 1000), () {
-          if (mounted) _fitBounds();
-        });
-      }
-
     } catch (e, stackTrace) {
       developer.log('❌ Error in _onMapCreated: $e', stackTrace: stackTrace);
       setState(() {
         _isMapLoading = false;
         _hasMapError = true;
         _errorMessage = 'Map creation failed: $e';
+        _useStaticFallback = true;
       });
-    }
-  }
-
-  void _fitBounds() {
-    try {
-      if (_mapController == null || !mounted) return;
-
-      if (widget.patientLocation == null) {
-        developer.log('⚠️ Cannot fit bounds: Patient location is null');
-        return;
-      }
-
-      developer.log('📐 Calculating bounds...');
-
-      final bounds = LatLngBounds(
-        southwest: LatLng(
-          widget.doctorLocation.latitude < widget.patientLocation!.latitude
-              ? widget.doctorLocation.latitude - 0.001
-              : widget.patientLocation!.latitude - 0.001,
-          widget.doctorLocation.longitude < widget.patientLocation!.longitude
-              ? widget.doctorLocation.longitude - 0.001
-              : widget.patientLocation!.longitude - 0.001,
-        ),
-        northeast: LatLng(
-          widget.doctorLocation.latitude > widget.patientLocation!.latitude
-              ? widget.doctorLocation.latitude + 0.001
-              : widget.patientLocation!.latitude + 0.001,
-          widget.doctorLocation.longitude > widget.patientLocation!.longitude
-              ? widget.doctorLocation.longitude + 0.001
-              : widget.patientLocation!.longitude + 0.001,
-        ),
-      );
-
-      _mapController!.animateCamera(
-        CameraUpdate.newLatLngBounds(bounds, 100.0),
-      );
-
-      developer.log('✅ Camera bounds fitted successfully');
-
-    } catch (e, stackTrace) {
-      developer.log('❌ Error fitting bounds: $e', stackTrace: stackTrace);
     }
   }
 
@@ -196,69 +68,202 @@ class _FullScreenMapState extends State<FullScreenMap> with WidgetsBindingObserv
         foregroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: const Icon(Icons.my_location),
+            icon: const Icon(Icons.refresh),
             onPressed: () {
-              _mapController?.animateCamera(
-                CameraUpdate.newLatLngZoom(widget.doctorLocation, 15),
-              );
+              setState(() {
+                _useStaticFallback = !_useStaticFallback;
+                _isMapLoading = true;
+                _hasMapError = false;
+                _errorMessage = '';
+              });
             },
-            tooltip: 'Center on your location',
+            tooltip: _useStaticFallback ? 'Switch to Google Maps' : 'Switch to Static Map',
           ),
         ],
       ),
-      body: _hasMapError
-          ? _buildErrorWidget()
-          : Stack(
-        children: [
-          GoogleMap(
-            initialCameraPosition: CameraPosition(
-              target: widget.doctorLocation,
-              zoom: 14, // Reduced initial zoom
-            ),
-            markers: markers,
-            circles: circles,
-            myLocationEnabled: false, // Disable to reduce buffer usage
-            myLocationButtonEnabled: false,
-            compassEnabled: false, // Disable to reduce rendering
-            mapToolbarEnabled: false, // Disable to reduce rendering
-            zoomControlsEnabled: true,
-            rotateGesturesEnabled: false, // Disable rotation
-            tiltGesturesEnabled: false, // Disable tilt
-            onMapCreated: _onMapCreated,
-            mapType: MapType.normal,
-            // Reduce rendering frequency
-            onCameraMove: null, // Remove camera move callback
-            onCameraIdle: null, // Remove camera idle callback
-          ),
-          if (_isMapLoading)
-            Container(
-              color: Colors.white.withOpacity(0.9),
-              child: const Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+      body: _useStaticFallback 
+          ? _buildStaticMap()
+          : _hasMapError
+              ? _buildErrorWidget()
+              : Stack(
                   children: [
-                    CircularProgressIndicator(),
-                    SizedBox(height: 16),
-                    Text('Loading Google Maps...'),
-                    SizedBox(height: 8),
-                    Text(
-                      'This may take a moment',
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    GoogleMap(
+                      initialCameraPosition: CameraPosition(
+                        target: widget.doctorLocation,
+                        zoom: 12,
+                      ),
+                      markers: {
+                        Marker(
+                          markerId: const MarkerId('doctor'),
+                          position: widget.doctorLocation,
+                          infoWindow: const InfoWindow(
+                            title: 'Doctor Location',
+                            snippet: 'Your current location',
+                          ),
+                        ),
+                      },
+                      circles: {},
+                      myLocationEnabled: false,
+                      myLocationButtonEnabled: false,
+                      compassEnabled: false,
+                      mapToolbarEnabled: false,
+                      zoomControlsEnabled: false,
+                      rotateGesturesEnabled: false,
+                      tiltGesturesEnabled: false,
+                      onMapCreated: _onMapCreated,
+                      mapType: MapType.normal,
+                      onCameraMove: null,
+                      onCameraIdle: null,
+                      onTap: null,
+                      onLongPress: null,
                     ),
+                    if (_isMapLoading)
+                      Container(
+                        color: Colors.white.withOpacity(0.9),
+                        child: const Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CircularProgressIndicator(),
+                              SizedBox(height: 16),
+                              Text('Loading Google Maps...'),
+                              SizedBox(height: 8),
+                              Text(
+                                'This may take a moment',
+                                style: TextStyle(fontSize: 12, color: Colors.grey),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                   ],
                 ),
+    );
+  }
+
+  Widget _buildStaticMap() {
+    return Container(
+      color: Colors.grey[200],
+      child: Column(
+        children: [
+          Expanded(
+            child: Container(
+              margin: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.location_on,
+                    size: 64,
+                    color: Colors.blue[600],
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Doctor Location',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue[600],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Latitude: ${widget.doctorLocation.latitude.toStringAsFixed(6)}',
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  Text(
+                    'Longitude: ${widget.doctorLocation.longitude.toStringAsFixed(6)}',
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  if (widget.patientLocation != null) ...[
+                    const SizedBox(height: 24),
+                    Icon(
+                      Icons.person_pin,
+                      size: 48,
+                      color: Colors.red[600],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Patient Location',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red[600],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Latitude: ${widget.patientLocation!.latitude.toStringAsFixed(6)}',
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    Text(
+                      'Longitude: ${widget.patientLocation!.longitude.toStringAsFixed(6)}',
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ],
+                  if (widget.radius != null) ...[
+                    const SizedBox(height: 24),
+                    Icon(
+                      Icons.radio_button_checked,
+                      size: 48,
+                      color: Colors.green[600],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Service Radius',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green[600],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${widget.radius!.toStringAsFixed(0)} meters',
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                    ),
+                  ],
+                ],
               ),
             ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                Text(
+                  'Static Map View',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Google Maps is experiencing buffer issues on this device. This static view shows the location data.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
-      floatingActionButton: widget.patientLocation != null && !_hasMapError
-          ? FloatingActionButton(
-        onPressed: _fitBounds,
-        backgroundColor: Colors.blue,
-        child: const Icon(Icons.center_focus_strong),
-        tooltip: 'Fit both locations',
-      )
-          : null,
     );
   }
 
@@ -277,16 +282,31 @@ class _FullScreenMapState extends State<FullScreenMap> with WidgetsBindingObserv
           const SizedBox(height: 8),
           Text(_errorMessage, textAlign: TextAlign.center),
           const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                _isMapLoading = true;
-                _hasMapError = false;
-                _errorMessage = '';
-              });
-              _initializeMapData();
-            },
-            child: const Text('Retry'),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _isMapLoading = true;
+                    _hasMapError = false;
+                    _errorMessage = '';
+                    _useStaticFallback = false;
+                  });
+                },
+                child: const Text('Retry Google Maps'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _useStaticFallback = true;
+                    _hasMapError = false;
+                    _errorMessage = '';
+                  });
+                },
+                child: const Text('Use Static Map'),
+              ),
+            ],
           ),
         ],
       ),

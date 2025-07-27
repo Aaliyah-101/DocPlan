@@ -36,6 +36,11 @@ android {
         ndk {
             abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64")
         }
+        
+        // Memory optimization for Google Maps
+        manifestPlaceholders["usesCleartextTraffic"] = "true"
+        manifestPlaceholders["hardwareAccelerated"] = "true"
+        manifestPlaceholders["largeHeap"] = "true"
     }
 
     buildTypes {

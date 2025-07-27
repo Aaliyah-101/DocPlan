@@ -29,6 +29,9 @@ class MainActivity : FlutterActivity() {
         // ✅ Optimize for Google Maps rendering
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
+        // ✅ Memory optimization for Google Maps
+        window.addFlags(WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON)
+
         // ✅ Create notification channel for Android 8.0+
         createNotificationChannel()
     }
@@ -52,24 +55,16 @@ class MainActivity : FlutterActivity() {
                     channelName,
                     NotificationManager.IMPORTANCE_HIGH
                 ).apply {
-                    description = "Plays loud emergency alarm for doctor notifications"
+                    description = "Emergency alerts and notifications"
                     setSound(soundUri, audioAttributes)
-                    enableLights(true)
                     enableVibration(true)
-                    // ✅ Additional notification settings
-                    lockscreenVisibility = android.app.Notification.VISIBILITY_PUBLIC
-                    setBypassDnd(true) // Bypass Do Not Disturb
+                    enableLights(true)
                 }
 
-                val manager = getSystemService(NotificationManager::class.java)
-                manager?.createNotificationChannel(channel)
-
-                // ✅ Log success for debugging
-                println("✅ Emergency notification channel created successfully")
-
+                val notificationManager = getSystemService(NotificationManager::class.java)
+                notificationManager.createNotificationChannel(channel)
             } catch (e: Exception) {
-                // ✅ Handle any errors in notification channel creation
-                println("❌ Error creating notification channel: ${e.message}")
+                // Log error but don't crash the app
                 e.printStackTrace()
             }
         }
@@ -84,9 +79,8 @@ class MainActivity : FlutterActivity() {
         )
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        // ✅ Clean up any resources
-        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+    override fun onPause() {
+        super.onPause()
+        // ✅ Clean up resources when app is paused
     }
 }
