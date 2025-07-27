@@ -6,11 +6,7 @@ import '../../services/appointment_service.dart';
 import '../../services/auth_service.dart';
 import '../../models/appointment_model.dart';
 import '../../widgets/gradient_background.dart';
-<<<<<<< HEAD
 import '../../controllers/notification_controller.dart';
-=======
-import '../../screens/patient/view_appointments_screen.dart';
->>>>>>> AaliyahM
 
 class BookAppointmentScreen extends StatefulWidget {
   const BookAppointmentScreen({super.key});
@@ -45,6 +41,17 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     'Neurosurgeon',
     'Cardiothoracic Surgeon',
     'Plastic Surgeon',
+    'Dermatologist',
+    'Oncologist',
+    'Radiologist',
+    'Pathologist',
+    'Rheumatologist',
+    'Ophthalmologist',
+    'Psychiatrist',
+    'Urologist',
+    'Trauma Surgeon',
+    'Allergist',
+    'Toxicologist',
   ];
 
   // Days of the week
@@ -172,8 +179,8 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                           _selectedDate == null
                               ? 'Choose a date'
                               : DateFormat(
-                                  'EEE, MMM d, yyyy',
-                                ).format(_selectedDate!),
+                            'EEE, MMM d, yyyy',
+                          ).format(_selectedDate!),
                         ),
                       ],
                     ),
@@ -207,7 +214,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                       final Set<String> allSlots = {};
                       for (final doc in doctors) {
                         final availability =
-                            doc['availability'] as Map<String, dynamic>?;
+                        doc['availability'] as Map<String, dynamic>?;
                         if (availability != null &&
                             availability[dayName] != null) {
                           for (final slot in (availability[dayName] as List)) {
@@ -278,7 +285,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                   maxLines: 3,
                   decoration: InputDecoration(
                     hintText:
-                        'Please describe your reason for the appointment...',
+                    'Please describe your reason for the appointment...',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -310,8 +317,8 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                     ),
                     child: _isLoading
                         ? const CircularProgressIndicator(
-                            color: AppColors.textWhite,
-                          )
+                      color: AppColors.textWhite,
+                    )
                         : const Text('Book Appointment'),
                   ),
                 ),
@@ -420,10 +427,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       );
 
       if (mounted) {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => ViewAppointmentsScreen(showGoHomeDialog: true)),
-          (route) => false,
-        );
+        Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(

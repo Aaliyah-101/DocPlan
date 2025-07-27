@@ -37,62 +37,62 @@ class DoctorViewAppointmentsScreen extends StatelessWidget {
         child: user == null
             ? const Center(child: Text('Not logged in'))
             : StreamBuilder<List<AppointmentModel>>(
-                stream: AppointmentService().getUserAppointments(
-                  user.uid,
-                  'doctor',
-                ),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text('No appointments found.'));
-                  }
-                  final now = DateTime.now();
-                  final upcoming = snapshot.data!
-                      .where(
-                        (a) => a.dateTime.isAfter(now) && a.status == 'upcoming',
-                      )
-                      .toList();
-                  final past = snapshot.data!
-                      .where(
-                        (a) => a.dateTime.isBefore(now) || a.status != 'upcoming',
-                      )
-                      .toList();
-                  return ListView(
-                    padding: const EdgeInsets.all(16),
-                    children: [
-                      if (upcoming.isNotEmpty) ...[
-                        const Text(
-                          'Upcoming',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        ...upcoming.map(
-                          (a) => _DoctorAppointmentCard(appointment: a),
-                        ),
-                        const SizedBox(height: 24),
-                      ],
-                      if (past.isNotEmpty) ...[
-                        const Text(
-                          'Past',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        ...past.map(
-                          (a) => _DoctorAppointmentCard(appointment: a),
-                        ),
-                      ],
-                    ],
-                  );
-                },
-              ),
+          stream: AppointmentService().getUserAppointments(
+            user.uid,
+            'doctor',
+          ),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(child: Text('No appointments found.'));
+            }
+            final now = DateTime.now();
+            final upcoming = snapshot.data!
+                .where(
+                  (a) => a.dateTime.isAfter(now) && a.status == 'upcoming',
+            )
+                .toList();
+            final past = snapshot.data!
+                .where(
+                  (a) => a.dateTime.isBefore(now) || a.status != 'upcoming',
+            )
+                .toList();
+            return ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                if (upcoming.isNotEmpty) ...[
+                  const Text(
+                    'Upcoming',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  ...upcoming.map(
+                        (a) => _DoctorAppointmentCard(appointment: a),
+                  ),
+                  const SizedBox(height: 24),
+                ],
+                if (past.isNotEmpty) ...[
+                  const Text(
+                    'Past',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  ...past.map(
+                        (a) => _DoctorAppointmentCard(appointment: a),
+                  ),
+                ],
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -237,12 +237,8 @@ class _DoctorAppointmentCardState extends State<_DoctorAppointmentCard> {
                     'Lat: ${a.location!['latitude']?.toStringAsFixed(5) ?? '-'}',
                   ),
                   const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'Lng: ${a.location!['longitude']?.toStringAsFixed(5) ?? '-'}',
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
+                  Text(
+                    'Lng: ${a.location!['longitude']?.toStringAsFixed(5) ?? '-'}',
                   ),
                   const SizedBox(width: 12),
                   ElevatedButton.icon(
@@ -274,10 +270,10 @@ class _DoctorAppointmentCardState extends State<_DoctorAppointmentCard> {
                     onPressed: _checking ? null : _checkRadius,
                     icon: _checking
                         ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
                         : const Icon(Icons.radar),
                     label: const Text('Check Radius'),
                     style: ElevatedButton.styleFrom(
@@ -294,8 +290,8 @@ class _DoctorAppointmentCardState extends State<_DoctorAppointmentCard> {
                           color: _inRadius == true
                               ? AppColors.success
                               : _inRadius == false
-                                  ? AppColors.error
-                                  : AppColors.textSecondary,
+                              ? AppColors.error
+                              : AppColors.textSecondary,
                           fontWeight: FontWeight.w500,
                         ),
                       ),

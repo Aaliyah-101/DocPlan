@@ -18,10 +18,7 @@
         android:theme="@style/LaunchTheme"
         android:allowBackup="true"
         android:usesCleartextTraffic="true">
-<<<<<<< HEAD
-=======
         <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyCZSkEDlKsS5iliFh57tA6DrXNQlytudQU"/>
->>>>>>> AaliyahM
 
         <!-- ✅ Firebase Notification Defaults -->
         <meta-data

@@ -6,13 +6,9 @@ import 'package:flutter/material.dart';
 import '../../constants/app_colors.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/gradient_background.dart';
-<<<<<<< HEAD
 import '../../widgets/notification_bell.dart';
-=======
 import 'package:docplan/screens/settings/settings_screen.dart';
 import 'package:carousel_slider/carousel_slider.dart';
->>>>>>> AaliyahM
-
 class PatientDashboardScreen extends StatefulWidget {
   const PatientDashboardScreen({super.key});
 
@@ -32,7 +28,26 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
     SettingsScreen(),
   ];
 
-  void _onItemTapped(int index) {
+  static const List<String> _menuTitles = [
+    'Home',
+    'Book Appointment',
+    'View Appointments',
+    'Declare Emergency',
+    'Medical Records',
+    'Settings',
+  ];
+
+  static const List<IconData> _menuIcons = [
+    Icons.home,
+    Icons.add_circle_outline,
+    Icons.list_alt,
+    Icons.emergency,
+    Icons.medical_services,
+    Icons.settings,
+  ];
+
+  void _onMenuSelected(int index) {
+    Navigator.pop(context); // Close the drawer
     setState(() {
       _selectedIndex = index;
     });
@@ -42,7 +57,6 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
-<<<<<<< HEAD
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         title: Text(_menuTitles[_selectedIndex]),
@@ -64,50 +78,21 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
                   Text("Menu", style: TextStyle(color: Colors.white, fontSize: 20)),
                 ],
               ),
-=======
-      body: Row(
-        children: [
-          NavigationRail(
-            selectedIndex: _selectedIndex,
-            onDestinationSelected: _onItemTapped,
-            labelType: NavigationRailLabelType.all,
-            selectedIconTheme: const IconThemeData(color: AppColors.primary),
-            unselectedIconTheme: const IconThemeData(
-              color: AppColors.textSecondary,
->>>>>>> AaliyahM
             ),
-            destinations: const [
-              NavigationRailDestination(
-                icon: Icon(Icons.home),
-                label: Text('Home'),
+            ...List.generate(
+              _menuTitles.length,
+                  (index) => ListTile(
+                leading: Icon(_menuIcons[index], color: AppColors.primary),
+                title: Text(_menuTitles[index], style: const TextStyle(fontSize: 16)),
+                selected: _selectedIndex == index,
+                selectedTileColor: AppColors.primary.withOpacity(0.1),
+                onTap: () => _onMenuSelected(index),
               ),
-              NavigationRailDestination(
-                icon: Icon(Icons.add_circle_outline),
-                label: Text('Book'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.list_alt),
-                label: Text('Appointments'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.emergency),
-                label: Text('Emergency'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.medical_services),
-                label: Text('Records'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.settings),
-                label: Text('Settings'),
-              ),
-            ],
-          ),
-          const VerticalDivider(thickness: 1, width: 1),
-          // Expanded page content
-          Expanded(child: _pages[_selectedIndex]),
-        ],
+            ),
+          ],
+        ),
       ),
+      body: _pages[_selectedIndex],
     );
   }
 }

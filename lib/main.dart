@@ -12,7 +12,7 @@ import 'services/firebase_messaging_service.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 final FlutterLocalNotificationsPlugin flnPlugin =
-    FlutterLocalNotificationsPlugin();
+FlutterLocalNotificationsPlugin();
 
 /// 👇 Required for background execution on some Android setups
 @pragma('vm:entry-point')
