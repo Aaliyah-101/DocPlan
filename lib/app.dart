@@ -14,15 +14,11 @@ class MyApp extends StatefulWidget {
   final GlobalKey<NavigatorState> navigatorKey;
   final FlutterLocalNotificationsPlugin flnPlugin;
 
-<<<<<<< HEAD
   const MyApp({
     super.key,
     required this.navigatorKey,
     required this.flnPlugin,
   });
-=======
-  const MyApp({super.key, required this.navigatorKey, required this.flnPlugin});
->>>>>>> AaliyahM
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -53,24 +49,8 @@ class _MyAppState extends State<MyApp> {
               final appointmentId = settings.arguments as String?;
               if (appointmentId != null) {
                 return MaterialPageRoute(
-                  builder: (_) =>
-                      EmergencyResponseScreen(appointmentId: appointmentId),
-                );
-              }
-            }
-
-            // ✅ Route for ChatScreen (notification-based)
-            if (settings.name == '/chat') {
-              final args = settings.arguments as Map<String, dynamic>?;
-              if (args != null &&
-                  args.containsKey('currentUserId') &&
-                  args.containsKey('otherUserId') &&
-                  args.containsKey('otherUserName')) {
-                return MaterialPageRoute(
-                  builder: (_) => ChatScreen(
-                    currentUserId: args['currentUserId'],
-                    otherUserId: args['otherUserId'],
-                    otherUserName: args['otherUserName'],
+                  builder: (_) => EmergencyResponseScreen(
+                    appointmentId: appointmentId,
                   ),
                 );
               }

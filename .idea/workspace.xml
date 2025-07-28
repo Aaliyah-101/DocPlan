@@ -10,28 +10,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="058a975a-a3fc-4aa3-a992-5e5075670016" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/lib/services/Notifications_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.flutter-plugins-dependencies" beforeDir="false" afterPath="$PROJECT_DIR$/.flutter-plugins-dependencies" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/.gradle/8.12/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/android/.gradle/8.12/executionHistory/executionHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/.gradle/8.12/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/android/.gradle/8.12/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/.gradle/8.12/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/android/.gradle/8.12/checksums/checksums.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/.gradle/8.12/checksums/md5-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/android/.gradle/8.12/checksums/md5-checksums.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/.gradle/8.12/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/android/.gradle/8.12/checksums/sha1-checksums.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/android/.gradle/8.12/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/android/.gradle/8.12/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/android/.gradle/8.12/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/android/.gradle/8.12/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/android/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/android/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/local.properties" beforeDir="false" afterPath="$PROJECT_DIR$/android/local.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/app.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/controllers/notification_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/controllers/notification_controller.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/controllers/reminder_worker.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/controllers/reminder_worker.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/screens/chat_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/chat_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/screens/doctor/doctor_dashboard_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/doctor/doctor_dashboard_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/screens/doctor/notification_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/doctor/notification_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/screens/patient/patient_dashboard_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/patient/patient_dashboard_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/services/appointment_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/services/appointment_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/services/firebase_messaging_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/services/firebase_messaging_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/services/notification_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/services/notification_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/services/notifications_service.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,7 +64,7 @@
 }</component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/Aaliyah-101/DocPlan.git&quot;,
+    &quot;url&quot;: &quot;https://github.com/flutter/flutter.git&quot;,
     &quot;accountId&quot;: &quot;a12b5db9-485e-47be-b6b1-c95da8569867&quot;
   }
 }</component>
@@ -106,7 +90,7 @@
     &quot;git-widget-placeholder&quot;: &quot;mathias&quot;,
     &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/user/AndroidStudioProjects/DocPlan/android/settings.gradle.kts&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/user/AndroidStudioProjects/DocPlan/android/app/src/main/res/raw&quot;,
     &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
@@ -116,11 +100,11 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\user\AndroidStudioProjects\DocPlan\android\app\src\main\res\raw" />
       <recent name="C:\Users\user\AndroidStudioProjects\DocPlan\lib" />
       <recent name="C:\Users\user\AndroidStudioProjects\DocPlan\lib\services" />
       <recent name="C:\Users\user\AndroidStudioProjects\DocPlan\lib\screens\doctor" />
       <recent name="C:\Users\user\AndroidStudioProjects\DocPlan\lib\widgets" />
-      <recent name="C:\Users\user\AndroidStudioProjects\DocPlan\lib\models" />
     </key>
   </component>
   <component name="RunManager" selected="Flutter.main.dart">
@@ -291,12 +275,24 @@
           <url>file://$PROJECT_DIR$/lib/constants/theme_notifier.dart</url>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/screens/doctor/view_appointments_screen.dart</url>
-          <line>38</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+  </component>
+  <component name="play_dynamic_filters_status">
+    <option name="appIdToCheckInfo">
+      <map>
+        <entry key="com.example.docplan.test">
+          <value>
+            <CheckInfo lastCheckTimestamp="1753460862572" />
+          </value>
+        </entry>
+        <entry />
+        <entry key="com.example.docplan">
+          <value>
+            <CheckInfo lastCheckTimestamp="1753464828397" />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>
