@@ -12,3 +12,21 @@ GeneratedPluginRegistrant.java
 key.properties
 **/*.keystore
 **/*.jks
+
+
+
+# Ignore Gradle build folders
+.gradle/
+android/.gradle/
+
+# Ignore IDE settings
+.idea/
+*.iml
+
+# Ignore build output
+build/
+android/app/build/
+
+# Misc
+.DS_Store
+*.log
