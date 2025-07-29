@@ -45,10 +45,14 @@ class _PatientRecordsScreenState extends State<PatientRecordsScreen> {
 
     setState(() => _isSearching = true);
 
+    print('DEBUG: Starting patient search for: "${_searchController.text.trim()}"');
+
     try {
       final results = await _medicalRecordService.searchMedicalRecords(
         _searchController.text.trim(),
       );
+
+      print('DEBUG: Search completed, found ${results.length} results');
 
       setState(() {
         _searchResults = results;
@@ -65,6 +69,7 @@ class _PatientRecordsScreenState extends State<PatientRecordsScreen> {
         );
       }
     } catch (e) {
+      print('DEBUG: Search error: $e');
       setState(() => _isSearching = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -109,6 +114,29 @@ class _PatientRecordsScreenState extends State<PatientRecordsScreen> {
         ),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.textWhite,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.bug_report),
+            onPressed: () async {
+              await _medicalRecordService.debugAllMedicalRecords();
+            },
+            tooltip: 'Debug Medical Records',
+          ),
+          IconButton(
+            icon: const Icon(Icons.collections),
+            onPressed: () async {
+              await _medicalRecordService.debugMedicalRecordsCollection();
+            },
+            tooltip: 'Debug Collection',
+          ),
+          IconButton(
+            icon: const Icon(Icons.science),
+            onPressed: () async {
+              await _medicalRecordService.createTestMedicalRecord('test_patient_id', 'Test Patient');
+            },
+            tooltip: 'Create Test Record',
+          ),
+        ],
       ),
       backgroundColor: AppColors.backgroundLight,
       body: GradientBackground(

@@ -13,12 +13,29 @@ import '../../services/chat_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'patient_location_map_screen.dart';
 
-class DoctorViewAppointmentsScreen extends StatelessWidget {
+class DoctorViewAppointmentsScreen extends StatefulWidget {
   const DoctorViewAppointmentsScreen({super.key});
+
+  @override
+  State<DoctorViewAppointmentsScreen> createState() => _DoctorViewAppointmentsScreenState();
+}
+
+class _DoctorViewAppointmentsScreenState extends State<DoctorViewAppointmentsScreen> {
+  bool _useFallback = true; // Start with fallback method
 
   @override
   Widget build(BuildContext context) {
     final user = AuthService().currentUser;
+    print('DEBUG: Doctor view appointments - Current user: ${user?.uid}');
+    print('DEBUG: Using fallback method: $_useFallback');
+    
+    // Debug doctor data
+    if (user != null) {
+      AppointmentService().debugDoctorData(user.uid);
+      AppointmentService().debugAppointmentsCollection();
+      AppointmentService().debugDoctorIdMismatch(user.uid);
+    }
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -31,22 +48,86 @@ class DoctorViewAppointmentsScreen extends StatelessWidget {
         ),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.textWhite,
+        actions: [
+          IconButton(
+            icon: Icon(_useFallback ? Icons.swap_horiz : Icons.swap_vert),
+            onPressed: () {
+              setState(() {
+                _useFallback = !_useFallback;
+              });
+            },
+            tooltip: 'Toggle Query Method',
+          ),
+          IconButton(
+            icon: const Icon(Icons.bug_report),
+            onPressed: () async {
+              await AppointmentService().debugAllAppointments();
+            },
+            tooltip: 'Debug Appointments',
+          ),
+          IconButton(
+            icon: const Icon(Icons.science),
+            onPressed: () async {
+              if (user != null) {
+                await AppointmentService().testAppointmentCreation(user.uid, 'test_patient_id');
+              }
+            },
+            tooltip: 'Test Appointment',
+          ),
+          IconButton(
+            icon: const Icon(Icons.collections),
+            onPressed: () async {
+              await AppointmentService().debugAppointmentsCollection();
+            },
+            tooltip: 'Debug Collection',
+          ),
+          IconButton(
+            icon: const Icon(Icons.person_search),
+            onPressed: () async {
+              if (user != null) {
+                await AppointmentService().debugDoctorIdMismatch(user.uid);
+              }
+            },
+            tooltip: 'Debug Doctor ID',
+          ),
+        ],
       ),
       backgroundColor: AppColors.backgroundLight,
       body: GradientBackground(
         child: user == null
             ? const Center(child: Text('Not logged in'))
             : StreamBuilder<List<AppointmentModel>>(
-          stream: AppointmentService().getUserAppointments(
-            user.uid,
-            'doctor',
-          ),
+          stream: _useFallback 
+              ? AppointmentService().getUserAppointmentsFallback(user.uid, 'doctor')
+              : AppointmentService().getUserAppointments(user.uid, 'doctor'),
           builder: (context, snapshot) {
+            print('DEBUG: StreamBuilder state: ${snapshot.connectionState}');
+            print('DEBUG: StreamBuilder has data: ${snapshot.hasData}');
+            print('DEBUG: StreamBuilder data length: ${snapshot.data?.length ?? 0}');
+            
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
             if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(child: Text('No appointments found.'));
+              return Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    margin: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: _useFallback ? Colors.orange : Colors.blue,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      'Using ${_useFallback ? 'Fallback' : 'Original'} Query Method',
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  const Expanded(
+                    child: Center(child: Text('No appointments found.')),
+                  ),
+                ],
+              );
             }
             final now = DateTime.now();
             final upcoming = snapshot.data!
@@ -62,6 +143,18 @@ class DoctorViewAppointmentsScreen extends StatelessWidget {
             return ListView(
               padding: const EdgeInsets.all(16),
               children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: _useFallback ? Colors.orange : Colors.blue,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    'Using ${_useFallback ? 'Fallback' : 'Original'} Query Method - Found ${snapshot.data!.length} appointments',
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                ),
                 if (upcoming.isNotEmpty) ...[
                   const Text(
                     'Upcoming',
