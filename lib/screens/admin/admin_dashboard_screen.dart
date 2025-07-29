@@ -6,6 +6,7 @@ import '../../models/emergency_model.dart';
 import 'package:logger/logger.dart';
 // ignore: unused_import
 import '../../widgets/gradient_background.dart';
+import 'test_reminders_screen.dart';
 
 class AdminDashboardScreen extends StatelessWidget {
   const AdminDashboardScreen({super.key});
@@ -216,6 +217,31 @@ class AdminDashboardScreen extends StatelessWidget {
                           MaterialPageRoute(
                             builder: (context) =>
                                 const AdminEmergenciesScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      icon: const Icon(Icons.notifications),
+                      label: const Text('Test Reminders'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.docplanBlue,
+                        foregroundColor: AppColors.textWhite,
+                        minimumSize: const Size.fromHeight(50),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const TestRemindersScreen(),
                           ),
                         );
                       },

@@ -44,28 +44,62 @@ class MedicalRecordService {
   Future<List<MedicalRecordModel>> searchMedicalRecords(
     String searchTerm,
   ) async {
-    // First, find patients matching the search term
-    final userQuery = await _firestore
-        .collection('users')
-        .where('role', isEqualTo: 'patient')
-        .where('name', isGreaterThanOrEqualTo: searchTerm)
-        .where('name', isLessThan: '$searchTerm\uf8ff')
-        .get();
+    if (searchTerm.trim().isEmpty) return [];
 
-    final patientIds = userQuery.docs.map((doc) => doc.id).toList();
+    try {
+      // First, find patients matching the search term
+      final userQuery = await _firestore
+          .collection('users')
+          .where('role', isEqualTo: 'patient')
+          .where('name', isGreaterThanOrEqualTo: searchTerm.trim())
+          .where('name', isLessThan: '${searchTerm.trim()}\uf8ff')
+          .get();
 
-    if (patientIds.isEmpty) return [];
+      final patientIds = userQuery.docs.map((doc) => doc.id).toList();
 
-    // Then get medical records for those patients
-    final recordsQuery = await _firestore
-        .collection('medical_records')
-        .where('patientId', whereIn: patientIds)
-        .orderBy('date', descending: true)
-        .get();
+      if (patientIds.isEmpty) return [];
 
-    return recordsQuery.docs
-        .map((doc) => MedicalRecordModel.fromMap(doc.data()))
-        .toList();
+      // Then get medical records for those patients
+      final recordsQuery = await _firestore
+          .collection('medical_records')
+          .where('patientId', whereIn: patientIds)
+          .orderBy('date', descending: true)
+          .get();
+
+      return recordsQuery.docs
+          .map((doc) => MedicalRecordModel.fromMap(doc.data()))
+          .toList();
+    } catch (e) {
+      // If the query fails due to missing indexes, try a simpler approach
+      print('Search failed with complex query: $e');
+      
+      // Fallback: Get all patients and filter locally
+      final allPatientsQuery = await _firestore
+          .collection('users')
+          .where('role', isEqualTo: 'patient')
+          .get();
+
+      final matchingPatientIds = allPatientsQuery.docs
+          .where((doc) {
+            final data = doc.data();
+            final name = (data['name'] ?? '').toString().toLowerCase();
+            return name.contains(searchTerm.trim().toLowerCase());
+          })
+          .map((doc) => doc.id)
+          .toList();
+
+      if (matchingPatientIds.isEmpty) return [];
+
+      final recordsQuery = await _firestore
+          .collection('medical_records')
+          .where('patientId', whereIn: matchingPatientIds)
+          .orderBy('date', descending: true)
+          .get();
+
+      return recordsQuery.docs
+          .map((doc) => MedicalRecordModel.fromMap(doc.data()))
+          .toList();
+    }
   }
 
   // Update a medical record

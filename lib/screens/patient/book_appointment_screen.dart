@@ -427,7 +427,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       );
 
       if (mounted) {
-        Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -436,6 +435,14 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
             backgroundColor: AppColors.success,
           ),
         );
+        
+        // Reset form after successful booking
+        setState(() {
+          _selectedSpecialty = null;
+          _selectedDate = null;
+          _selectedTimeSlot = null;
+          _reason = null;
+        });
       }
     } catch (e) {
       setState(() {

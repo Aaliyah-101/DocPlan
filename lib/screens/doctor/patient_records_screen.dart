@@ -54,12 +54,22 @@ class _PatientRecordsScreenState extends State<PatientRecordsScreen> {
         _searchResults = results;
         _isSearching = false;
       });
+
+      // Show feedback if no results found
+      if (results.isEmpty && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('No medical records found for "${_searchController.text.trim()}"'),
+            backgroundColor: AppColors.textSecondary,
+          ),
+        );
+      }
     } catch (e) {
       setState(() => _isSearching = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: ${e.toString()}'),
+            content: Text('Search error: ${e.toString()}'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -69,11 +79,19 @@ class _PatientRecordsScreenState extends State<PatientRecordsScreen> {
 
   List<MedicalRecordModel> get _filteredResults {
     if (_selectedFilter == 'All') return _searchResults;
+    
+    // Map filter options to actual database types
+    final Map<String, String> filterToType = {
+      'Diagnosis': 'diagnosis',
+      'Prescription': 'prescription',
+      'Test Result': 'test_result',
+    };
+    
+    final targetType = filterToType[_selectedFilter];
+    if (targetType == null) return _searchResults;
+    
     return _searchResults
-        .where(
-          (record) =>
-              record.type.toLowerCase() == _selectedFilter.toLowerCase(),
-        )
+        .where((record) => record.type.toLowerCase() == targetType.toLowerCase())
         .toList();
   }
 
@@ -122,6 +140,14 @@ class _PatientRecordsScreenState extends State<PatientRecordsScreen> {
                       filled: true,
                       fillColor: AppColors.cardBackground,
                     ),
+                    onChanged: (value) {
+                      // Debounce search to avoid too many requests
+                      Future.delayed(const Duration(milliseconds: 500), () {
+                        if (value == _searchController.text) {
+                          _searchPatients();
+                        }
+                      });
+                    },
                     onSubmitted: (_) => _searchPatients(),
                   ),
                   const SizedBox(height: 12),

@@ -152,9 +152,19 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
                             ? records
                             : records
                                   .where(
-                                    (record) =>
-                                        record.type.toLowerCase() ==
-                                        _selectedFilter.toLowerCase(),
+                                    (record) {
+                                      // Map filter options to actual database types
+                                      final Map<String, String> filterToType = {
+                                        'Diagnosis': 'diagnosis',
+                                        'Prescription': 'prescription',
+                                        'Test Result': 'test_result',
+                                      };
+                                      
+                                      final targetType = filterToType[_selectedFilter];
+                                      if (targetType == null) return false;
+                                      
+                                      return record.type.toLowerCase() == targetType.toLowerCase();
+                                    },
                                   )
                                   .toList();
 
