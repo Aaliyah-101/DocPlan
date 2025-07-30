@@ -168,4 +168,3 @@ tasks.register<Delete>("cleanBeforeBuild") {
 tasks.named("preBuild") {
     dependsOn("cleanBeforeBuild")
 }
-// Custom task to clean after build
