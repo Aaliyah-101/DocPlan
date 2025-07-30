@@ -7,7 +7,7 @@ import '../../services/appointment_service.dart';
 import 'view_appointments_screen.dart';
 import 'radius_settings_screen.dart';
 import 'patient_records_screen.dart';
-import '../../widgets/gradient_background.dart';
+import '../../widgets/background.dart';
 import '../../models/emergency_model.dart';
 import '../settings/settings_screen.dart';
 import '../../widgets/notification_bell.dart';
