@@ -21,11 +21,8 @@ class AppointmentService {
       ...appointment.toMap(),
       'dateTime': Timestamp.fromDate(appointment.dateTime), // ✅ FIXED
     });
-<<<<<<< HEAD
-=======
     
     print('DEBUG: Appointment created successfully');
->>>>>>> fik
   }
 
   // Get appointments for a user (patient or doctor)
@@ -84,12 +81,6 @@ class AppointmentService {
         .collection('appointments')
         .snapshots()
         .map((snapshot) {
-<<<<<<< HEAD
-      return snapshot.docs
-          .map((doc) => AppointmentModel.fromMap(doc.data()))
-          .toList();
-    });
-=======
       print('DEBUG: Total appointments in collection: ${snapshot.docs.length}');
       
       // Filter appointments manually
@@ -236,7 +227,6 @@ class AppointmentService {
     } catch (e) {
       print('DEBUG: Error in test appointment creation: $e');
     }
->>>>>>> fik
   }
 
   // Get available doctors

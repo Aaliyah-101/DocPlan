@@ -3,10 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/chat_service.dart';
 import '../services/auth_service.dart';
 import '../models/user_model.dart';
-<<<<<<< HEAD
-=======
 import 'package:intl/intl.dart';
->>>>>>> fik
 
 class ChatScreen extends StatefulWidget {
   final String currentUserId;
@@ -27,11 +24,6 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _controller = TextEditingController();
   final ChatService _chatService = ChatService();
-<<<<<<< HEAD
-  UserModel? _otherUser;
-  UserModel? _currentUser;
-  bool _loadingUser = true;
-=======
   final ScrollController _scrollController = ScrollController();
   final FocusNode _focusNode = FocusNode();
 
@@ -55,15 +47,12 @@ class _ChatScreenState extends State<ChatScreen> {
   static const Color messageBubbleMeGradient = Color(0xFF764BA2);
   static const Color messageBubbleOther = Color(0xFFEDF2F7);
   static const Color messageBubbleOtherBorder = Color(0xFFE2E8F0);
->>>>>>> fik
 
   @override
   void initState() {
     super.initState();
     _fetchUsers();
     _markAsRead();
-<<<<<<< HEAD
-=======
 
     // Listen to focus changes to handle keyboard
     _focusNode.addListener(() {
@@ -79,7 +68,6 @@ class _ChatScreenState extends State<ChatScreen> {
     _scrollController.dispose();
     _focusNode.dispose();
     super.dispose();
->>>>>>> fik
   }
 
   Future<void> _fetchUsers() async {
@@ -96,20 +84,14 @@ class _ChatScreenState extends State<ChatScreen> {
   void _sendMessage() async {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
-<<<<<<< HEAD
-=======
 
     setState(() => _isTyping = true);
 
->>>>>>> fik
     await _chatService.sendMessage(
       senderId: widget.currentUserId,
       receiverId: widget.otherUserId,
       message: text,
     );
-<<<<<<< HEAD
-    _controller.clear();
-=======
 
     _controller.clear();
     setState(() => _isTyping = false);
@@ -126,7 +108,6 @@ class _ChatScreenState extends State<ChatScreen> {
         );
       }
     });
->>>>>>> fik
   }
 
   void _markAsRead() {
@@ -137,38 +118,6 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-<<<<<<< HEAD
-  Widget _buildAvatar(UserModel? user, {double radius = 18}) {
-    if (user?.profilePictureUrl != null && user!.profilePictureUrl!.isNotEmpty) {
-      return CircleAvatar(
-        radius: radius,
-        backgroundImage: NetworkImage(user.profilePictureUrl!),
-      );
-    } else if (user != null && user.name.isNotEmpty) {
-      final initials = user.name.trim().split(' ').map((e) => e[0]).take(2).join();
-      return CircleAvatar(
-        radius: radius,
-        child: Text(initials, style: const TextStyle(fontWeight: FontWeight.bold)),
-      );
-    } else {
-      return CircleAvatar(radius: radius, child: const Icon(Icons.person));
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            _buildAvatar(_otherUser),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                widget.otherUserName,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 18),
-=======
   String _formatMessageTime(Timestamp timestamp) {
     final dateTime = timestamp.toDate();
     final now = DateTime.now();
@@ -184,7 +133,8 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildAvatar(UserModel? user, {double radius = 20}) {
-    if (user?.profilePictureUrl != null && user!.profilePictureUrl!.isNotEmpty) {
+    if (user?.profilePictureUrl != null &&
+        user!.profilePictureUrl!.isNotEmpty) {
       return Container(
         decoration: BoxDecoration(
           shape: BoxShape.circle,
@@ -208,7 +158,12 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       );
     } else if (user != null && user.name.isNotEmpty) {
-      final initials = user.name.trim().split(' ').map((e) => e[0]).take(2).join();
+      final initials = user.name
+          .trim()
+          .split(' ')
+          .map((e) => e[0])
+          .take(2)
+          .join();
       return Container(
         decoration: BoxDecoration(
           shape: BoxShape.circle,
@@ -263,13 +218,20 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  Widget _buildMessageBubble(QueryDocumentSnapshot msg, bool isMe, UserModel? user) {
-    final hasTimestamp = msg.data() is Map && (msg.data() as Map).containsKey('timestamp');
+  Widget _buildMessageBubble(
+    QueryDocumentSnapshot msg,
+    bool isMe,
+    UserModel? user,
+  ) {
+    final hasTimestamp =
+        msg.data() is Map && (msg.data() as Map).containsKey('timestamp');
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
       child: Row(
-        mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isMe
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!isMe) ...[
@@ -278,26 +240,30 @@ class _ChatScreenState extends State<ChatScreen> {
           ],
           Flexible(
             child: Column(
-              crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              crossAxisAlignment: isMe
+                  ? CrossAxisAlignment.end
+                  : CrossAxisAlignment.start,
               children: [
                 Container(
                   constraints: BoxConstraints(
                     maxWidth: MediaQuery.of(context).size.width * 0.75,
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 16,
+                  ),
                   decoration: BoxDecoration(
                     gradient: isMe
                         ? LinearGradient(
-                      colors: [messageBubbleMe, messageBubbleMeGradient],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    )
+                            colors: [messageBubbleMe, messageBubbleMeGradient],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          )
                         : null,
                     color: isMe ? null : messageBubbleOther,
-                    border: isMe ? null : Border.all(
-                      color: messageBubbleOtherBorder,
-                      width: 1,
-                    ),
+                    border: isMe
+                        ? null
+                        : Border.all(color: messageBubbleOtherBorder, width: 1),
                     borderRadius: BorderRadius.only(
                       topLeft: const Radius.circular(20),
                       topRight: const Radius.circular(20),
@@ -329,10 +295,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     padding: const EdgeInsets.only(top: 4, left: 4, right: 4),
                     child: Text(
                       _formatMessageTime(msg['timestamp']),
-                      style: TextStyle(
-                        color: textSecondary,
-                        fontSize: 12,
-                      ),
+                      style: TextStyle(color: textSecondary, fontSize: 12),
                     ),
                   ),
               ],
@@ -378,7 +341,10 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               child: SafeArea(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   child: Row(
                     children: [
                       IconButton(
@@ -453,59 +419,8 @@ class _ChatScreenState extends State<ChatScreen> {
             Expanded(
               child: _loadingUser
                   ? Center(
-                child: Container(
-                  padding: const EdgeInsets.all(32),
-                  decoration: BoxDecoration(
-                    color: cardBackground,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
-                        blurRadius: 20,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CircularProgressIndicator(
-                        color: primaryBlue,
-                        strokeWidth: 3,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        "Loading conversation...",
-                        style: TextStyle(
-                          color: textSecondary,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-                  : StreamBuilder<QuerySnapshot>(
-                stream: _chatService.streamMessages(
-                  widget.currentUserId,
-                  widget.otherUserId,
-                ),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return Center(
-                      child: CircularProgressIndicator(color: primaryBlue),
-                    );
-                  }
-
-                  final messages = snapshot.data!.docs;
-                  if (messages.isNotEmpty) _markAsRead();
-
-                  if (messages.isEmpty) {
-                    return Center(
                       child: Container(
                         padding: const EdgeInsets.all(32),
-                        margin: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
                           color: cardBackground,
                           borderRadius: BorderRadius.circular(20),
@@ -520,63 +435,120 @@ class _ChatScreenState extends State<ChatScreen> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [primaryBlue.withOpacity(0.1), accentTeal.withOpacity(0.1)],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Icon(
-                                Icons.chat_bubble_outline,
-                                size: 48,
-                                color: primaryBlue,
-                              ),
+                            CircularProgressIndicator(
+                              color: primaryBlue,
+                              strokeWidth: 3,
                             ),
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 16),
                             Text(
-                              "No messages yet",
+                              "Loading conversation...",
                               style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600,
-                                color: textPrimary,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              "Start the conversation!",
-                              style: TextStyle(
-                                fontSize: 16,
                                 color: textSecondary,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ],
                         ),
                       ),
-                    );
-                  }
+                    )
+                  : StreamBuilder<QuerySnapshot>(
+                      stream: _chatService.streamMessages(
+                        widget.currentUserId,
+                        widget.otherUserId,
+                      ),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return Center(
+                            child: CircularProgressIndicator(
+                              color: primaryBlue,
+                            ),
+                          );
+                        }
 
-                  // Auto-scroll to bottom when new messages arrive
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    _scrollToBottom();
-                  });
+                        final messages = snapshot.data!.docs;
+                        if (messages.isNotEmpty) _markAsRead();
 
-                  return ListView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    itemCount: messages.length,
-                    itemBuilder: (context, index) {
-                      final msg = messages[index];
-                      final isMe = msg['senderId'] == widget.currentUserId;
-                      final user = isMe ? _currentUser : _otherUser;
-                      return _buildMessageBubble(msg, isMe, user);
-                    },
-                  );
-                },
-              ),
+                        if (messages.isEmpty) {
+                          return Center(
+                            child: Container(
+                              padding: const EdgeInsets.all(32),
+                              margin: const EdgeInsets.all(24),
+                              decoration: BoxDecoration(
+                                color: cardBackground,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.08),
+                                    blurRadius: 20,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          primaryBlue.withOpacity(0.1),
+                                          accentTeal.withOpacity(0.1),
+                                        ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      ),
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    child: Icon(
+                                      Icons.chat_bubble_outline,
+                                      size: 48,
+                                      color: primaryBlue,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  Text(
+                                    "No messages yet",
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600,
+                                      color: textPrimary,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    "Start the conversation!",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: textSecondary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
+
+                        // Auto-scroll to bottom when new messages arrive
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          _scrollToBottom();
+                        });
+
+                        return ListView.builder(
+                          controller: _scrollController,
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          itemCount: messages.length,
+                          itemBuilder: (context, index) {
+                            final msg = messages[index];
+                            final isMe =
+                                msg['senderId'] == widget.currentUserId;
+                            final user = isMe ? _currentUser : _otherUser;
+                            return _buildMessageBubble(msg, isMe, user);
+                          },
+                        );
+                      },
+                    ),
             ),
 
             // Input Area with modern design
@@ -622,10 +594,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             focusNode: _focusNode,
                             maxLines: null,
                             textCapitalization: TextCapitalization.sentences,
-                            style: TextStyle(
-                              color: textPrimary,
-                              fontSize: 16,
-                            ),
+                            style: TextStyle(color: textPrimary, fontSize: 16),
                             decoration: InputDecoration(
                               hintText: 'Type a message...',
                               hintStyle: TextStyle(
@@ -665,118 +634,29 @@ class _ChatScreenState extends State<ChatScreen> {
                         child: IconButton(
                           icon: _isTyping
                               ? SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
-                          )
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
                               : const Icon(
-                            Icons.send_rounded,
-                            color: Colors.white,
-                            size: 22,
-                          ),
+                                  Icons.send_rounded,
+                                  color: Colors.white,
+                                  size: 22,
+                                ),
                           onPressed: _isTyping ? null : _sendMessage,
                         ),
                       ),
                     ],
                   ),
                 ),
->>>>>>> fik
               ),
             ),
           ],
         ),
       ),
-<<<<<<< HEAD
-      body: _loadingUser
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-        children: [
-          Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: _chatService.streamMessages(
-                widget.currentUserId,
-                widget.otherUserId,
-              ),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                final messages = snapshot.data!.docs;
-                if (messages.isNotEmpty) _markAsRead();
-                return ListView.builder(
-                  padding: const EdgeInsets.all(8),
-                  itemCount: messages.length,
-                  itemBuilder: (context, index) {
-                    final msg = messages[index];
-                    final isMe = msg['senderId'] == widget.currentUserId;
-                    final user = isMe ? _currentUser : _otherUser;
-                    return Row(
-                      mainAxisAlignment: isMe
-                          ? MainAxisAlignment.end
-                          : MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        if (!isMe) ...[
-                          _buildAvatar(user),
-                          const SizedBox(width: 6),
-                        ],
-                        Flexible(
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(vertical: 4),
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 12),
-                            decoration: BoxDecoration(
-                              color: isMe
-                                  ? Colors.blueAccent.withOpacity(0.8)
-                                  : Colors.grey[300],
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              msg['message'],
-                              style: TextStyle(
-                                color: isMe ? Colors.white : Colors.black,
-                              ),
-                            ),
-                          ),
-                        ),
-                        if (isMe) ...[
-                          const SizedBox(width: 6),
-                          _buildAvatar(user),
-                        ],
-                      ],
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    decoration: const InputDecoration(
-                      hintText: 'Type a message...',
-                    ),
-                    onSubmitted: (_) => _sendMessage(),
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.send),
-                  onPressed: _sendMessage,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-=======
->>>>>>> fik
     );
   }
 }

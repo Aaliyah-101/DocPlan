@@ -5,10 +5,6 @@ import 'package:intl/intl.dart';
 
 class EmergencyResponseScreen extends StatefulWidget {
   final String appointmentId;
-<<<<<<< HEAD
-
-=======
->>>>>>> fik
   const EmergencyResponseScreen({super.key, required this.appointmentId});
 
   @override
@@ -24,8 +20,6 @@ class _EmergencyResponseScreenState extends State<EmergencyResponseScreen> {
   Map<String, dynamic>? emergencyData;
   String? error;
 
-<<<<<<< HEAD
-=======
   // Modern gradient color scheme
   static const Color primaryBlue = Color(0xFF1565C0);
   static const Color deepBlue = Color(0xFF0D47A1);
@@ -46,7 +40,6 @@ class _EmergencyResponseScreenState extends State<EmergencyResponseScreen> {
   static const Color textSecondary = Color(0xFF718096);
   static const Color accentTeal = Color(0xFF00ACC1);
 
->>>>>>> fik
   @override
   void initState() {
     super.initState();
@@ -58,18 +51,10 @@ class _EmergencyResponseScreenState extends State<EmergencyResponseScreen> {
       isLoading = true;
       error = null;
     });
-<<<<<<< HEAD
-
-=======
->>>>>>> fik
     try {
       final res = await http.get(
         Uri.parse('https://docplan-backend.onrender.com/api/emergencies/${widget.appointmentId}'),
       );
-<<<<<<< HEAD
-
-=======
->>>>>>> fik
       if (res.statusCode == 200) {
         final data = json.decode(res.body);
         setState(() {
@@ -80,21 +65,13 @@ class _EmergencyResponseScreenState extends State<EmergencyResponseScreen> {
         });
       } else {
         setState(() {
-<<<<<<< HEAD
-          error = '❌ Failed to load emergency.';
-=======
           error = 'Failed to load emergency details';
->>>>>>> fik
           isLoading = false;
         });
       }
     } catch (e) {
       setState(() {
-<<<<<<< HEAD
-        error = '❌ Error: $e';
-=======
         error = 'Network error occurred';
->>>>>>> fik
         isLoading = false;
       });
     }
@@ -105,91 +82,40 @@ class _EmergencyResponseScreenState extends State<EmergencyResponseScreen> {
     final res = await http.post(
       Uri.parse('https://docplan-backend.onrender.com/api/emergencies/${widget.appointmentId}/acknowledge'),
     );
-<<<<<<< HEAD
-
-=======
->>>>>>> fik
     if (res.statusCode == 200) {
       setState(() {
         isAcknowledged = true;
         isAckLoading = false;
       });
-<<<<<<< HEAD
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("✅ Emergency acknowledged")),
-      );
-    } else {
-      setState(() => isAckLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("❌ Failed to acknowledge")),
-      );
-=======
       _showSuccessSnackBar("Emergency acknowledged successfully");
     } else {
       setState(() => isAckLoading = false);
       _showErrorSnackBar("Failed to acknowledge emergency");
->>>>>>> fik
     }
   }
 
   Future<void> handleResolve() async {
-<<<<<<< HEAD
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text("Confirm"),
-        content: const Text("Are you sure you want to resolve this emergency?"),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Cancel")),
-          ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text("Confirm")),
-        ],
-      ),
-    );
-
-=======
     final confirmed = await _showConfirmationDialog();
->>>>>>> fik
     if (confirmed == true) {
       setState(() => isResolveLoading = true);
       final res = await http.post(
         Uri.parse('https://docplan-backend.onrender.com/api/emergencies/${widget.appointmentId}/resolve'),
       );
-<<<<<<< HEAD
-
-=======
->>>>>>> fik
       if (res.statusCode == 200) {
         setState(() {
           isResolved = true;
           isResolveLoading = false;
         });
-<<<<<<< HEAD
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("✅ Emergency resolved")),
-        );
-
-        await Future.delayed(const Duration(seconds: 3));
-        if (mounted) Navigator.pop(context);
-      } else {
-        setState(() => isResolveLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("❌ Failed to resolve")),
-        );
-=======
         _showSuccessSnackBar("Emergency resolved successfully");
         await Future.delayed(const Duration(seconds: 2));
         if (mounted) Navigator.pop(context);
       } else {
         setState(() => isResolveLoading = false);
         _showErrorSnackBar("Failed to resolve emergency");
->>>>>>> fik
       }
     }
   }
 
-<<<<<<< HEAD
-=======
   Future<bool?> _showConfirmationDialog() {
     return showDialog<bool>(
       context: context,
@@ -353,112 +279,16 @@ class _EmergencyResponseScreenState extends State<EmergencyResponseScreen> {
     );
   }
 
->>>>>>> fik
   String formatTimestamp(Map<String, dynamic> timestamp) {
     try {
       final seconds = timestamp['_seconds'];
       final date = DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
-<<<<<<< HEAD
-      return DateFormat('MMMM d, yyyy – h:mm a').format(date.toLocal());
-=======
       return DateFormat('MMMM d, yyyy • h:mm a').format(date.toLocal());
->>>>>>> fik
     } catch (e) {
       return "Invalid date";
     }
   }
 
-<<<<<<< HEAD
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey.shade100,
-      appBar: AppBar(
-        title: const Text("🚨 Emergency Response"),
-        backgroundColor: Colors.red.shade700,
-        actions: [
-          IconButton(
-            onPressed: loadEmergencyDetails,
-            icon: const Icon(Icons.refresh),
-            tooltip: "Refresh",
-          ),
-        ],
-      ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : error != null
-          ? Center(child: Text(error!, style: const TextStyle(color: Colors.red)))
-          : emergencyData == null
-          ? const Center(child: Text("No emergency data found."))
-          : Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              "🚑 Emergency Assigned",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.red),
-            ),
-            const SizedBox(height: 20),
-
-            infoRow(Icons.person, "Patient: ${emergencyData!['patientName'] ?? 'Unknown'}"),
-            infoRow(Icons.info_outline, "Reason: ${emergencyData!['reason']}"),
-            infoRow(Icons.note_alt_outlined, "Notes: ${emergencyData!['notes'] ?? 'None'}"),
-            infoRow(Icons.access_time_filled, "Started: ${formatTimestamp(emergencyData!['dateTime'])}"),
-
-            const SizedBox(height: 30),
-
-            if (!isAcknowledged)
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  icon: isAckLoading
-                      ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                  )
-                      : const Icon(Icons.verified),
-                  label: const Text("Acknowledge Emergency"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
-                  onPressed: isAckLoading ? null : handleAcknowledge,
-                ),
-              ),
-
-            const SizedBox(height: 12),
-
-            if (!isResolved)
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  icon: isResolveLoading
-                      ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                  )
-                      : const Icon(Icons.check_circle),
-                  label: const Text("Resolve Emergency"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
-                  onPressed: isResolveLoading ? null : handleResolve,
-                ),
-              ),
-
-            if (isResolved)
-              const Padding(
-                padding: EdgeInsets.only(top: 20.0),
-                child: Text(
-                  "✅ Emergency has been resolved.",
-                  style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-                ),
-              ),
-=======
   Widget _buildStatusChip() {
     String status = emergencyData!['status'] ?? 'pending';
     List<Color> gradientColors;
@@ -1050,29 +880,12 @@ class _EmergencyResponseScreenState extends State<EmergencyResponseScreen> {
                 ),
               ),
             ),
->>>>>>> fik
           ],
         ),
       ),
     );
   }
 
-<<<<<<< HEAD
-  Widget infoRow(IconData icon, String text) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        children: [
-          Icon(icon, color: Colors.black54),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.black87,
-              ),
-=======
   Widget _buildDetailRow(IconData icon, String label, String value) {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
@@ -1129,7 +942,6 @@ class _EmergencyResponseScreenState extends State<EmergencyResponseScreen> {
                   ),
                 ),
               ],
->>>>>>> fik
             ),
           ),
         ],

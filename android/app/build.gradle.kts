@@ -13,15 +13,8 @@ android {
     compileSdk = 35
     ndkVersion = "27.0.12077973"
 
-<<<<<<< HEAD
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-        isCoreLibraryDesugaringEnabled = true
-=======
     buildFeatures {
         buildConfig = true
->>>>>>> fik
     }
     lint {
         checkReleaseBuilds = false
@@ -106,10 +99,6 @@ flutter {
 }
 
 dependencies {
-<<<<<<< HEAD
-    implementation("com.google.firebase:firebase-messaging:24.1.2")
-    coreLibraryDesugaring ("com.android.tools:desugar_jdk_libs:2.1.5")
-=======
     // Core library desugaring
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 
@@ -178,5 +167,4 @@ tasks.register<Delete>("cleanBeforeBuild") {
 
 tasks.named("preBuild") {
     dependsOn("cleanBeforeBuild")
->>>>>>> fik
 }

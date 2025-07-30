@@ -3,16 +3,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/appointment_model.dart';
 import '../../constants/app_colors.dart';
-<<<<<<< HEAD
-
-class PatientLocationMapScreen extends StatefulWidget {
-  final AppointmentModel appointment;
-  const PatientLocationMapScreen({super.key, required this.appointment});
-
-  @override
-  State<PatientLocationMapScreen> createState() =>
-      _PatientLocationMapScreenState();
-=======
 import 'dart:developer' as developer;
 
 class PatientLocationMapScreen extends StatefulWidget {
@@ -21,47 +11,18 @@ class PatientLocationMapScreen extends StatefulWidget {
 
   @override
   State<PatientLocationMapScreen> createState() => _PatientLocationMapScreenState();
->>>>>>> fik
 }
 
 class _PatientLocationMapScreenState extends State<PatientLocationMapScreen> {
   LatLng? patientLatLng;
   LatLng? doctorLatLng;
-<<<<<<< HEAD
-  double? radius;
-  bool loading = true;
-  String? error;
-=======
   bool loading = true;
   String? error;
   GoogleMapController? _mapController;
->>>>>>> fik
 
   @override
   void initState() {
     super.initState();
-<<<<<<< HEAD
-    _loadLocations();
-  }
-
-  Future<void> _loadLocations() async {
-    try {
-      final location = widget.appointment.location;
-      if (location == null) {
-        setState(() {
-          error = 'No patient location available.';
-          loading = false;
-        });
-        return;
-      }
-      patientLatLng = LatLng(location['latitude'], location['longitude']);
-      // Fetch doctor location and radius from Firestore
-      final doc = await FirebaseFirestore.instance
-          .collection('doctors')
-          .doc(widget.appointment.doctorId)
-          .get();
-      if (!doc.exists) {
-=======
     developer.log('🚀 PatientLocationMapScreen: Initializing for appointment: ${widget.appointment.id}');
     _loadDoctorLocation();
   }
@@ -73,7 +34,6 @@ class _PatientLocationMapScreenState extends State<PatientLocationMapScreen> {
       final doc = await FirebaseFirestore.instance.collection('doctors').doc(widget.appointment.doctorId).get();
       if (!doc.exists) {
         developer.log('❌ Doctor document does not exist');
->>>>>>> fik
         setState(() {
           error = 'Doctor location not found.';
           loading = false;
@@ -83,34 +43,20 @@ class _PatientLocationMapScreenState extends State<PatientLocationMapScreen> {
       final data = doc.data() as Map<String, dynamic>;
       final doctorLocation = data['location'];
       if (doctorLocation == null) {
-<<<<<<< HEAD
-=======
         developer.log('❌ Doctor location is null');
->>>>>>> fik
         setState(() {
           error = 'Doctor location not set.';
           loading = false;
         });
         return;
       }
-<<<<<<< HEAD
-      doctorLatLng = LatLng(
-        doctorLocation['latitude'],
-        doctorLocation['longitude'],
-      );
-      radius = (data['radius'] ?? 1000).toDouble();
-=======
       doctorLatLng = LatLng(doctorLocation['latitude'], doctorLocation['longitude']);
       developer.log('✅ Doctor location loaded: $doctorLatLng');
->>>>>>> fik
       setState(() {
         loading = false;
       });
     } catch (e) {
-<<<<<<< HEAD
-=======
       developer.log('❌ Error loading doctor location: $e');
->>>>>>> fik
       setState(() {
         error = 'Error loading map data: $e';
         loading = false;
@@ -118,14 +64,11 @@ class _PatientLocationMapScreenState extends State<PatientLocationMapScreen> {
     }
   }
 
-<<<<<<< HEAD
-=======
   void _onMapCreated(GoogleMapController controller) {
     developer.log('🗺️ Patient location map created successfully');
     _mapController = controller;
   }
 
->>>>>>> fik
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -138,45 +81,6 @@ class _PatientLocationMapScreenState extends State<PatientLocationMapScreen> {
           ? const Center(child: CircularProgressIndicator())
           : error != null
           ? Center(child: Text(error!))
-<<<<<<< HEAD
-          : GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: doctorLatLng!,
-                zoom: 14,
-              ),
-              markers: {
-                Marker(
-                  markerId: const MarkerId('patient'),
-                  position: patientLatLng!,
-                  infoWindow: const InfoWindow(title: 'Patient'),
-                  icon: BitmapDescriptor.defaultMarkerWithHue(
-                    BitmapDescriptor.hueRed,
-                  ),
-                ),
-                Marker(
-                  markerId: const MarkerId('doctor'),
-                  position: doctorLatLng!,
-                  infoWindow: const InfoWindow(title: 'Doctor'),
-                  icon: BitmapDescriptor.defaultMarkerWithHue(
-                    BitmapDescriptor.hueGreen,
-                  ),
-                ),
-              },
-              circles: {
-                Circle(
-                  circleId: const CircleId('radius'),
-                  center: doctorLatLng!,
-                  radius: radius!,
-                  fillColor: Colors.green.withAlpha((255 * 0.2).toInt()),
-                  strokeColor: Colors.green,
-                  strokeWidth: 2,
-                ),
-              },
-            ),
-    );
-  }
-}
-=======
           : StreamBuilder<DocumentSnapshot>(
         stream: FirebaseFirestore.instance
             .collection('appointments')
@@ -235,4 +139,3 @@ class _PatientLocationMapScreenState extends State<PatientLocationMapScreen> {
 
 
 }
->>>>>>> fik

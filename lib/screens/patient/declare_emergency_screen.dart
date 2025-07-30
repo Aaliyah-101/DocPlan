@@ -21,10 +21,6 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
   final AppointmentService _appointmentService = AppointmentService();
 
   final _formKey = GlobalKey<FormState>();
-<<<<<<< HEAD
-  final _symptomsController = TextEditingController();
-=======
->>>>>>> fik
 
   final List<String> _emergencyTypes = [
     'Heart Attack',
@@ -56,8 +52,6 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
   bool _isLoading = false;
   String? _error;
 
-<<<<<<< HEAD
-=======
   // Generate default description based on emergency type
   String _getDefaultDescription(String emergencyType) {
     final Map<String, String> defaultDescriptions = {
@@ -86,7 +80,6 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
     return defaultDescriptions[emergencyType] ?? 'Patient experiencing emergency medical situation';
   }
 
->>>>>>> fik
   @override
   void dispose() {
     super.dispose();
@@ -113,11 +106,7 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
       if (availableDoctors.isEmpty) {
         setState(() {
           _error =
-<<<<<<< HEAD
-              'No doctors available for emergency. Please contact emergency services directly.';
-=======
           'No doctors available for emergency. Please contact emergency services directly.';
->>>>>>> fik
         });
         return;
       }
@@ -128,11 +117,8 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
           .doc()
           .id;
 
-<<<<<<< HEAD
-=======
       final defaultDescription = _getDefaultDescription(_selectedEmergencyType);
 
->>>>>>> fik
       final appointment = AppointmentModel(
         id: appointmentId,
         doctorId: availableDoctors.first['id'],
@@ -141,12 +127,7 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
         patientName: userModel.name,
         dateTime: DateTime.now(),
         status: 'pending',
-<<<<<<< HEAD
-        reason:
-            'EMERGENCY: $_selectedEmergencyType - ${_symptomsController.text.trim()}',
-=======
         reason: 'EMERGENCY: $_selectedEmergencyType - $defaultDescription',
->>>>>>> fik
         notes: 'Severity: $_selectedSeverity',
         createdAt: DateTime.now(),
         location: null,
@@ -163,12 +144,7 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
         id: emergencyId,
         doctorId: availableDoctors.first['id'],
         doctorName: availableDoctors.first['name'],
-<<<<<<< HEAD
-        reason:
-            'Patient Emergency: $_selectedEmergencyType - ${_symptomsController.text.trim()}',
-=======
         reason: 'Patient Emergency: $_selectedEmergencyType - $defaultDescription',
->>>>>>> fik
         timestamp: DateTime.now(),
         status: 'active',
         affectedAppointments: [appointmentId],
@@ -179,11 +155,7 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
           MaterialPageRoute(
             builder: (context) => const PatientDashboardScreen(),
           ),
-<<<<<<< HEAD
-          (route) => false,
-=======
               (route) => false,
->>>>>>> fik
         );
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -244,13 +216,8 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
 
     if (snapshot.docs.isEmpty) {
       setState(
-<<<<<<< HEAD
-        () => _error =
-            'No available doctors for "$matchedSpecialty" at the moment.',
-=======
             () => _error =
         'No available doctors for "$matchedSpecialty" at the moment.',
->>>>>>> fik
       );
       return [];
     }
@@ -337,17 +304,10 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
                       items: _emergencyTypes
                           .map(
                             (type) => DropdownMenuItem(
-<<<<<<< HEAD
-                              value: type,
-                              child: Text(type),
-                            ),
-                          )
-=======
                           value: type,
                           child: Text(type),
                         ),
                       )
->>>>>>> fik
                           .toList(),
                       onChanged: (value) =>
                           setState(() => _selectedEmergencyType = value!),
@@ -370,36 +330,15 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
                       items: _severityLevels
                           .map(
                             (severity) => DropdownMenuItem(
-<<<<<<< HEAD
-                              value: severity,
-                              child: Text(severity),
-                            ),
-                          )
-=======
                           value: severity,
                           child: Text(severity),
                         ),
                       )
->>>>>>> fik
                           .toList(),
                       onChanged: (value) =>
                           setState(() => _selectedSeverity = value!),
                     ),
                     const SizedBox(height: 24),
-<<<<<<< HEAD
-                    TextFormField(
-                      controller: _symptomsController,
-                      decoration: const InputDecoration(
-                        labelText: 'Describe your symptoms',
-                      ),
-                      maxLines: 3,
-                      validator: (value) => value == null || value.length < 10
-                          ? 'Please provide more detailed symptoms'
-                          : null,
-                    ),
-                    const SizedBox(height: 24),
-=======
->>>>>>> fik
                     if (_error != null)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 12),
@@ -419,13 +358,8 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
                         ),
                         child: _isLoading
                             ? const CircularProgressIndicator(
-<<<<<<< HEAD
-                                color: AppColors.textWhite,
-                              )
-=======
                           color: AppColors.textWhite,
                         )
->>>>>>> fik
                             : const Text('Send Emergency Request'),
                       ),
                     ),
@@ -439,8 +373,4 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
       ),
     );
   }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> fik

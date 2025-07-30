@@ -2,18 +2,13 @@ import 'package:docplan/screens/patient/book_appointment_screen.dart';
 import 'package:docplan/screens/patient/view_appointments_screen.dart';
 import 'package:docplan/screens/patient/declare_emergency_screen.dart';
 import 'package:docplan/screens/patient/medical_records_screen.dart';
-import 'package:docplan/screens/settings/settings_screen.dart';
 import 'package:flutter/material.dart';
 import '../../constants/app_colors.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/gradient_background.dart';
 import '../../widgets/notification_bell.dart';
-<<<<<<< HEAD
-
-=======
 import 'package:docplan/screens/settings/settings_screen.dart';
 import 'package:carousel_slider/carousel_slider.dart';
->>>>>>> fik
 class PatientDashboardScreen extends StatefulWidget {
   const PatientDashboardScreen({super.key});
 
@@ -305,10 +300,6 @@ class _PatientHomeContent extends StatelessWidget {
                   );
                 },
               ),
-<<<<<<< HEAD
-              const SizedBox(height: 40),
-=======
->>>>>>> fik
             ],
           ),
         ),
