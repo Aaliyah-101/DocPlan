@@ -7,6 +7,11 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+<<<<<<< HEAD
+=======
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+>>>>>>> fik
 
     <application
         android:label="docplan"
@@ -15,14 +20,37 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:theme="@style/LaunchTheme"
         android:allowBackup="true"
+<<<<<<< HEAD
         android:usesCleartextTraffic="true">
+=======
+        android:usesCleartextTraffic="true"
+        android:hardwareAccelerated="true"
+        android:largeHeap="true"
+        android:vmSafeMode="false"
+        android:requestLegacyExternalStorage="true"
+        android:enableOnBackInvokedCallback="true"
+        android:preserveLegacyExternalStorage="false">
+        
+        <!-- ✅ Google Maps API Key -->
+        <meta-data 
+            android:name="com.google.android.geo.API_KEY" 
+            android:value="AIzaSyCZSkEDlKsS5iliFh57tA6DrXNQlytudQU"/>
+        
+        <!-- ✅ Google Maps Map ID for advanced features -->
+        <meta-data
+            android:name="com.google.android.geo.MAP_ID"
+            android:value="docplan_map_id"/>
+>>>>>>> fik
 
         <!-- ✅ Firebase Notification Defaults -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_notification" />
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> fik
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/primary" />
@@ -84,4 +112,8 @@
         </intent>
     </queries>
 
+<<<<<<< HEAD
 </manifest>
+=======
+</manifest>
+>>>>>>> fik

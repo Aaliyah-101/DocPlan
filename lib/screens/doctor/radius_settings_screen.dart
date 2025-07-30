@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'full_screen_map.dart';
 import '../../constants/app_colors.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/custom_button.dart';
@@ -20,6 +23,8 @@ class _RadiusSettingsScreenState extends State<RadiusSettingsScreen> {
   Position? _currentPosition;
   double _radius = 1000;
   String _statusMessage = '';
+  GoogleMapController? _mapController;
+  Set<Circle> _circles = {};
 
   @override
   void initState() {
@@ -94,12 +99,30 @@ class _RadiusSettingsScreenState extends State<RadiusSettingsScreen> {
               altitudeAccuracy: 0,
               headingAccuracy: 0,
             );
+            _updateCircles();
           }
         });
       }
     } catch (e) {
       setState(() {
         _statusMessage = 'Error loading settings: $e';
+      });
+    }
+  }
+
+  void _updateCircles() {
+    if (_currentPosition != null) {
+      setState(() {
+        _circles = {
+          Circle(
+            circleId: const CircleId('radius'),
+            center: LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
+            radius: _radius,
+            strokeColor: AppColors.primary.withOpacity(0.8),
+            strokeWidth: 2,
+            fillColor: AppColors.primary.withOpacity(0.15),
+          ),
+        };
       });
     }
   }
@@ -116,11 +139,11 @@ class _RadiusSettingsScreenState extends State<RadiusSettingsScreen> {
       final position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
-
       setState(() {
         _currentPosition = position;
         _statusMessage = 'Location updated successfully';
       });
+      _updateCircles();
     } catch (e) {
       setState(() {
         _statusMessage = 'Error getting location: $e';
@@ -148,13 +171,13 @@ class _RadiusSettingsScreenState extends State<RadiusSettingsScreen> {
           .collection('doctors')
           .doc(user.uid)
           .update({
-            'location': {
-              'latitude': _currentPosition!.latitude,
-              'longitude': _currentPosition!.longitude,
-              'timestamp': DateTime.now().toIso8601String(),
-            },
-            'radius': _radius,
-          });
+        'location': {
+          'latitude': _currentPosition!.latitude,
+          'longitude': _currentPosition!.longitude,
+          'timestamp': DateTime.now().toIso8601String(),
+        },
+        'radius': _radius,
+      });
 
       setState(() {
         _statusMessage = 'Settings saved successfully!';
@@ -175,6 +198,10 @@ class _RadiusSettingsScreenState extends State<RadiusSettingsScreen> {
     } finally {
       setState(() => _isLoading = false);
     }
+  }
+
+  void _onMapCreated(GoogleMapController controller) {
+    _mapController = controller;
   }
 
   @override
@@ -248,14 +275,12 @@ class _RadiusSettingsScreenState extends State<RadiusSettingsScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-
                 // Current Location
                 Text(
                   'Current Location',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 10),
-
                 if (_currentPosition != null) ...[
                   Container(
                     padding: const EdgeInsets.all(16),
@@ -268,7 +293,7 @@ class _RadiusSettingsScreenState extends State<RadiusSettingsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Latitude: ${_currentPosition!.latitude.toStringAsFixed(6)}',
+                          'Latitude:  ${_currentPosition!.latitude.toStringAsFixed(6)}',
                           style: const TextStyle(fontSize: 14),
                         ),
                         const SizedBox(height: 4),
@@ -276,6 +301,104 @@ class _RadiusSettingsScreenState extends State<RadiusSettingsScreen> {
                           'Longitude: ${_currentPosition!.longitude.toStringAsFixed(6)}',
                           style: const TextStyle(fontSize: 14),
                         ),
+                        const SizedBox(height: 16),
+                        if (kIsWeb)
+                          Container(
+                            height: 250,
+                            color: Colors.grey[300],
+                            child: const Center(child: Text('Map not supported on web')),
+                          )
+                        else
+                          SizedBox(
+                            height: 250,
+                            child: Stack(
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => FullScreenMap(
+                                          doctorLocation: LatLng(
+                                            _currentPosition!.latitude,
+                                            _currentPosition!.longitude,
+                                          ),
+                                          radius: _radius,
+                                          // patientLocation: LatLng(patientLat, patientLng), // Add if you have patient location
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: AbsorbPointer(
+                                    child: Container(
+                                      height: 200,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[200],
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(color: Colors.grey[300]!),
+                                      ),
+                                      child: Stack(
+                                        children: [
+                                          GoogleMap(
+                                            onMapCreated: _onMapCreated,
+                                            initialCameraPosition: CameraPosition(
+                                              target: LatLng(
+                                                _currentPosition!.latitude,
+                                                _currentPosition!.longitude,
+                                              ),
+                                              zoom: 12,
+                                            ),
+                                            markers: {
+                                              Marker(
+                                                markerId: const MarkerId('doctor_location'),
+                                                position: LatLng(
+                                                  _currentPosition!.latitude,
+                                                  _currentPosition!.longitude,
+                                                ),
+                                                infoWindow: const InfoWindow(
+                                                  title: 'Your Location',
+                                                ),
+                                              ),
+                                            },
+                                            circles: {},
+                                            myLocationEnabled: false,
+                                            myLocationButtonEnabled: false,
+                                            zoomControlsEnabled: false,
+                                            mapToolbarEnabled: false,
+                                            compassEnabled: false,
+                                            rotateGesturesEnabled: false,
+                                            tiltGesturesEnabled: false,
+                                            onCameraMove: null,
+                                            onCameraIdle: null,
+                                            onTap: null,
+                                            onLongPress: null,
+                                          ),
+                                          Positioned(
+                                            top: 8,
+                                            right: 8,
+                                            child: Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                              decoration: BoxDecoration(
+                                                color: Colors.black.withOpacity(0.7),
+                                                borderRadius: BorderRadius.circular(4),
+                                              ),
+                                              child: const Text(
+                                                'Tap to view full map',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 10,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -294,7 +417,6 @@ class _RadiusSettingsScreenState extends State<RadiusSettingsScreen> {
                   ),
                 ],
                 const SizedBox(height: 16),
-
                 CustomButton(
                   text: 'Get Current Location',
                   onPressed: _isLoading ? null : _getCurrentLocation,
@@ -302,7 +424,6 @@ class _RadiusSettingsScreenState extends State<RadiusSettingsScreen> {
                   backgroundColor: AppColors.primary,
                 ),
                 const SizedBox(height: 24),
-
                 // Radius Setting
                 Text(
                   'Detection Radius',
@@ -342,11 +463,12 @@ class _RadiusSettingsScreenState extends State<RadiusSettingsScreen> {
                           setState(() {
                             _radius = value;
                           });
+                          _updateCircles();
                         },
                       ),
-                      Row(
+                      const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
+                        children: [
                           Text('100m', style: TextStyle(fontSize: 12)),
                           Text('10km', style: TextStyle(fontSize: 12)),
                         ],
@@ -355,7 +477,6 @@ class _RadiusSettingsScreenState extends State<RadiusSettingsScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-
                 CustomButton(
                   text: 'Save Settings',
                   onPressed: _isLoading ? null : _saveSettings,
@@ -363,7 +484,6 @@ class _RadiusSettingsScreenState extends State<RadiusSettingsScreen> {
                   backgroundColor: AppColors.success,
                 ),
                 const SizedBox(height: 16),
-
                 // Info
                 Container(
                   padding: const EdgeInsets.all(16),
@@ -393,5 +513,11 @@ class _RadiusSettingsScreenState extends State<RadiusSettingsScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _mapController?.dispose();
+    super.dispose();
   }
 }

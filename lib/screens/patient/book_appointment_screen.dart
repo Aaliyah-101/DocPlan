@@ -179,8 +179,8 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                           _selectedDate == null
                               ? 'Choose a date'
                               : DateFormat(
-                                  'EEE, MMM d, yyyy',
-                                ).format(_selectedDate!),
+                            'EEE, MMM d, yyyy',
+                          ).format(_selectedDate!),
                         ),
                       ],
                     ),
@@ -214,7 +214,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                       final Set<String> allSlots = {};
                       for (final doc in doctors) {
                         final availability =
-                            doc['availability'] as Map<String, dynamic>?;
+                        doc['availability'] as Map<String, dynamic>?;
                         if (availability != null &&
                             availability[dayName] != null) {
                           for (final slot in (availability[dayName] as List)) {
@@ -285,7 +285,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                   maxLines: 3,
                   decoration: InputDecoration(
                     hintText:
-                        'Please describe your reason for the appointment...',
+                    'Please describe your reason for the appointment...',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -317,8 +317,8 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                     ),
                     child: _isLoading
                         ? const CircularProgressIndicator(
-                            color: AppColors.textWhite,
-                          )
+                      color: AppColors.textWhite,
+                    )
                         : const Text('Book Appointment'),
                   ),
                 ),
@@ -427,7 +427,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       );
 
       if (mounted) {
-        Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -436,6 +435,14 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
             backgroundColor: AppColors.success,
           ),
         );
+        
+        // Reset form after successful booking
+        setState(() {
+          _selectedSpecialty = null;
+          _selectedDate = null;
+          _selectedTimeSlot = null;
+          _reason = null;
+        });
       }
     } catch (e) {
       setState(() {

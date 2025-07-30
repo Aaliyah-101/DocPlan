@@ -48,4 +48,8 @@ class NotificationModel {
       'timestamp': timestamp,
     };
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> fik

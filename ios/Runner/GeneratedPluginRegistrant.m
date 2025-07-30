@@ -12,6 +12,15 @@
 @import cloud_firestore;
 #endif
 
+<<<<<<< HEAD
+=======
+#if __has_include(<connectivity_plus/ConnectivityPlusPlugin.h>)
+#import <connectivity_plus/ConnectivityPlusPlugin.h>
+#else
+@import connectivity_plus;
+#endif
+
+>>>>>>> fik
 #if __has_include(<firebase_auth/FLTFirebaseAuthPlugin.h>)
 #import <firebase_auth/FLTFirebaseAuthPlugin.h>
 #else
@@ -106,6 +115,10 @@
 
 + (void)registerWithRegistry:(NSObject<FlutterPluginRegistry>*)registry {
   [FLTFirebaseFirestorePlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTFirebaseFirestorePlugin"]];
+<<<<<<< HEAD
+=======
+  [ConnectivityPlusPlugin registerWithRegistrar:[registry registrarForPlugin:@"ConnectivityPlusPlugin"]];
+>>>>>>> fik
   [FLTFirebaseAuthPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTFirebaseAuthPlugin"]];
   [FLTFirebaseCorePlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTFirebaseCorePlugin"]];
   [FLTFirebaseMessagingPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTFirebaseMessagingPlugin"]];

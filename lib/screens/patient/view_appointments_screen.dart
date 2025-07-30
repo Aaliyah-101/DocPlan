@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../constants/app_colors.dart';
@@ -33,39 +34,39 @@ class ViewAppointmentsScreen extends StatelessWidget {
         child: user == null
             ? const Center(child: Text('Not logged in'))
             : StreamBuilder<List<AppointmentModel>>(
-                stream: AppointmentService().getUserAppointments(user.uid, 'patient'),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text('No appointments found.'));
-                  }
-                  final now = DateTime.now();
-                  final upcoming = snapshot.data!
-                      .where((a) => a.dateTime.isAfter(now) && a.status == 'upcoming')
-                      .toList();
-                  final past = snapshot.data!
-                      .where((a) => a.dateTime.isBefore(now) || a.status != 'upcoming')
-                      .toList();
-                  return ListView(
-                    padding: const EdgeInsets.all(16),
-                    children: [
-                      if (upcoming.isNotEmpty) ...[
-                        const Text('Upcoming', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 10),
-                        ...upcoming.map((a) => _AppointmentCard(appointment: a)),
-                        const SizedBox(height: 24),
-                      ],
-                      if (past.isNotEmpty) ...[
-                        const Text('Past', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 10),
-                        ...past.map((a) => _AppointmentCard(appointment: a)),
-                      ],
-                    ],
-                  );
-                },
-              ),
+          stream: AppointmentService().getUserAppointments(user.uid, 'patient'),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(child: Text('No appointments found.'));
+            }
+            final now = DateTime.now();
+            final upcoming = snapshot.data!
+                .where((a) => a.dateTime.isAfter(now) && a.status == 'upcoming')
+                .toList();
+            final past = snapshot.data!
+                .where((a) => a.dateTime.isBefore(now) || a.status != 'upcoming')
+                .toList();
+            return ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                if (upcoming.isNotEmpty) ...[
+                  const Text('Upcoming', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 10),
+                  ...upcoming.map((a) => _AppointmentCard(appointment: a)),
+                  const SizedBox(height: 24),
+                ],
+                if (past.isNotEmpty) ...[
+                  const Text('Past', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 10),
+                  ...past.map((a) => _AppointmentCard(appointment: a)),
+                ],
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -291,4 +292,4 @@ class _AppointmentCard extends StatelessWidget {
         return AppColors.textSecondary;
     }
   }
-} 
+}

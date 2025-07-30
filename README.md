@@ -5,12 +5,13 @@ A Flutter-based healthcare appointment scheduling application with role-based ac
 ## Features
 
 ### 🔐 Authentication & Role Management
-- **Multi-role signup**: Users can register as Patient, Doctor, or Admin
+- **Multi-role signup**: Users can register as Patient, Doctor, 
 - **Role-based dashboards**: Different interfaces for each user type
 - **Secure authentication**: Firebase Authentication integration
 
 ### 👨‍⚕️ Doctor Features
 - **Specialty selection**: Choose from 9 medical specialties:
+
   - Cardiologist
   - Endocrinologist
   - Gastroenterologist
@@ -20,6 +21,16 @@ A Flutter-based healthcare appointment scheduling application with role-based ac
   - Neurosurgeon
   - Cardiothoracic Surgeon
   - Plastic Surgeon
+  - Dermatologistgit 
+  - Oncologist 
+  - Radiologist
+  - Pathologist
+  - Ophthalmologist
+  - Psychiatrist
+  - Urologist
+  - Trauma Surgeon
+  - Allergist
+  - toxicologist
 - **Availability management**: Set weekly schedule with hourly time slots
 - **Appointment viewing**: View and manage patient appointments
 - **Patient location tracking**: Check if patients are within service radius
@@ -29,14 +40,9 @@ A Flutter-based healthcare appointment scheduling application with role-based ac
 - **Availability-based booking**: See doctor's available time slots
 - **Appointment booking**: Book appointments with reason/reasoning
 - **Appointment viewing**: View upcoming and past appointments
-- **No emergency access**: Patients cannot declare emergencies
+- **emergency access**: Patients can declare emergencies
 
-### 🛡️ Admin Features
-- **System overview**: Dashboard with statistics and monitoring
-- **Emergency management**: Declare system-wide emergencies
-- **Appointment freezing**: Freeze all appointments during emergencies
-- **User management**: Overview of all users, doctors, and appointments
-- **Emergency resolution**: Resolve emergencies and unfreeze appointments
+
 
 ### 🚨 Emergency System
 - **Admin-only emergency declaration**: Only admins can declare emergencies
@@ -164,11 +170,12 @@ A Flutter-based healthcare appointment scheduling application with role-based ac
 - Real-time chat between doctors and patients
 - Video consultation integration
 - Payment processing
-- Prescription management
+- video consultation
 - Medical records integration
 - Advanced analytics and reporting
 - Multi-language support
 - Push notifications for appointment reminders
+
 
 ## Contributing
 

@@ -46,4 +46,8 @@ class NotificationService {
         .doc(notificationId)
         .delete();
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> fik

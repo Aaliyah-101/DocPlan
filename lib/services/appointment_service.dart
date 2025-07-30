@@ -9,6 +9,11 @@ class AppointmentService {
 
   // Create new appointment
   Future<void> createAppointment(AppointmentModel appointment) async {
+    print('DEBUG: Creating appointment with ID: ${appointment.id}');
+    print('DEBUG: Doctor ID: ${appointment.doctorId}');
+    print('DEBUG: Patient ID: ${appointment.patientId}');
+    print('DEBUG: Status: ${appointment.status}');
+    
     await _firestore
         .collection('appointments')
         .doc(appointment.id)
@@ -16,6 +21,11 @@ class AppointmentService {
       ...appointment.toMap(),
       'dateTime': Timestamp.fromDate(appointment.dateTime), // ✅ FIXED
     });
+<<<<<<< HEAD
+=======
+    
+    print('DEBUG: Appointment created successfully');
+>>>>>>> fik
   }
 
   // Get appointments for a user (patient or doctor)
@@ -24,17 +34,209 @@ class AppointmentService {
       String role,
       ) {
     String field = role == 'doctor' ? 'doctorId' : 'patientId';
+    
+    print('DEBUG: Getting appointments for user: $userId with role: $role');
+    print('DEBUG: Using field: $field');
+
+    // First, let's try a simple query without any filters
+    return _firestore
+        .collection('appointments')
+        .snapshots()
+        .map((snapshot) {
+      print('DEBUG: Total appointments in collection: ${snapshot.docs.length}');
+      
+      // Filter appointments manually
+      final filteredDocs = snapshot.docs.where((doc) {
+        final data = doc.data();
+        final fieldValue = data[field];
+        print('DEBUG: Document ${doc.id}: $field = $fieldValue, userId = $userId');
+        return fieldValue == userId;
+      }).toList();
+      
+      print('DEBUG: Filtered appointments for $role $userId: ${filteredDocs.length}');
+      
+      final appointments = filteredDocs
+          .map((doc) {
+            final data = doc.data();
+            print('DEBUG: Appointment data: $data');
+            return AppointmentModel.fromMap(data);
+          })
+          .toList();
+      print('DEBUG: Parsed ${appointments.length} appointments');
+      // Sort appointments by dateTime manually
+      appointments.sort((a, b) => a.dateTime.compareTo(b.dateTime));
+      return appointments;
+    });
+  }
+
+  // Get appointments for a user (patient or doctor) - Fallback method
+  Stream<List<AppointmentModel>> getUserAppointmentsFallback(
+      String userId,
+      String role,
+      ) {
+    String field = role == 'doctor' ? 'doctorId' : 'patientId';
+    
+    print('DEBUG: Using fallback method for appointments');
+    print('DEBUG: Getting appointments for user: $userId with role: $role');
+    print('DEBUG: Using field: $field');
 
     return _firestore
         .collection('appointments')
-        .where(field, isEqualTo: userId)
-        .orderBy('dateTime', descending: false)
         .snapshots()
         .map((snapshot) {
+<<<<<<< HEAD
       return snapshot.docs
           .map((doc) => AppointmentModel.fromMap(doc.data()))
           .toList();
     });
+=======
+      print('DEBUG: Total appointments in collection: ${snapshot.docs.length}');
+      
+      // Filter appointments manually
+      final filteredDocs = snapshot.docs.where((doc) {
+        final data = doc.data();
+        final fieldValue = data[field];
+        print('DEBUG: Document ${doc.id}: $field = $fieldValue, userId = $userId');
+        return fieldValue == userId;
+      }).toList();
+      
+      print('DEBUG: Filtered appointments for $role $userId: ${filteredDocs.length}');
+      
+      final appointments = filteredDocs
+          .map((doc) {
+            final data = doc.data();
+            print('DEBUG: Appointment data: $data');
+            return AppointmentModel.fromMap(data);
+          })
+          .toList();
+      print('DEBUG: Parsed ${appointments.length} appointments');
+      // Sort appointments by dateTime manually
+      appointments.sort((a, b) => a.dateTime.compareTo(b.dateTime));
+      return appointments;
+    });
+  }
+
+  // Debug method to check all appointments in database
+  Future<void> debugAllAppointments() async {
+    try {
+      final snapshot = await _firestore.collection('appointments').get();
+      print('DEBUG: Total appointments in database: ${snapshot.docs.length}');
+      for (final doc in snapshot.docs) {
+        final data = doc.data();
+        print('DEBUG: Appointment ${doc.id}: doctorId=${data['doctorId']}, patientId=${data['patientId']}, status=${data['status']}');
+      }
+    } catch (e) {
+      print('DEBUG: Error getting all appointments: $e');
+    }
+  }
+
+  // Debug method to check if appointments collection exists and has data
+  Future<void> debugAppointmentsCollection() async {
+    try {
+      print('DEBUG: Checking appointments collection...');
+      final snapshot = await _firestore.collection('appointments').limit(1).get();
+      print('DEBUG: Appointments collection exists: ${snapshot.docs.isNotEmpty}');
+      print('DEBUG: Number of documents in appointments collection: ${snapshot.docs.length}');
+      
+      if (snapshot.docs.isNotEmpty) {
+        final firstDoc = snapshot.docs.first;
+        final data = firstDoc.data();
+        print('DEBUG: First appointment document structure:');
+        data.forEach((key, value) {
+          print('DEBUG:   $key: $value (${value.runtimeType})');
+        });
+      }
+    } catch (e) {
+      print('DEBUG: Error checking appointments collection: $e');
+    }
+  }
+
+  // Debug method to check for doctor ID mismatches
+  Future<void> debugDoctorIdMismatch(String doctorUid) async {
+    try {
+      print('DEBUG: Checking for doctor ID mismatches...');
+      
+      // Check if doctor exists in doctors collection
+      final doctorDoc = await _firestore.collection('doctors').doc(doctorUid).get();
+      print('DEBUG: Doctor exists in doctors collection: ${doctorDoc.exists}');
+      
+      if (doctorDoc.exists) {
+        final doctorData = doctorDoc.data();
+        print('DEBUG: Doctor data: $doctorData');
+      }
+      
+      // Check all appointments for this doctor
+      final appointmentsSnapshot = await _firestore.collection('appointments').get();
+      final doctorAppointments = appointmentsSnapshot.docs.where((doc) {
+        final data = doc.data();
+        return data['doctorId'] == doctorUid;
+      }).toList();
+      
+      print('DEBUG: Found ${doctorAppointments.length} appointments for doctor $doctorUid');
+      
+      for (final doc in doctorAppointments) {
+        final data = doc.data();
+        print('DEBUG: Appointment ${doc.id}: doctorId=${data['doctorId']}, patientId=${data['patientId']}, status=${data['status']}');
+      }
+    } catch (e) {
+      print('DEBUG: Error checking doctor ID mismatch: $e');
+    }
+  }
+
+  // Debug method to check doctor data
+  Future<void> debugDoctorData(String doctorId) async {
+    try {
+      final doc = await _firestore.collection('doctors').doc(doctorId).get();
+      print('DEBUG: Doctor document exists: ${doc.exists}');
+      if (doc.exists) {
+        final data = doc.data();
+        print('DEBUG: Doctor data: $data');
+      }
+    } catch (e) {
+      print('DEBUG: Error getting doctor data: $e');
+    }
+  }
+
+  // Test method to create and query a test appointment
+  Future<void> testAppointmentCreation(String doctorId, String patientId) async {
+    try {
+      print('DEBUG: Testing appointment creation...');
+      
+      // Create a test appointment
+      final testAppointment = AppointmentModel(
+        id: 'test_${DateTime.now().millisecondsSinceEpoch}',
+        doctorId: doctorId,
+        patientId: patientId,
+        doctorName: 'Test Doctor',
+        patientName: 'Test Patient',
+        dateTime: DateTime.now().add(const Duration(hours: 1)),
+        status: 'upcoming',
+        reason: 'Test appointment',
+        notes: null,
+        createdAt: DateTime.now(),
+        location: null,
+        isEmergency: false,
+        specialty: 'Test',
+      );
+      
+      await createAppointment(testAppointment);
+      print('DEBUG: Test appointment created');
+      
+      // Try to query it
+      final snapshot = await _firestore
+          .collection('appointments')
+          .where('doctorId', isEqualTo: doctorId)
+          .get();
+      
+      print('DEBUG: Found ${snapshot.docs.length} appointments for doctor $doctorId');
+      for (final doc in snapshot.docs) {
+        final data = doc.data();
+        print('DEBUG: Test appointment data: $data');
+      }
+    } catch (e) {
+      print('DEBUG: Error in test appointment creation: $e');
+    }
+>>>>>>> fik
   }
 
   // Get available doctors

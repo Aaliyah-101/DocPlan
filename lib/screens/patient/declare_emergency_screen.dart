@@ -21,7 +21,10 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
   final AppointmentService _appointmentService = AppointmentService();
 
   final _formKey = GlobalKey<FormState>();
+<<<<<<< HEAD
   final _symptomsController = TextEditingController();
+=======
+>>>>>>> fik
 
   final List<String> _emergencyTypes = [
     'Heart Attack',
@@ -53,9 +56,39 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
   bool _isLoading = false;
   String? _error;
 
+<<<<<<< HEAD
+=======
+  // Generate default description based on emergency type
+  String _getDefaultDescription(String emergencyType) {
+    final Map<String, String> defaultDescriptions = {
+      'Heart Attack': 'Patient experiencing chest pain, shortness of breath, and other heart attack symptoms',
+      'Stroke': 'Patient showing signs of stroke including facial drooping, arm weakness, and speech difficulties',
+      'Diabetic Coma': 'Patient with diabetes experiencing severe symptoms including confusion and unconsciousness',
+      'Seizures': 'Patient experiencing seizure activity with loss of consciousness and convulsions',
+      'Asthma Attack': 'Patient experiencing severe breathing difficulties and wheezing',
+      'Severe Allergy': 'Patient experiencing severe allergic reaction with difficulty breathing and swelling',
+      'Unconscious Patient': 'Patient is unconscious and unresponsive to stimuli',
+      'Road Accidents': 'Patient involved in road accident with multiple injuries',
+      'Fall Injuries': 'Patient sustained injuries from a fall with potential fractures',
+      'Gunshot Wound': 'Patient with gunshot wound requiring immediate medical attention',
+      'Stab Wound': 'Patient with stab wound and bleeding requiring emergency care',
+      'Burns': 'Patient with severe burns requiring immediate medical treatment',
+      'Blunt Trauma': 'Patient with blunt force trauma and internal injuries',
+      'Crush Injury': 'Patient with crush injury and potential compartment syndrome',
+      'High Fever & Convulsions': 'Patient with high fever and convulsions requiring immediate attention',
+      'Severe Dehydration': 'Patient showing signs of severe dehydration and electrolyte imbalance',
+      'Poisoning': 'Patient suspected of poisoning requiring immediate medical intervention',
+      'Choking': 'Patient experiencing choking and airway obstruction',
+      'Child Trauma': 'Child patient with trauma requiring pediatric emergency care',
+      'Other': 'Patient experiencing emergency medical situation requiring immediate attention',
+    };
+    
+    return defaultDescriptions[emergencyType] ?? 'Patient experiencing emergency medical situation';
+  }
+
+>>>>>>> fik
   @override
   void dispose() {
-    _symptomsController.dispose();
     super.dispose();
   }
 
@@ -80,7 +113,11 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
       if (availableDoctors.isEmpty) {
         setState(() {
           _error =
+<<<<<<< HEAD
               'No doctors available for emergency. Please contact emergency services directly.';
+=======
+          'No doctors available for emergency. Please contact emergency services directly.';
+>>>>>>> fik
         });
         return;
       }
@@ -91,6 +128,11 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
           .doc()
           .id;
 
+<<<<<<< HEAD
+=======
+      final defaultDescription = _getDefaultDescription(_selectedEmergencyType);
+
+>>>>>>> fik
       final appointment = AppointmentModel(
         id: appointmentId,
         doctorId: availableDoctors.first['id'],
@@ -99,8 +141,12 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
         patientName: userModel.name,
         dateTime: DateTime.now(),
         status: 'pending',
+<<<<<<< HEAD
         reason:
             'EMERGENCY: $_selectedEmergencyType - ${_symptomsController.text.trim()}',
+=======
+        reason: 'EMERGENCY: $_selectedEmergencyType - $defaultDescription',
+>>>>>>> fik
         notes: 'Severity: $_selectedSeverity',
         createdAt: DateTime.now(),
         location: null,
@@ -117,8 +163,12 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
         id: emergencyId,
         doctorId: availableDoctors.first['id'],
         doctorName: availableDoctors.first['name'],
+<<<<<<< HEAD
         reason:
             'Patient Emergency: $_selectedEmergencyType - ${_symptomsController.text.trim()}',
+=======
+        reason: 'Patient Emergency: $_selectedEmergencyType - $defaultDescription',
+>>>>>>> fik
         timestamp: DateTime.now(),
         status: 'active',
         affectedAppointments: [appointmentId],
@@ -129,7 +179,11 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
           MaterialPageRoute(
             builder: (context) => const PatientDashboardScreen(),
           ),
+<<<<<<< HEAD
           (route) => false,
+=======
+              (route) => false,
+>>>>>>> fik
         );
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -190,8 +244,13 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
 
     if (snapshot.docs.isEmpty) {
       setState(
+<<<<<<< HEAD
         () => _error =
             'No available doctors for "$matchedSpecialty" at the moment.',
+=======
+            () => _error =
+        'No available doctors for "$matchedSpecialty" at the moment.',
+>>>>>>> fik
       );
       return [];
     }
@@ -278,10 +337,17 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
                       items: _emergencyTypes
                           .map(
                             (type) => DropdownMenuItem(
+<<<<<<< HEAD
                               value: type,
                               child: Text(type),
                             ),
                           )
+=======
+                          value: type,
+                          child: Text(type),
+                        ),
+                      )
+>>>>>>> fik
                           .toList(),
                       onChanged: (value) =>
                           setState(() => _selectedEmergencyType = value!),
@@ -304,15 +370,23 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
                       items: _severityLevels
                           .map(
                             (severity) => DropdownMenuItem(
+<<<<<<< HEAD
                               value: severity,
                               child: Text(severity),
                             ),
                           )
+=======
+                          value: severity,
+                          child: Text(severity),
+                        ),
+                      )
+>>>>>>> fik
                           .toList(),
                       onChanged: (value) =>
                           setState(() => _selectedSeverity = value!),
                     ),
                     const SizedBox(height: 24),
+<<<<<<< HEAD
                     TextFormField(
                       controller: _symptomsController,
                       decoration: const InputDecoration(
@@ -324,6 +398,8 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
                           : null,
                     ),
                     const SizedBox(height: 24),
+=======
+>>>>>>> fik
                     if (_error != null)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 12),
@@ -343,8 +419,13 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
                         ),
                         child: _isLoading
                             ? const CircularProgressIndicator(
+<<<<<<< HEAD
                                 color: AppColors.textWhite,
                               )
+=======
+                          color: AppColors.textWhite,
+                        )
+>>>>>>> fik
                             : const Text('Send Emergency Request'),
                       ),
                     ),
@@ -358,4 +439,8 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
       ),
     );
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> fik
