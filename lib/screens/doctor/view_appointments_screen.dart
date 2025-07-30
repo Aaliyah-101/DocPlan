@@ -6,7 +6,7 @@ import '../../constants/app_colors.dart';
 import '../../services/appointment_service.dart';
 import '../../services/auth_service.dart';
 import '../../models/appointment_model.dart';
-import '../../widgets/gradient_background.dart';
+import '../../widgets/background.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../screens/chat_screen.dart';
 import '../../services/chat_service.dart';
@@ -33,7 +33,7 @@ class DoctorViewAppointmentsScreen extends StatelessWidget {
         foregroundColor: AppColors.textWhite,
       ),
       backgroundColor: AppColors.backgroundLight,
-      body: GradientBackground(
+      body: Background(
         child: user == null
             ? const Center(child: Text('Not logged in'))
             : StreamBuilder<List<AppointmentModel>>(
