@@ -159,7 +159,7 @@ class _DoctorHomeContent extends StatelessWidget {
       'lib/images/p8.jpg',
     ];
     final ValueNotifier<int> currentNotifier = ValueNotifier<int>(0);
-    return GradientBackground(
+    return Background(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
