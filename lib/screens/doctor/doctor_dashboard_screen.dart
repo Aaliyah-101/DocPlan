@@ -7,15 +7,16 @@ import '../../services/appointment_service.dart';
 import 'view_appointments_screen.dart';
 import 'radius_settings_screen.dart';
 import 'patient_records_screen.dart';
-
-=======
-import '../../widgets/background.dart';
+import '../../widgets/gradient_background.dart';
 import '../../models/emergency_model.dart';
 import '../settings/settings_screen.dart';
+<<<<<<< HEAD
 import '../../widgets/notification_bell.dart';
+=======
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
->>>>>>> fik
+>>>>>>> AaliyahM
+
 class DoctorDashboardScreen extends StatefulWidget {
   const DoctorDashboardScreen({super.key});
 
@@ -48,6 +49,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
+<<<<<<< HEAD
       appBar: AppBar(
         title: const Text('Doctor Dashboard'),
         backgroundColor: AppColors.primary,
@@ -71,62 +73,45 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                     Text("Doctor Menu", style: TextStyle(color: Colors.white, fontSize: 20)),
                   ],
                 ),
+=======
+      body: Row(
+        children: [
+          NavigationRail(
+            selectedIndex: _selectedIndex,
+            onDestinationSelected: _onItemTapped,
+            labelType: NavigationRailLabelType.all,
+            selectedIconTheme: const IconThemeData(color: AppColors.primary),
+            unselectedIconTheme: const IconThemeData(
+              color: AppColors.textSecondary,
+            ),
+            destinations: const [
+              NavigationRailDestination(
+                icon: Icon(Icons.home),
+                label: Text('Home'),
+>>>>>>> AaliyahM
               ),
-              ListTile(
-                leading: const Icon(Icons.home, color: AppColors.primary),
-                title: const Text('Home'),
-                selected: _selectedIndex == 0,
-                selectedTileColor: AppColors.primary.withOpacity(0.1),
-                onTap: () {
-                  Navigator.pop(context);
-                  setState(() => _selectedIndex = 0);
-                },
+              NavigationRailDestination(
+                icon: Icon(Icons.list_alt),
+                label: Text('Appointments'),
               ),
-              ListTile(
-                leading: const Icon(Icons.list_alt, color: AppColors.primary),
-                title: const Text('Appointments'),
-                selected: _selectedIndex == 1,
-                selectedTileColor: AppColors.primary.withOpacity(0.1),
-                onTap: () {
-                  Navigator.pop(context);
-                  setState(() => _selectedIndex = 1);
-                },
+              NavigationRailDestination(
+                icon: Icon(Icons.medical_services),
+                label: Text('Records'),
               ),
-              ListTile(
-                leading: const Icon(Icons.medical_services, color: AppColors.primary),
-                title: const Text('Records'),
-                selected: _selectedIndex == 2,
-                selectedTileColor: AppColors.primary.withOpacity(0.1),
-                onTap: () {
-                  Navigator.pop(context);
-                  setState(() => _selectedIndex = 2);
-                },
+              NavigationRailDestination(
+                icon: Icon(Icons.my_location),
+                label: Text('Set Radius'),
               ),
-              ListTile(
-                leading: const Icon(Icons.my_location, color: AppColors.primary),
-                title: const Text('Set Radius'),
-                selected: _selectedIndex == 3,
-                selectedTileColor: AppColors.primary.withOpacity(0.1),
-                onTap: () {
-                  Navigator.pop(context);
-                  setState(() => _selectedIndex = 3);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.settings, color: AppColors.primary),
-                title: const Text('Settings'),
-                selected: _selectedIndex == 4,
-                selectedTileColor: AppColors.primary.withOpacity(0.1),
-                onTap: () {
-                  Navigator.pop(context);
-                  setState(() => _selectedIndex = 4);
-                },
+              NavigationRailDestination(
+                icon: Icon(Icons.settings),
+                label: Text('Settings'),
               ),
             ],
           ),
-        ),
+          const VerticalDivider(thickness: 1, width: 1),
+          Expanded(child: _pages[_selectedIndex]),
+        ],
       ),
-      body: _pages[_selectedIndex],
     );
   }
 }
@@ -162,7 +147,7 @@ class _DoctorHomeContent extends StatelessWidget {
       'lib/images/p8.jpg',
     ];
     final ValueNotifier<int> currentNotifier = ValueNotifier<int>(0);
-    return Background(
+    return GradientBackground(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
