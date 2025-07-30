@@ -9,6 +9,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
+<<<<<<< HEAD
     <list default="true" id="058a975a-a3fc-4aa3-a992-5e5075670016" name="Changes" comment="">
       <change afterPath="$PROJECT_DIR$/lib/services/Notifications_service.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.flutter-plugins-dependencies" beforeDir="false" afterPath="$PROJECT_DIR$/.flutter-plugins-dependencies" afterDir="false" />
@@ -33,6 +34,9 @@
       <change beforePath="$PROJECT_DIR$/lib/services/notifications_service.dart" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
+=======
+    <list default="true" id="058a975a-a3fc-4aa3-a992-5e5075670016" name="Changes" comment="" />
+>>>>>>> fik
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -80,7 +84,11 @@
 }</component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
+<<<<<<< HEAD
     &quot;url&quot;: &quot;https://github.com/Aaliyah-101/DocPlan.git&quot;,
+=======
+    &quot;url&quot;: &quot;https://github.com/flutter/flutter.git&quot;,
+>>>>>>> fik
     &quot;accountId&quot;: &quot;a12b5db9-485e-47be-b6b1-c95da8569867&quot;
   }
 }</component>
@@ -93,6 +101,7 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
+<<<<<<< HEAD
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;Flutter.main.dart.executor&quot;: &quot;Run&quot;,
@@ -116,11 +125,40 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+=======
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Flutter.main.dart.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "mathias",
+    "io.flutter.reload.alreadyRun": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/user/AndroidStudioProjects/DocPlan/assets/images",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "dart.settings",
+    "show.migrate.to.gradle.popup": "false"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\user\AndroidStudioProjects\DocPlan\assets\images" />
+>>>>>>> fik
       <recent name="C:\Users\user\AndroidStudioProjects\DocPlan\lib" />
       <recent name="C:\Users\user\AndroidStudioProjects\DocPlan\lib\services" />
       <recent name="C:\Users\user\AndroidStudioProjects\DocPlan\lib\screens\doctor" />
       <recent name="C:\Users\user\AndroidStudioProjects\DocPlan\lib\widgets" />
+<<<<<<< HEAD
       <recent name="C:\Users\user\AndroidStudioProjects\DocPlan\lib\models" />
+=======
+>>>>>>> fik
     </key>
   </component>
   <component name="RunManager" selected="Flutter.main.dart">

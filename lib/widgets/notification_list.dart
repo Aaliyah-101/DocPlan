@@ -188,4 +188,8 @@ class _NotificationListState extends State<NotificationList> {
         return type;
     }
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> fik

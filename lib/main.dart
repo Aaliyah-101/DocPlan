@@ -4,6 +4,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:workmanager/workmanager.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+<<<<<<< HEAD
+=======
+import 'dart:developer' as developer;
+>>>>>>> fik
 
 import 'app.dart';
 import 'constants/app_theme.dart';
@@ -12,7 +16,11 @@ import 'services/firebase_messaging_service.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 final FlutterLocalNotificationsPlugin flnPlugin =
+<<<<<<< HEAD
     FlutterLocalNotificationsPlugin();
+=======
+FlutterLocalNotificationsPlugin();
+>>>>>>> fik
 
 /// 👇 Required for background execution on some Android setups
 @pragma('vm:entry-point')
@@ -41,12 +49,33 @@ Future<void> main() async {
 
       // ✅ Register background task (clean and safe)
       await Workmanager().cancelAll(); // Avoid duplicates
+<<<<<<< HEAD
       Workmanager().registerPeriodicTask(
         "reminder_task",
         "check_reminders",
         frequency: const Duration(minutes: 15),
         initialDelay: const Duration(seconds: 10),
       );
+=======
+      
+      // Register periodic task for appointment reminders
+      Workmanager().registerPeriodicTask(
+        "appointment_reminder_task",
+        "check_reminders",
+        frequency: const Duration(minutes: 15), // Check every 15 minutes
+        initialDelay: const Duration(seconds: 30), // Start after 30 seconds
+        constraints: Constraints(
+          networkType: NetworkType.connected,
+          requiresBatteryNotLow: false,
+          requiresCharging: false,
+          requiresDeviceIdle: false,
+          requiresStorageNotLow: false,
+        ),
+        existingWorkPolicy: ExistingWorkPolicy.replace,
+      );
+      
+      print('✅ WorkManager initialized with appointment reminder task');
+>>>>>>> fik
     }
   } catch (e) {
     print("Firebase initialization failed: $e");
@@ -74,4 +103,8 @@ Future<void> main() async {
       child: MyApp(navigatorKey: navigatorKey, flnPlugin: flnPlugin),
     ),
   );
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> fik

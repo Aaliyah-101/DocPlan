@@ -45,9 +45,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         );
       }
     } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -70,6 +68,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         foregroundColor: AppColors.textWhite,
       ),
       body: SafeArea(
+<<<<<<< HEAD
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: Form(
@@ -152,17 +151,136 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           Icons.check_circle,
                           color: AppColors.success,
                           size: 24,
+=======
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Column(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withOpacity(0.05),
+                          borderRadius: BorderRadius.circular(16),
+>>>>>>> fik
                         ),
-                        SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            'Password reset email sent! Please check your inbox and follow the instructions.',
-                            style: TextStyle(
-                              color: AppColors.success,
-                              fontSize: 16,
+                        padding: const EdgeInsets.all(16),
+                        child: Card(
+                          color: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 4,
+                          child: Padding(
+                            padding: const EdgeInsets.all(24.0),
+                            child: Form(
+                              key: _formKey,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 16),
+                                  Container(
+                                    width: 80,
+                                    height: 80,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primary.withAlpha(
+                                          (255 * 0.1).toInt()),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: const Icon(
+                                      Icons.lock_reset,
+                                      size: 40,
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 24),
+                                  const Text(
+                                    'Reset Password',
+                                    style: TextStyle(
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.textPrimary,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  const Text(
+                                    'Enter your email address and we\'ll send you a link to reset your password.',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 32),
+                                  if (!_emailSent) ...[
+                                    CustomTextField(
+                                      controller: _emailController,
+                                      label: 'Email Address',
+                                      icon: Icons.email,
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Please enter your email';
+                                        }
+                                        if (!RegExp(
+                                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                                        ).hasMatch(value)) {
+                                          return 'Please enter a valid email';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                    const SizedBox(height: 24),
+                                    CustomButton(
+                                      text: 'Send Reset Link',
+                                      onPressed:
+                                      _isLoading ? null : _resetPassword,
+                                      isLoading: _isLoading,
+                                    ),
+                                  ] else ...[
+                                    Container(
+                                      padding: const EdgeInsets.all(20),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.success.withAlpha(
+                                            (255 * 0.1).toInt()),
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                            color: AppColors.success),
+                                      ),
+                                      child: const Row(
+                                        children: [
+                                          Icon(
+                                            Icons.check_circle,
+                                            color: AppColors.success,
+                                            size: 24,
+                                          ),
+                                          SizedBox(width: 12),
+                                          Expanded(
+                                            child: Text(
+                                              'Password reset email sent! Please check your inbox and follow the instructions.',
+                                              style: TextStyle(
+                                                color: AppColors.success,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 24),
+                                    CustomButton(
+                                      text: 'Back to Sign In',
+                                      onPressed: () =>
+                                          Navigator.pop(context),
+                                    ),
+                                  ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
+<<<<<<< HEAD
                       ],
                     ),
                   ),
@@ -187,12 +305,32 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           color: AppColors.primary,
                           fontSize: 16,
                         ),
+=======
+>>>>>>> fik
                       ),
-                    ),
+                      const Spacer(),
+                      if (!_emailSent)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 24.0),
+                          child: Center(
+                            child: TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text(
+                                'Back to Sign In',
+                                style: TextStyle(
+                                  color: AppColors.primary,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
-              ],
-            ),
-          ),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );

@@ -3,7 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-import '../screens/chat_screen.dart'; // Adjust the path if necessary
+import '../screens/chat_screen.dart';
 
 class FirebaseMessagingService {
   static final FirebaseMessaging _messaging = FirebaseMessaging.instance;
@@ -20,20 +20,30 @@ class FirebaseMessagingService {
     // 🔒 Request notification permissions
     await _messaging.requestPermission();
 
-    // ✅ Create Android notification channel
-    const AndroidNotificationChannel channel = AndroidNotificationChannel(
+    // ✅ Emergency Alerts Channel
+    const AndroidNotificationChannel emergencyChannel = AndroidNotificationChannel(
+      'emergency_alerts',
+      'Emergency Alerts',
+      description: 'Used for emergency alert notifications.',
+      importance: Importance.max,
+      sound: RawResourceAndroidNotificationSound('emergency_alarm'), // .mp3 file in res/raw/
+    );
+
+    // ✅ General Channel (Optional if you still want other notifications)
+    const AndroidNotificationChannel generalChannel = AndroidNotificationChannel(
       'high_importance_channel',
       'High Importance Notifications',
       description: 'This channel is used for important notifications.',
       importance: Importance.high,
     );
 
-    await flnPlugin
-        .resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(channel);
+    final androidPlugin = flnPlugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
 
-    // 🎯 Local Notification initialization (when tapped while app is running)
+    await androidPlugin?.createNotificationChannel(emergencyChannel);
+    await androidPlugin?.createNotificationChannel(generalChannel);
+
+    // 🎯 Local Notification initialization
     await flnPlugin.initialize(
       const InitializationSettings(
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
@@ -60,30 +70,37 @@ class FirebaseMessagingService {
       String? title = notification?.title;
       String? body = notification?.body;
 
-      // Fallback title/body for emergency types
+      // 🛑 Emergency fallback title/body
       if ((title == null || body == null) && type == 'emergency_alert') {
         title ??= "🚨 Emergency Alert";
         body ??= "An emergency has been assigned to you.";
-      } else if ((title == null || body == null) &&
-          type == 'emergency_update') {
+      } else if ((title == null || body == null) && type == 'emergency_update') {
         title ??= "🚨 Emergency Update";
         body ??= "Emergency has been marked as ${data['status']}.";
       }
+
+      // 🧠 Decide channel based on type
+      final String channelId =
+      type == 'emergency_alert' ? 'emergency_alerts' : 'high_importance_channel';
+
+      final String soundName =
+      type == 'emergency_alert' ? 'emergency_alarm' : 'default';
 
       flnPlugin.show(
         message.hashCode,
         title,
         body,
-        const NotificationDetails(
+        NotificationDetails(
           android: AndroidNotificationDetails(
-            'high_importance_channel',
-            'High Importance Notifications',
+            channelId,
+            channelId == 'emergency_alerts' ? 'Emergency Alerts' : 'High Importance Notifications',
             importance: Importance.max,
             priority: Priority.high,
             playSound: true,
+            sound: RawResourceAndroidNotificationSound(soundName),
           ),
         ),
-        payload: appointmentId, // This is passed to onDidReceiveNotificationResponse
+        payload: appointmentId,
       );
     });
 
@@ -117,11 +134,9 @@ class FirebaseMessagingService {
       if (currentUser == null) return;
 
       final String currentUserId = currentUser.uid;
-      final String otherUserId =
-      currentUserId == senderId ? receiverId : senderId;
-      final String otherUserName = currentUserId == senderId
-          ? (data['receiverName'] ?? 'User')
-          : senderName;
+      final String otherUserId = currentUserId == senderId ? receiverId : senderId;
+      final String otherUserName =
+      currentUserId == senderId ? (data['receiverName'] ?? 'User') : senderName;
 
       navigatorKey.currentState?.push(
         MaterialPageRoute(
@@ -158,11 +173,9 @@ class FirebaseMessagingService {
       if (currentUser == null) return;
 
       final String currentUserId = currentUser.uid;
-      final String otherUserId =
-      currentUserId == senderId ? receiverId : senderId;
-      final String otherUserName = currentUserId == senderId
-          ? (data['receiverName'] ?? 'User')
-          : senderName;
+      final String otherUserId = currentUserId == senderId ? receiverId : senderId;
+      final String otherUserName =
+      currentUserId == senderId ? (data['receiverName'] ?? 'User') : senderName;
 
       navigatorKey.currentState?.push(
         MaterialPageRoute(

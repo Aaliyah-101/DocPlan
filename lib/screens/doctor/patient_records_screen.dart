@@ -45,21 +45,36 @@ class _PatientRecordsScreenState extends State<PatientRecordsScreen> {
 
     setState(() => _isSearching = true);
 
+    print('DEBUG: Starting patient search for: "${_searchController.text.trim()}"');
+
     try {
       final results = await _medicalRecordService.searchMedicalRecords(
         _searchController.text.trim(),
       );
 
+      print('DEBUG: Search completed, found ${results.length} results');
+
       setState(() {
         _searchResults = results;
         _isSearching = false;
       });
+
+      // Show feedback if no results found
+      if (results.isEmpty && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('No medical records found for "${_searchController.text.trim()}"'),
+            backgroundColor: AppColors.textSecondary,
+          ),
+        );
+      }
     } catch (e) {
+      print('DEBUG: Search error: $e');
       setState(() => _isSearching = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: ${e.toString()}'),
+            content: Text('Search error: ${e.toString()}'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -69,11 +84,19 @@ class _PatientRecordsScreenState extends State<PatientRecordsScreen> {
 
   List<MedicalRecordModel> get _filteredResults {
     if (_selectedFilter == 'All') return _searchResults;
+    
+    // Map filter options to actual database types
+    final Map<String, String> filterToType = {
+      'Diagnosis': 'diagnosis',
+      'Prescription': 'prescription',
+      'Test Result': 'test_result',
+    };
+    
+    final targetType = filterToType[_selectedFilter];
+    if (targetType == null) return _searchResults;
+    
     return _searchResults
-        .where(
-          (record) =>
-              record.type.toLowerCase() == _selectedFilter.toLowerCase(),
-        )
+        .where((record) => record.type.toLowerCase() == targetType.toLowerCase())
         .toList();
   }
 
@@ -91,6 +114,29 @@ class _PatientRecordsScreenState extends State<PatientRecordsScreen> {
         ),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.textWhite,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.bug_report),
+            onPressed: () async {
+              await _medicalRecordService.debugAllMedicalRecords();
+            },
+            tooltip: 'Debug Medical Records',
+          ),
+          IconButton(
+            icon: const Icon(Icons.collections),
+            onPressed: () async {
+              await _medicalRecordService.debugMedicalRecordsCollection();
+            },
+            tooltip: 'Debug Collection',
+          ),
+          IconButton(
+            icon: const Icon(Icons.science),
+            onPressed: () async {
+              await _medicalRecordService.createTestMedicalRecord('test_patient_id', 'Test Patient');
+            },
+            tooltip: 'Create Test Record',
+          ),
+        ],
       ),
       backgroundColor: AppColors.backgroundLight,
       body: GradientBackground(
@@ -122,6 +168,14 @@ class _PatientRecordsScreenState extends State<PatientRecordsScreen> {
                       filled: true,
                       fillColor: AppColors.cardBackground,
                     ),
+                    onChanged: (value) {
+                      // Debounce search to avoid too many requests
+                      Future.delayed(const Duration(milliseconds: 500), () {
+                        if (value == _searchController.text) {
+                          _searchPatients();
+                        }
+                      });
+                    },
                     onSubmitted: (_) => _searchPatients(),
                   ),
                   const SizedBox(height: 12),

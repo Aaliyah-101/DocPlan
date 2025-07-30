@@ -59,4 +59,8 @@ class NotificationBell extends StatelessWidget {
       },
     );
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> fik
