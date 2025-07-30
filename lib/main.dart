@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:workmanager/workmanager.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'dart:developer' as developer;
 
 import 'app.dart';
 import 'constants/app_theme.dart';
@@ -41,12 +42,24 @@ Future<void> main() async {
 
       // ✅ Register background task (clean and safe)
       await Workmanager().cancelAll(); // Avoid duplicates
+      
+      // Register periodic task for appointment reminders
       Workmanager().registerPeriodicTask(
-        "reminder_task",
+        "appointment_reminder_task",
         "check_reminders",
-        frequency: const Duration(minutes: 15),
-        initialDelay: const Duration(seconds: 10),
+        frequency: const Duration(minutes: 15), // Check every 15 minutes
+        initialDelay: const Duration(seconds: 30), // Start after 30 seconds
+        constraints: Constraints(
+          networkType: NetworkType.connected,
+          requiresBatteryNotLow: false,
+          requiresCharging: false,
+          requiresDeviceIdle: false,
+          requiresStorageNotLow: false,
+        ),
+        existingWorkPolicy: ExistingWorkPolicy.replace,
       );
+      
+      print('✅ WorkManager initialized with appointment reminder task');
     }
   } catch (e) {
     print("Firebase initialization failed: $e");

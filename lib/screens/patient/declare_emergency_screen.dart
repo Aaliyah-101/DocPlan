@@ -21,7 +21,6 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
   final AppointmentService _appointmentService = AppointmentService();
 
   final _formKey = GlobalKey<FormState>();
-  final _symptomsController = TextEditingController();
 
   final List<String> _emergencyTypes = [
     'Heart Attack',
@@ -53,9 +52,36 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
   bool _isLoading = false;
   String? _error;
 
+  // Generate default description based on emergency type
+  String _getDefaultDescription(String emergencyType) {
+    final Map<String, String> defaultDescriptions = {
+      'Heart Attack': 'Patient experiencing chest pain, shortness of breath, and other heart attack symptoms',
+      'Stroke': 'Patient showing signs of stroke including facial drooping, arm weakness, and speech difficulties',
+      'Diabetic Coma': 'Patient with diabetes experiencing severe symptoms including confusion and unconsciousness',
+      'Seizures': 'Patient experiencing seizure activity with loss of consciousness and convulsions',
+      'Asthma Attack': 'Patient experiencing severe breathing difficulties and wheezing',
+      'Severe Allergy': 'Patient experiencing severe allergic reaction with difficulty breathing and swelling',
+      'Unconscious Patient': 'Patient is unconscious and unresponsive to stimuli',
+      'Road Accidents': 'Patient involved in road accident with multiple injuries',
+      'Fall Injuries': 'Patient sustained injuries from a fall with potential fractures',
+      'Gunshot Wound': 'Patient with gunshot wound requiring immediate medical attention',
+      'Stab Wound': 'Patient with stab wound and bleeding requiring emergency care',
+      'Burns': 'Patient with severe burns requiring immediate medical treatment',
+      'Blunt Trauma': 'Patient with blunt force trauma and internal injuries',
+      'Crush Injury': 'Patient with crush injury and potential compartment syndrome',
+      'High Fever & Convulsions': 'Patient with high fever and convulsions requiring immediate attention',
+      'Severe Dehydration': 'Patient showing signs of severe dehydration and electrolyte imbalance',
+      'Poisoning': 'Patient suspected of poisoning requiring immediate medical intervention',
+      'Choking': 'Patient experiencing choking and airway obstruction',
+      'Child Trauma': 'Child patient with trauma requiring pediatric emergency care',
+      'Other': 'Patient experiencing emergency medical situation requiring immediate attention',
+    };
+    
+    return defaultDescriptions[emergencyType] ?? 'Patient experiencing emergency medical situation';
+  }
+
   @override
   void dispose() {
-    _symptomsController.dispose();
     super.dispose();
   }
 
@@ -91,6 +117,8 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
           .doc()
           .id;
 
+      final defaultDescription = _getDefaultDescription(_selectedEmergencyType);
+
       final appointment = AppointmentModel(
         id: appointmentId,
         doctorId: availableDoctors.first['id'],
@@ -99,8 +127,7 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
         patientName: userModel.name,
         dateTime: DateTime.now(),
         status: 'pending',
-        reason:
-        'EMERGENCY: $_selectedEmergencyType - ${_symptomsController.text.trim()}',
+        reason: 'EMERGENCY: $_selectedEmergencyType - $defaultDescription',
         notes: 'Severity: $_selectedSeverity',
         createdAt: DateTime.now(),
         location: null,
@@ -117,8 +144,7 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
         id: emergencyId,
         doctorId: availableDoctors.first['id'],
         doctorName: availableDoctors.first['name'],
-        reason:
-        'Patient Emergency: $_selectedEmergencyType - ${_symptomsController.text.trim()}',
+        reason: 'Patient Emergency: $_selectedEmergencyType - $defaultDescription',
         timestamp: DateTime.now(),
         status: 'active',
         affectedAppointments: [appointmentId],
@@ -311,17 +337,6 @@ class _DeclareEmergencyScreenState extends State<DeclareEmergencyScreen> {
                           .toList(),
                       onChanged: (value) =>
                           setState(() => _selectedSeverity = value!),
-                    ),
-                    const SizedBox(height: 24),
-                    TextFormField(
-                      controller: _symptomsController,
-                      decoration: const InputDecoration(
-                        labelText: 'Describe your symptoms',
-                      ),
-                      maxLines: 3,
-                      validator: (value) => value == null || value.length < 10
-                          ? 'Please provide more detailed symptoms'
-                          : null,
                     ),
                     const SizedBox(height: 24),
                     if (_error != null)
