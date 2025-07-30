@@ -7,15 +7,15 @@ class GradientBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.primary, AppColors.docplanBlue, AppColors.accent],
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Image.asset(
+          'lib/images/pic2.jpg',
+          fit: BoxFit.cover,
         ),
-      ),
-      child: SafeArea(child: child),
+        SafeArea(child: child),
+      ],
     );
   }
 }
